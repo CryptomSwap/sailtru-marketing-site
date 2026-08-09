@@ -1,0 +1,349 @@
+{
+  "metadata": {
+    "title": "SailTrue | Business & Web Intelligence",
+    "description": "SailTrue diagnoses websites, optimizes SEO and GEO, integrates automation and AI, and builds custom apps and tools that help businesses scale."
+  },
+  "common": {
+    "skipToContent": "Skip to main content",
+    "brandHome": "SailTrue home",
+    "primaryNav": "Primary navigation",
+    "localeSwitch": "Language",
+    "localeEn": "EN",
+    "localeHe": "עב"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "howItWorks": "How It Works",
+    "capabilities": "Capabilities",
+    "approach": "Approach",
+    "proof": "Proof",
+    "about": "About",
+    "beginDiagnosis": "Get in touch"
+  },
+  "hero": {
+    "railLabel": "Business & web intelligence",
+    "headlineAria": "From diagnosis to scale — SEO, automation, and custom tools",
+    "headlineLineA": "From diagnosis",
+    "headlineLineB": "to scale.",
+    "headlineLineC": "SEO, automation,",
+    "headlineLineD": "custom tools.",
+    "subtitle": "We analyze websites, optimize discovery through SEO and GEO, integrate AI and automation, and build custom apps that help your business grow.",
+    "methodology": "Methodology"
+  },
+  "problem": {
+    "index": "02",
+    "kicker": "Signal landscape",
+    "title": "Growth breaks in systems, not slogans.",
+    "description": "Websites underperform when signals, workflows, and tooling fall out of sync. Without structured diagnosis and the right build capacity, SEO gains, automation, and scale never compound.",
+    "signals": [
+      {
+        "title": "Clarity Breakdown",
+        "note": "Interpretation slows before users commit"
+      },
+      {
+        "title": "Trust Gaps",
+        "note": "Credibility signals fall below category norms"
+      },
+      {
+        "title": "Mobile Friction",
+        "note": "Small screens amplify hesitation points"
+      },
+      {
+        "title": "Conversion Leakage",
+        "note": "Decision flow breaks at key moments"
+      },
+      {
+        "title": "Discovery Gaps",
+        "note": "SEO and GEO signals miss high-intent demand"
+      },
+      {
+        "title": "Manual Drag",
+        "note": "Repetitive ops block teams from scaling"
+      }
+    ]
+  },
+  "methodology": {
+    "index": "03",
+    "kicker": "Methodology",
+    "title": "Measure first. Decide second. Improve continuously.",
+    "description": "We establish evidence before direction — then optimize, automate, and build what the business needs to scale.",
+    "steps": [
+      {
+        "title": "Detect",
+        "body": "We audit websites, SEO/GEO visibility, UX clarity, trust signals, and conversion flow to establish a real baseline."
+      },
+      {
+        "title": "Prioritize",
+        "body": "We rank interventions — optimization, automation, or custom build — by business impact, effort, and urgency."
+      },
+      {
+        "title": "Deliver",
+        "body": "We execute improvements, integrate AI where it compounds value, and ship custom tools that remove friction at scale."
+      }
+    ]
+  },
+  "signalLayers": {
+    "index": "04",
+    "kicker": "Signal layers",
+    "title": "Performance is a system of signals.",
+    "description": "SailTrue evaluates each layer independently and systemically — from search and generative engine visibility to UX, trust, and conversion.",
+    "navLabel": "Signal layers",
+    "layers": [
+      "AI Visibility",
+      "Technical SEO",
+      "UX Clarity",
+      "Conversion Flow",
+      "Mobile Experience",
+      "Trust Signals",
+      "Positioning Fit"
+    ],
+    "detailBody": "Weak links in {layer} produce compounding drag across trust, interpretation speed, and conversion quality. We resolve it with measurable interventions and continuous verification.",
+    "detailMetric": "Scored by friction risk · revenue influence · layer dependency"
+  },
+  "transformation": {
+    "index": "05",
+    "kicker": "Capabilities",
+    "title": "Diagnosis is the start. Scale is the system.",
+    "description": "We partner with businesses on the full stack — from website intelligence to SEO, automation, AI, and custom product builds.",
+    "paths": [
+      {
+        "title": "Website diagnosis & optimization",
+        "body": "Structured audits across technical health, UX clarity, trust, and conversion — with continuous verification as you grow."
+      },
+      {
+        "title": "SEO & GEO",
+        "body": "Search and generative engine visibility engineered for real demand — technical foundations, content signals, and measurable ranking gains."
+      },
+      {
+        "title": "Automation & AI integration",
+        "body": "Workflows, agents, and intelligent systems that remove manual drag and compound operational leverage."
+      },
+      {
+        "title": "Custom apps & internal tools",
+        "body": "Purpose-built software — dashboards, client portals, and ops tools — designed to help your business scale without friction."
+      }
+    ]
+  },
+  "proof": {
+    "index": "06",
+    "kicker": "Proof",
+    "title": "Evidence over claims.",
+    "description": "High-performing businesses combine structured diagnosis, SEO and GEO discipline, smart automation, and tools built for how they actually operate.",
+    "stats": [
+      "Increase in qualified conversion rate",
+      "Improvement in SEO and GEO visibility",
+      "Reduction in manual ops through automation"
+    ],
+    "quote": "SailTrue turned fragmented assumptions into a coherent roadmap with measurable commercial impact.",
+    "attribution": "Growth lead, B2B SaaS",
+    "logos": ["Verity", "Northline", "Daremetrics", "Lattice", "Glyph"]
+  },
+  "process": {
+    "index": "07",
+    "kicker": "Engagement",
+    "title": "Clear rhythm. Clear ownership. Clear progress.",
+    "description": "A disciplined model from baseline insight through optimization, automation, and custom build delivery.",
+    "steps": [
+      {
+        "label": "Onboard",
+        "body": "Align on business model, growth priorities, and where diagnosis, SEO, automation, or build fits."
+      },
+      {
+        "label": "Baseline",
+        "body": "Build a cross-layer view of website performance, discovery signals, and operational bottlenecks."
+      },
+      {
+        "label": "Deliver",
+        "body": "Execute SEO/GEO, automation, AI integration, or custom tools — with clear ownership and measurable outcomes."
+      },
+      {
+        "label": "Iterate",
+        "body": "Recalibrate based on results and continue compounding gains as the business scales."
+      }
+    ]
+  },
+  "finalCta": {
+    "index": "08",
+    "kicker": "Start a conversation",
+    "title": "Tell us where you want to scale.",
+    "body": "Share your website, growth objective, and what you need — diagnosis, SEO/GEO, automation, AI, or a custom build. We will return a focused direction and practical next steps.",
+    "button": "Get in touch",
+    "note": "Typical response · within 2 business days"
+  },
+  "whatsapp": {
+    "label": "WhatsApp",
+    "ariaLabel": "Contact SailTrue on WhatsApp"
+  },
+  "servicesPage": {
+    "metadata": {
+      "title": "Services | SailTrue",
+      "description": "Website diagnosis, SEO and GEO, automation and AI integration, and custom apps — built to help businesses scale."
+    },
+    "hero": {
+      "kicker": "Services",
+      "title": "We build growth systems, not slide decks.",
+      "body": "Diagnosis, SEO, automation, AI, and custom tools — delivered with the same rigor agencies reserve for strategy decks. Outcomes you can measure.",
+      "cta": "Let's talk"
+    },
+    "philosophy": {
+      "kicker": "Before the services",
+      "title": "You hire us for outcomes. Everything else is how we deliver.",
+      "paragraph1": "Services generate results — and that's what you pay for.",
+      "paragraph2": "Structured diagnosis, messaging clarity, technical audits, and build discipline — we don't invoice these as line items. They're how we make the services work.",
+      "paragraph3": "When we optimize your SEO, automate a workflow, or ship a custom tool, it's backed by evidence — not assumptions."
+    },
+    "services": {
+      "index": "01",
+      "kicker": "What we deliver",
+      "title": "Four capabilities. One growth system.",
+      "description": "Each service stands alone or compounds with the others — from first diagnosis to custom infrastructure.",
+      "items": [
+        {
+          "title": "Website diagnosis & optimization",
+          "body": "Structured audits across technical health, UX clarity, trust signals, and conversion — with continuous verification as you grow.",
+          "features": ["Signal audit", "UX clarity", "Conversion flow", "Trust analysis", "Performance baseline"]
+        },
+        {
+          "title": "SEO & GEO",
+          "body": "Search and generative engine visibility engineered for real demand — not vanity rankings.",
+          "features": ["Keyword strategy", "Technical SEO", "On-page optimization", "Generative visibility", "SERP analysis"]
+        },
+        {
+          "title": "Automation & AI integration",
+          "body": "Workflows and intelligent systems that remove manual drag and compound operational leverage.",
+          "features": ["Workflow automation", "AI agents", "Integration architecture", "Process mapping", "Intelligent ops"]
+        },
+        {
+          "title": "Custom apps & internal tools",
+          "body": "Purpose-built software — dashboards, portals, and ops tools — designed for how your business actually scales.",
+          "features": ["Internal dashboards", "Client portals", "Custom workflows", "API integrations", "Scale-ready builds"]
+        }
+      ]
+    },
+    "process": {
+      "index": "02",
+      "kicker": "Our process",
+      "title": "How we work",
+      "railLabel": "Engagement process",
+      "steps": [
+        {
+          "label": "Deep dive",
+          "title": "Understand the business better than the brief",
+          "body": "We map your model, technology, market, and bottlenecks — website signals, discovery gaps, manual ops, and build requirements. Then we define storylines for what to fix, automate, or build first."
+        },
+        {
+          "label": "Build & optimize",
+          "title": "Execute with evidence behind every decision",
+          "body": "SEO and GEO improvements, UX fixes, automation flows, AI integrations, or custom apps — prioritized by impact and shipped with clear ownership."
+        },
+        {
+          "label": "Amplify",
+          "title": "Deploy, integrate, and make it stick",
+          "body": "We don't ship and disappear. Tools get integrated into daily ops, teams get clarity, and every deliverable is positioned to keep generating value."
+        },
+        {
+          "label": "Compound",
+          "title": "Measure, iterate, and expand what works",
+          "body": "New storylines, new optimizations, new automations — we recalibrate based on outcomes and keep compounding gains as the business scales."
+        }
+      ]
+    },
+    "outcomes": {
+      "index": "03",
+      "kicker": "Outcomes",
+      "title": "Evidence over claims.",
+      "description": "Representative results from engagements across diagnosis, SEO, automation, and custom build.",
+      "cards": [
+        {
+          "title": "B2B SaaS platform",
+          "metric": "+38%",
+          "label": "Qualified conversion",
+          "tags": ["Diagnosis", "UX clarity", "Conversion flow"]
+        },
+        {
+          "title": "Regional services brand",
+          "metric": "3.2×",
+          "label": "Organic visibility",
+          "tags": ["SEO", "Technical fixes", "Content signals"]
+        },
+        {
+          "title": "Operations-heavy business",
+          "metric": "−60%",
+          "label": "Manual processing time",
+          "tags": ["Automation", "AI integration", "Custom tools"]
+        }
+      ]
+    },
+    "contact": {
+      "index": "04",
+      "kicker": "Contact",
+      "title": "Tell us where you want to scale.",
+      "body": "Share your website, growth objective, and what you need — diagnosis, SEO/GEO, automation, AI, or a custom build. We'll return a focused direction and practical next steps.",
+      "emailCta": "Email us",
+      "whatsappCta": "WhatsApp",
+      "note": "Typical response · within 2 business days"
+    }
+  },
+  "diagnostics": {
+    "hudStatus": "Analysis complete",
+    "hudLabel": "Diagnostic HUD",
+    "hudSignals": "{count} signals",
+    "chromeUrl": "preview.local",
+    "chromeSignalLabel": "Signal Scan",
+    "severity": {
+      "low": "low",
+      "medium": "medium",
+      "high": "high"
+    },
+    "cards": [
+      {
+        "id": "trust",
+        "eyebrow": "TRUST.SIG",
+        "title": "Credibility below benchmark",
+        "body": "−34% vs category median",
+        "severity": "high"
+      },
+      {
+        "id": "conversion",
+        "eyebrow": "CONV.FLOW",
+        "title": "Decision friction detected",
+        "body": "CTA hierarchy conflict",
+        "severity": "medium"
+      },
+      {
+        "id": "visibility",
+        "eyebrow": "AI.VIS",
+        "title": "Discovery signal incomplete",
+        "body": "Schema coverage at 41%",
+        "severity": "medium"
+      },
+      {
+        "id": "lcp",
+        "eyebrow": "PERF.LCP",
+        "title": "Largest contentful paint slow",
+        "body": "3.8s · target ≤ 2.5s",
+        "severity": "high"
+      },
+      {
+        "id": "ttfb",
+        "eyebrow": "NET.TTFB",
+        "title": "Server response delayed",
+        "body": "TTFB 840ms · p75 620ms",
+        "severity": "medium"
+      },
+      {
+        "id": "assets",
+        "eyebrow": "ASSET.JS",
+        "title": "Render-blocking payload",
+        "body": "1.2MB JS · 4 blocking scripts",
+        "severity": "medium"
+      }
+    ]
+  },
+  "preview": {
+    "mode": "image",
+    "primary": "/images/hero-panel-northline.jpg",
+    "alternate": "/images/hero-panel-cycle-2.png"
+  }
+}
