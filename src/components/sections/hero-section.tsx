@@ -38,13 +38,8 @@ export function HeroSection() {
         <header className="hero-nav">
           <Link href="/" className="hero-nav__brand" aria-label={tCommon("brandHome")}>
             <img
-              src="/images/sailtrue-mark.png"
-              alt=""
-              className="hero-nav__logo-img hero-nav__logo-img--mark"
-            />
-            <img
-              src="/images/sailtrue-logo.png"
-              alt="SailTrue"
+              src="/images/sailtrue-wordmark.png"
+              alt="SailTru"
               className="hero-nav__logo-img hero-nav__logo-img--wordmark"
             />
           </Link>

@@ -1,11 +1,11 @@
 {
   "metadata": {
-    "title": "SailTrue | Business & Web Intelligence",
-    "description": "SailTrue diagnoses websites, optimizes SEO and GEO, integrates automation and AI, and builds custom apps and tools that help businesses scale."
+    "title": "SailTru | Business & Web Intelligence",
+    "description": "SailTru diagnoses websites, optimizes SEO and GEO, integrates automation and AI, and builds custom apps and tools that help businesses scale."
   },
   "common": {
     "skipToContent": "Skip to main content",
-    "brandHome": "SailTrue home",
+    "brandHome": "SailTru home",
     "primaryNav": "Primary navigation",
     "localeSwitch": "Language",
     "localeEn": "EN",
@@ -87,7 +87,7 @@
     "index": "04",
     "kicker": "Signal layers",
     "title": "Performance is a system of signals.",
-    "description": "SailTrue evaluates each layer independently and systemically — from search and generative engine visibility to UX, trust, and conversion.",
+    "description": "SailTru evaluates each layer independently and systemically — from search and generative engine visibility to UX, trust, and conversion.",
     "navLabel": "Signal layers",
     "layers": [
       "AI Visibility",
@@ -135,7 +135,7 @@
       "Improvement in SEO and GEO visibility",
       "Reduction in manual ops through automation"
     ],
-    "quote": "SailTrue turned fragmented assumptions into a coherent roadmap with measurable commercial impact.",
+    "quote": "SailTru turned fragmented assumptions into a coherent roadmap with measurable commercial impact.",
     "attribution": "Growth lead, B2B SaaS",
     "logos": ["Verity", "Northline", "Daremetrics", "Lattice", "Glyph"]
   },
@@ -173,11 +173,11 @@
   },
   "whatsapp": {
     "label": "WhatsApp",
-    "ariaLabel": "Contact SailTrue on WhatsApp"
+    "ariaLabel": "Contact SailTru on WhatsApp"
   },
   "servicesPage": {
     "metadata": {
-      "title": "Services | SailTrue",
+      "title": "Services | SailTru",
       "description": "Website diagnosis, SEO and GEO, automation and AI integration, and custom apps — built to help businesses scale."
     },
     "hero": {
