@@ -1,11 +1,11 @@
 {
   "metadata": {
-    "title": "SailTrue | מודיעין עסקי ודיגיטלי",
-    "description": "SailTrue מאבחנת אתרים, מייעלת SEO ו-GEO, משלבת אוטומציה ו-AI, ובונה אפליקציות וכלים מותאמים שעוזרים לעסקים לגדול."
+    "title": "SailTru | מודיעין עסקי ודיגיטלי",
+    "description": "SailTru מאבחנת אתרים, מייעלת SEO ו-GEO, משלבת אוטומציה ו-AI, ובונה אפליקציות וכלים מותאמים שעוזרים לעסקים לגדול."
   },
   "common": {
     "skipToContent": "דילוג לתוכן הראשי",
-    "brandHome": "SailTrue — דף הבית",
+    "brandHome": "SailTru — דף הבית",
     "primaryNav": "ניווט ראשי",
     "localeSwitch": "שפה",
     "localeEn": "EN",
@@ -87,7 +87,7 @@
     "index": "04",
     "kicker": "שכבות אות",
     "title": "ביצועים הם מערכת של אותות.",
-    "description": "SailTrue מעריכה כל שכבה בנפרד ובהקשר מערכתי — מנראות בחיפוש ובמנועי AI ועד UX, אמון והמרה.",
+    "description": "SailTru מעריכה כל שכבה בנפרד ובהקשר מערכתי — מנראות בחיפוש ובמנועי AI ועד UX, אמון והמרה.",
     "navLabel": "שכבות אות",
     "layers": [
       "נראות AI",
@@ -135,7 +135,7 @@
       "שיפור בנראות SEO ו-GEO",
       "ירידה בעומס ידני באמצעות אוטומציה"
     ],
-    "quote": "SailTrue הפכה הנחות מפוזרות לתוכנית עבודה עקבית עם השפעה מסחרית מדידה.",
+    "quote": "SailTru הפכה הנחות מפוזרות לתוכנית עבודה עקבית עם השפעה מסחרית מדידה.",
     "attribution": "מנהל צמיחה, SaaS B2B",
     "logos": ["Verity", "Northline", "Daremetrics", "Lattice", "Glyph"]
   },
@@ -173,11 +173,11 @@
   },
   "whatsapp": {
     "label": "WhatsApp",
-    "ariaLabel": "יצירת קשר עם SailTrue ב-WhatsApp"
+    "ariaLabel": "יצירת קשר עם SailTru ב-WhatsApp"
   },
   "servicesPage": {
     "metadata": {
-      "title": "שירותים | SailTrue",
+      "title": "שירותים | SailTru",
       "description": "אבחון אתרים, SEO ו-GEO, אוטומציה ושילוב AI, ואפליקציות מותאמות — כדי לעזור לעסקים לגדול."
     },
     "hero": {
