@@ -525,3 +525,15 @@
 .hero-intel__controls {
   gap: 1rem 1.25rem;
 }
+/* SailTru operator: he-hierarchy-parity */
+[dir="rtl"] .hero-intel__subtitle {
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  line-height: 1.65;
+  color: rgba(125, 138, 165, 0.78);
+  font-weight: 400;
+}
+
+[dir="rtl"] .services-hero__kicker {
+  font-weight: 500;
+  color: rgba(155, 168, 195, 0.68);
+}
