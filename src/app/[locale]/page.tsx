@@ -5,6 +5,7 @@ import { MethodologySection } from "@/components/sections/methodology-section";
 import { ProblemSection } from "@/components/sections/problem-section";
 import { ProcessSection } from "@/components/sections/process-section";
 import { ProofSection } from "@/components/sections/proof-section";
+import { HomeTestimonialTeaser } from "@/components/sections/home-testimonial-teaser";
 import { SignalLayersSection } from "@/components/sections/signal-layers-section";
 import { TransformationSection } from "@/components/sections/transformation-section";
 import "@/components/sections/sections.css";
@@ -29,6 +30,7 @@ export default async function HomePage({ params }: PageProps) {
       <MethodologySection />
       <SignalLayersSection />
       <TransformationSection />
+      <HomeTestimonialTeaser />
       <ProofSection />
       <ProcessSection />
       <FinalCtaSection />
