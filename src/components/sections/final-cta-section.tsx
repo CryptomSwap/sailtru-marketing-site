@@ -1,6 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+
+const CALENDLY_URL = "https://calendly.com/sailtrue";
+const CONTACT_EMAIL = "team@sailtru.com";
 import { Container } from "@/components/ui/container";
 import { ProductStage } from "@/components/ui/product-stage";
 import { Reveal } from "@/components/ui/reveal";
@@ -23,10 +26,10 @@ export function FinalCtaSection() {
               <h2 className="product-close__title">{t("title")}</h2>
               <p className="product-close__body">{t("body")}</p>
               <div className="product-close__actions">
-                <a href="mailto:hello@sailtrue.io" className="product-close__btn">
+                <a href={CALENDLY_URL} className="product-close__btn" target="_blank" rel="noopener noreferrer">
                   {t("button")}
                 </a>
-                <p className="product-close__note">{t("note")}</p>
+                <a href={`mailto:${CONTACT_EMAIL}`} className="product-close__note product-close__note--link">{CONTACT_EMAIL}</a>
               </div>
             </div>
           </Reveal>
