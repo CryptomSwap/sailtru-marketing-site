@@ -18,9 +18,9 @@ export function HeroSection() {
 
   const navItems = [
     { label: tNav("services"), href: "/services" as const },
-    { label: tNav("howItWorks"), href: "/#methodology" as const },
-    { label: tNav("proof"), href: "/#proof" as const },
-    { label: tNav("about"), href: "/#process" as const },
+    { label: tNav("howItWorks"), href: "/how-we-work" as const },
+    { label: tNav("work"), href: "/work" as const },
+    { label: tNav("contact"), href: "/contact" as const },
   ];
 
   const alternateLocale = routing.locales.find((l) => l !== locale) ?? routing.defaultLocale;
