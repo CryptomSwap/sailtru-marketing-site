@@ -52,7 +52,7 @@ export function HeroEditorial() {
         <a href="#methodology" className="hero-cta hero-cta--ghost">
           {t("methodology")}
         </a>
-        <Link href="#final-cta" className="hero-cta hero-cta--ghost">
+        <Link href="#final-cta" className="hero-cta hero-cta--primary">
           {tNav("beginDiagnosis")}
         </Link>
       </motion.div>

@@ -516,3 +516,12 @@
     );
   }
 }
+.hero-cta--primary {
+  box-shadow:
+    0 0 0 1px rgba(114, 144, 255, 0.1),
+    0 10px 28px rgba(46, 68, 128, 0.22);
+}
+
+.hero-intel__controls {
+  gap: 1rem 1.25rem;
+}
