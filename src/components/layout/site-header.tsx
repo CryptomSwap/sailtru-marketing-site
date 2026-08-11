@@ -64,7 +64,7 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
         >
           {alternateLocale === "he" ? tCommon("localeHe") : tCommon("localeEn")}
         </Link>
-        <Link href="/#final-cta" className="hero-cta hero-cta--ghost hero-cta--nav">
+        <Link href="/#final-cta" className="hero-cta hero-cta--primary hero-cta--nav">
           {tNav("beginDiagnosis")}
         </Link>
       </div>
