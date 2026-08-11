@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "title": "SailTru | מודיעין עסקי ודיגיטלי",
-    "description": "SailTru מאבחנת אתרים, מייעלת SEO ו-GEO, משלבת אוטומציה ו-AI, ובונה אפליקציות וכלים מותאמים שעוזרים לעסקים לגדול."
+    "title": "SailTru | צמיחה ואוטומציה מונחות AI",
+    "description": "SailTru עוזרת לעסקים לגלות היכן הם מפסידים הזדמנות — בגילוי, תחרות, תפעול ובנייה — ואז ליישם את המערכות שמשפרות."
   },
   "common": {
     "skipToContent": "דילוג לתוכן הראשי",
@@ -13,23 +13,30 @@
   },
   "nav": {
     "home": "בית",
-    "services": "שירותים",
-    "howItWorks": "איך זה עובד",
+    "services": "מה אנחנו עושים",
+    "howItWorks": "איך אנחנו עובדים",
     "capabilities": "יכולות",
     "approach": "הגישה",
-    "proof": "תוצאות",
-    "about": "אודות",
-    "beginDiagnosis": "יצירת קשר"
+    "proof": "עבודות",
+    "about": "איך אנחנו עובדים",
+    "beginDiagnosis": "יצירת קשר",
+    "work": "עבודות",
+    "contact": "יצירת קשר"
   },
   "hero": {
-    "railLabel": "מודיעין עסקי ודיגיטלי",
+    "railLabel": "צמיחה ואוטומציה מונחות AI",
     "headlineAria": "מאבחון ועד צמיחה — SEO, אוטומציה וכלים מותאמים",
-    "headlineLineA": "מאבחון",
-    "headlineLineB": "ועד צמיחה.",
-    "headlineLineC": "SEO, אוטומציה,",
-    "headlineLineD": "כלים מותאמים.",
-    "subtitle": "אנחנו מאבחנים אתרים, מייעלים נראות ב-SEO ו-GEO, משלבים AI ואוטומציה, ובונים אפליקציות וכלים שעוזרים לעסק שלכם לגדול.",
-    "methodology": "המתודולוגיה"
+    "headlineLineA": "מוצאים היכן",
+    "headlineLineB": "ההזדמנות",
+    "headlineLineC": "אובדת —",
+    "headlineLineD": "ואז בונים את התיקון.",
+    "subtitle": "SailTru היא חברת צמיחה ואוטומציה מונחות AI. אנחנו עוזרים לעסקים להשתפר בגילוי, להתחרות בחוכמה ולייעל עבודה שמעכבת.",
+    "methodology": "איך אנחנו עובדים",
+    "urlScan": {
+      "label": "כתובת אתר",
+      "placeholder": "yourcompany.com",
+      "runScan": "הרץ סריקה"
+    }
   },
   "problem": {
     "index": "02",
@@ -137,7 +144,13 @@
     ],
     "quote": "SailTru הפכה הנחות מפוזרות לתוכנית עבודה עקבית עם השפעה מסחרית מדידה.",
     "attribution": "מנהל צמיחה, SaaS B2B",
-    "logos": ["Verity", "Northline", "Daremetrics", "Lattice", "Glyph"]
+    "logos": [
+      "Verity",
+      "Northline",
+      "Daremetrics",
+      "Lattice",
+      "Glyph"
+    ]
   },
   "process": {
     "index": "07",
@@ -202,22 +215,46 @@
         {
           "title": "אבחון ואופטימיזציית אתרים",
           "body": "בדיקות מובנות של בריאות טכנית, בהירות UX, אותות אמון והמרה — עם אימות מתמשך תוך כדי צמיחה.",
-          "features": ["ביקורת אותות", "בהירות UX", "זרימת המרה", "ניתוח אמון", "קו בסיס ביצועים"]
+          "features": [
+            "ביקורת אותות",
+            "בהירות UX",
+            "זרימת המרה",
+            "ניתוח אמון",
+            "קו בסיס ביצועים"
+          ]
         },
         {
           "title": "SEO ו-GEO",
           "body": "נראות בחיפוש ובמנועי AI שמבוססת על ביקוש אמיתי — לא דירוגים ריקים.",
-          "features": ["אסטרטגיית מילות מפתח", "SEO טכני", "אופטימיזציית on-page", "נראות generative", "ניתוח SERP"]
+          "features": [
+            "אסטרטגיית מילות מפתח",
+            "SEO טכני",
+            "אופטימיזציית on-page",
+            "נראות generative",
+            "ניתוח SERP"
+          ]
         },
         {
           "title": "אוטומציה ושילוב AI",
           "body": "תהליכים ומערכות חכמות שמסירים עומס ידני ומצטברים ליתרון תפעולי.",
-          "features": ["אוטומציית workflow", "סוכני AI", "ארכיטקטורת אינטגרציה", "מיפוי תהליכים", "תפעול חכם"]
+          "features": [
+            "אוטומציית workflow",
+            "סוכני AI",
+            "ארכיטקטורת אינטגרציה",
+            "מיפוי תהליכים",
+            "תפעול חכם"
+          ]
         },
         {
           "title": "אפליקציות וכלים מותאמים",
           "body": "תוכנה לפי מטרה — דשבורדים, פורטלים וכלי תפעול — שתוכננו לאופן שבו העסק שלכם באמת גדל.",
-          "features": ["דשבורדים פנימיים", "פורטלים ללקוחות", "workflow מותאם", "אינטגרציות API", "בנייה לקנה מידה"]
+          "features": [
+            "דשבורדים פנימיים",
+            "פורטלים ללקוחות",
+            "workflow מותאם",
+            "אינטגרציות API",
+            "בנייה לקנה מידה"
+          ]
         }
       ]
     },
@@ -259,19 +296,31 @@
           "title": "פלטפורמת B2B SaaS",
           "metric": "+38%",
           "label": "המרה איכותית",
-          "tags": ["אבחון", "בהירות UX", "זרימת המרה"]
+          "tags": [
+            "אבחון",
+            "בהירות UX",
+            "זרימת המרה"
+          ]
         },
         {
           "title": "מותג שירותים אזורי",
           "metric": "3.2×",
           "label": "נראות אורגנית",
-          "tags": ["SEO", "תיקונים טכניים", "אותות תוכן"]
+          "tags": [
+            "SEO",
+            "תיקונים טכניים",
+            "אותות תוכן"
+          ]
         },
         {
           "title": "עסק תפעולי",
           "metric": "−60%",
           "label": "זמן עיבוד ידני",
-          "tags": ["אוטומציה", "שילוב AI", "כלים מותאמים"]
+          "tags": [
+            "אוטומציה",
+            "שילוב AI",
+            "כלים מותאמים"
+          ]
         }
       ]
     },
@@ -345,5 +394,73 @@
     "mode": "image",
     "primary": "/images/hero-panel-lendly-he.png",
     "alternate": "/images/hero-panel-lendly-he.png"
+  },
+  "homeTestimonial": {
+    "ariaLabel": "המלצת לקוח",
+    "quote": "Sailtru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
+    "attribution": "Laba Records",
+    "moreLink": "עוד סיפורי לקוחות"
+  },
+  "howWeWorkPage": {
+    "metadata": {
+      "title": "איך אנחנו עובדים | SailTru",
+      "description": "כיצד SailTru מאבחנת הזדמנות, מיישמת שיפורים ומאמתת תוצאות בכנות."
+    },
+    "index": "01",
+    "kicker": "איך אנחנו עובדים",
+    "title": "אנחנו לא עוצרים בתובנה.",
+    "intro": "SailTru מוצאת היכן עסקים מאבדים הזדמנות — ואז עוזרת לעצב ולספק את השיפור.",
+    "sections": {
+      "loop": {
+        "title": "מוצאים → מבינים → בונים",
+        "body": "מוצאים את ההזדמנות. מבינים את הפער. בונים את השיפור."
+      },
+      "diagnosis": {
+        "title": "אבחון מבוסס ראיות",
+        "body": "אנחנו מנתחים אתרים, מתחרים, נראות AI וחיכוך תפעולי."
+      },
+      "implementation": {
+        "title": "יישום עם בני אדם בלולאה",
+        "body": "אנחנו מספקים תיקונים, אוטומציות ומערכות מותאמות."
+      },
+      "verification": {
+        "title": "אימות כנה",
+        "body": "אנחנו סוגרים סקירות עם שיפור מאומת או inconclusive כנה."
+      }
+    },
+    "cta": "יצירת קשר"
+  },
+  "contactPage": {
+    "metadata": {
+      "title": "יצירת קשר | SailTru",
+      "description": "קבעו שיחה או שלחו אימייל ל-SailTru."
+    },
+    "index": "01",
+    "kicker": "יצירת קשר",
+    "title": "בואו נמצא את הפער ששווה לתקן.",
+    "intro": "שתפו את האתר ומה תרצו לשפר. נחזור עם כיוון ממוקד וצעד הבא.",
+    "steps": [
+      "שיתוף האתר והקשר העסקי",
+      "קריאת אבחון ראשונית",
+      "המלצה ממוקדת וצעד הבא"
+    ],
+    "calendlyCta": "קביעת שיחה ב-Calendly"
+  },
+  "workPage": {
+    "metadata": {
+      "title": "עבודות | SailTru",
+      "description": "המלצות לקוחות ותוצאות מעבודת SailTru."
+    },
+    "index": "01",
+    "kicker": "עבודות",
+    "title": "מה לקוחות אומרים",
+    "intro": "המלצות מאומתות מעסקים שעזרנו להם.",
+    "testimonials": [
+      {
+        "quote": "Sailtru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
+        "attribution": "Laba Records"
+      }
+    ],
+    "cta": "פתיחת שיחה"
   }
 }
