@@ -525,3 +525,87 @@
 .hero-intel__controls {
   gap: 1rem 1.25rem;
 }
+
+/* Site v1 — hero URL scan control */
+
+.hero-url-scan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  align-items: stretch;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.hero-url-scan__input {
+  flex: 1 1 12rem;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(100, 130, 200, 0.22);
+  background: rgba(8, 12, 22, 0.72);
+  color: var(--foreground, #eef2ff);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+}
+
+.hero-url-scan__input::placeholder {
+  color: rgba(180, 195, 230, 0.55);
+}
+
+.hero-url-scan__button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.product-quote {
+  border-left: 2px solid rgba(100, 130, 200, 0.35);
+  padding-left: 1.125rem;
+}
+
+.product-quote--compact {
+  margin-top: 1.25rem;
+}
+
+.product-quote__text {
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: rgba(230, 236, 255, 0.92);
+}
+
+.product-quote__attribution {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(180, 195, 230, 0.72);
+}
+
+.home-testimonial-teaser__link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: rgba(140, 180, 255, 0.92);
+}
+
+.product-stack--spaced {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.product-close--inline {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.product-steps {
+  margin-top: 1.5rem;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+  color: rgba(210, 220, 245, 0.88);
+}
