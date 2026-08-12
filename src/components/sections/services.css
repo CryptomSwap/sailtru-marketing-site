@@ -447,3 +447,37 @@
   border-color: rgba(37, 211, 102, 0.55);
   background: rgba(37, 211, 102, 0.14);
 }
+/* SailTru operator: he-services-hero-readability */
+.services-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 75% 65% at 50% 42%,
+    rgba(12, 16, 28, 0.72) 0%,
+    rgba(12, 16, 28, 0.35) 48%,
+    transparent 78%
+  );
+}
+
+@media (min-width: 768px) {
+  .services-hero__grid {
+    opacity: 0.16;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 38%, black 8%, transparent 68%);
+  }
+
+  .services-hero__title {
+    text-shadow: 0 1px 24px rgba(8, 12, 24, 0.45);
+  }
+
+  .services-hero__body {
+    color: rgba(176, 186, 210, 0.92);
+    text-shadow: 0 1px 16px rgba(8, 12, 24, 0.35);
+  }
+}
+
+[dir="rtl"] .services-hero__content {
+  text-align: center;
+}
