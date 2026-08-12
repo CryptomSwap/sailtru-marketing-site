@@ -1,3 +1,4 @@
+import { ServiceJsonLd } from "@/components/seo/service-json-ld";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { ServicesContactSection } from "@/components/sections/services/services-contact-section";
@@ -34,6 +35,7 @@ export default async function ServicesPage({ params }: PageProps) {
 
   return (
     <main id="main-content" className="relative z-10 w-full min-w-0 pb-14">
+      <ServiceJsonLd />
       <ServicesHeroSection />
       <ServicesPhilosophySection />
       <ServicesGridSection />

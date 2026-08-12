@@ -11,6 +11,8 @@ import {
 } from "@/lib/fonts";
 import { CodeWaveBackground } from "@/components/ui/code-wave-background";
 import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
+import { AnalyticsBeacon } from "@/components/seo/analytics-beacon";
+import { OrganizationJsonLd } from "@/components/seo/organization-json-ld";
 import { routing, type Locale } from "@/i18n/routing";
 import "../globals.css";
 
@@ -30,6 +32,35 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
   return {
     title: t("title"),
     description: t("description"),
+    metadataBase: new URL("https://sailtru.com"),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        en: "/en",
+        he: "/he"
+      }
+    },
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      url: `/${locale}`,
+      siteName: "SailTru",
+      locale: locale === "he" ? "he_IL" : "en_US",
+      type: "website"
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description")
+    },
+    icons: {
+      icon: [
+        { url: "/images/sailtrue-favicon.png", sizes: "32x32", type: "image/png" },
+        { url: "/images/sailtrue-favicon-48.png", sizes: "48x48", type: "image/png" },
+        { url: "/images/sailtrue-favicon-192.png", sizes: "192x192", type: "image/png" }
+      ],
+      apple: "/images/sailtrue-apple-icon.png"
+    }
   };
 }
 
@@ -54,6 +85,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <CodeWaveBackground />
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
+          <AnalyticsBeacon />
           <WhatsAppCta />
         </NextIntlClientProvider>
       </body>
