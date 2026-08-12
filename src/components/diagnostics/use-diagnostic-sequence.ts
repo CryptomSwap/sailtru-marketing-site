@@ -6,6 +6,7 @@ import {
   diagnosticTimeline,
   heroDiscoveryIds,
 } from "@/components/diagnostics/diagnostic-content";
+import { useDiagnosticScanContext } from "@/components/diagnostics/diagnostic-scan-context";
 
 export type DiagnosticSequenceState = {
   websiteVisible: boolean;
@@ -70,6 +71,8 @@ export function useDiagnosticSequence(): DiagnosticSequenceState & {
   showAltImage: boolean;
 } {
   const reduceMotion = useReducedMotion();
+  const scanContext = useDiagnosticScanContext();
+  const externalGeneration = scanContext?.scanGeneration ?? 0;
   const [cycle, setCycle] = useState(0);
   const [showAltImage, setShowAltImage] = useState(false);
   const [state, setState] = useState<DiagnosticSequenceState>(
@@ -77,14 +80,16 @@ export function useDiagnosticSequence(): DiagnosticSequenceState & {
   );
 
   useEffect(() => {
-    if (reduceMotion) {
-      setState(finalState);
-      return;
-    }
-
-    setState(cycle === 0 ? initialState : cycleResetState);
+    if (reduceMotion) return;
 
     const timers: ReturnType<typeof setTimeout>[] = [];
+
+    timers.push(
+      setTimeout(() => {
+        setState(cycle === 0 && externalGeneration === 0 ? initialState : cycleResetState);
+      }, 0)
+    );
+
     const t = diagnosticTimeline;
 
     const schedule = (delay: number, update: Partial<DiagnosticSequenceState>) => {
@@ -143,7 +148,7 @@ export function useDiagnosticSequence(): DiagnosticSequenceState & {
     );
 
     return () => timers.forEach(clearTimeout);
-  }, [reduceMotion, cycle]);
+  }, [reduceMotion, cycle, externalGeneration]);
 
   return {
     ...state,

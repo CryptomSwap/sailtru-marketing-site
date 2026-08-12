@@ -3,13 +3,13 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
+import { HeroUrlScan } from "@/components/sections/hero-url-scan";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 export function HeroEditorial() {
   const reduceMotion = useReducedMotion();
   const t = useTranslations("hero");
-  const tNav = useTranslations("nav");
 
   const reveal = (delay: number, y = 14) =>
     reduceMotion
@@ -49,11 +49,9 @@ export function HeroEditorial() {
       </motion.p>
 
       <motion.div className="hero-intel__controls" {...reveal(0.52, 10)}>
-        <a href="#methodology" className="hero-cta hero-cta--ghost">
+        <HeroUrlScan />
+        <Link href="/how-we-work" className="hero-cta hero-cta--ghost">
           {t("methodology")}
-        </a>
-        <Link href="#final-cta" className="hero-cta hero-cta--primary">
-          {tNav("beginDiagnosis")}
         </Link>
       </motion.div>
     </div>

@@ -4,6 +4,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { SectionShell } from "@/components/ui/section-shell";
 import { HeroDiagnosticExperience } from "@/components/sections/hero-diagnostic-experience";
+import { DiagnosticScanProvider } from "@/components/diagnostics/diagnostic-scan-context";
 import { HeroEditorial } from "@/components/sections/hero-editorial";
 import { routing, type Locale } from "@/i18n/routing";
 import "./hero.css";
@@ -71,12 +72,16 @@ export function HeroSection() {
           </div>
         </header>
 
+        <DiagnosticScanProvider>
+
+
         <div className="hero-product__stage">
           <div className="hero-product__intel">
             <HeroEditorial />
           </div>
           <HeroDiagnosticExperience />
         </div>
+        </DiagnosticScanProvider>
       </div>
 
       <div className="hero-product__grid" aria-hidden />
