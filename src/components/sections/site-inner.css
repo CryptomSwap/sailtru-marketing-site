@@ -1,0 +1,221 @@
+.site-inner {
+  min-height: 100svh;
+  background: #f4f6fa;
+  color: #0e1524;
+}
+
+.site-inner__bar {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .site-inner__bar {
+    padding: 0 2.5rem;
+  }
+}
+
+.site-inner .site-header--v2 {
+  border-bottom: 1px solid rgba(14, 21, 36, 0.1);
+}
+
+.site-inner__main {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 5.5rem;
+}
+
+@media (min-width: 768px) {
+  .site-inner__main {
+    padding: 4.5rem 2.5rem 6.5rem;
+  }
+}
+
+.site-inner__title {
+  margin: 0;
+  font-family: var(--font-sans), "IBM Plex Sans", system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  color: #0e1524;
+}
+
+.site-inner__lede {
+  margin: 1rem 0 0;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: #4a5870;
+}
+
+.site-inner__blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  margin-top: 2.75rem;
+}
+
+.site-inner__block {
+  padding-top: 1.15rem;
+  border-top: 2px solid #0e1524;
+  box-shadow: inset 0 2px 0 #2f5bff;
+}
+
+.site-inner__block h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #0e1524;
+}
+
+.site-inner__block p,
+.site-inner__steps li {
+  margin: 0;
+  color: #4a5870;
+  line-height: 1.55;
+}
+
+.site-inner__steps {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.site-inner__steps li {
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(14, 21, 36, 0.12);
+  font-variant-numeric: tabular-nums;
+}
+
+.site-inner__quote {
+  margin: 0;
+  padding-top: 1.15rem;
+  border-top: 2px solid #0e1524;
+  box-shadow: inset 0 2px 0 #2f5bff;
+}
+
+.site-inner__quote p {
+  margin: 0;
+  font-family: var(--font-serif), "Instrument Serif", Georgia, serif;
+  font-size: 1.35rem;
+  font-style: italic;
+  line-height: 1.35;
+  color: #0e1524;
+}
+
+.site-inner__quote footer {
+  margin-top: 0.85rem;
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2f5bff;
+}
+
+.site-inner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.25rem;
+  align-items: center;
+  margin-top: 2.5rem;
+}
+
+.site-inner__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.8rem 1.25rem;
+  background: #0e1524;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-inner__cta:hover {
+  background: #2f5bff;
+}
+
+.site-inner__mail {
+  color: #2f5bff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+[dir="rtl"] .site-inner__quote p {
+  font-family: var(--font-serif-he), var(--font-serif), "Frank Ruhl Libre", serif;
+  font-style: normal;
+}
+
+.site-inner .site-header--v2,
+.site-inner .site-header--compact {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem 0;
+}
+
+.site-inner .site-header__brand {
+  text-decoration: none;
+}
+
+.site-inner .site-header__wordmark {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: #0e1524;
+}
+
+.site-inner .site-header__wordmark-accent {
+  color: #2f5bff;
+}
+
+.site-inner .site-header__links {
+  display: none;
+  align-items: center;
+  gap: 1.15rem;
+  margin-inline-start: auto;
+}
+
+@media (min-width: 900px) {
+  .site-inner .site-header__links {
+    display: flex;
+  }
+}
+
+.site-inner .site-header__link {
+  color: #5c6b82;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.site-inner .site-header__link--active,
+.site-inner .site-header__link:hover {
+  color: #0e1524;
+}
+
+.site-inner .site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-inline-start: auto;
+}
+
+.site-inner .site-header__locale {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0e1524;
+  text-decoration: none;
+}
+
+.site-inner .site-header__cta {
+  background: #0e1524;
+  color: #fff;
+  padding: 0.55rem 0.95rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+}

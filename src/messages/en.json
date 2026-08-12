@@ -7,9 +7,9 @@
     "skipToContent": "Skip to main content",
     "brandHome": "SailTru home",
     "primaryNav": "Primary navigation",
-    "localeSwitch": "Language",
+    "localeSwitch": "Switch language",
     "localeEn": "EN",
-    "localeHe": "עב"
+    "localeHe": "HE"
   },
   "nav": {
     "home": "Home",
@@ -401,23 +401,23 @@
     "index": "01",
     "kicker": "How we work",
     "title": "We don't stop at insight.",
-    "intro": "SailTru finds where businesses lose opportunity — then helps design and deliver the improvement with evidence-first discipline.",
+    "intro": "SailTru finds where businesses lose opportunity, then helps design and deliver the improvement with evidence-first discipline.",
     "sections": {
       "loop": {
-        "title": "Find → Understand → Build",
+        "title": "Find, understand, build",
         "body": "Find the opportunity. Understand the gap. Build the improvement. Intelligence, action, and implementation stay connected."
       },
       "diagnosis": {
         "title": "Diagnosis with evidence",
-        "body": "We analyze websites, competitors, AI visibility, and operational friction — using verified signals, not generic advice."
+        "body": "We analyze websites, competitors, AI visibility, and operational friction, using verified signals, not generic advice."
       },
       "implementation": {
         "title": "Implementation with humans in the loop",
-        "body": "We deliver fixes, automations, and custom systems with agency-led execution today — not autonomous promises."
+        "body": "We deliver fixes, automations, and custom systems with agency-led execution today, not autonomous promises."
       },
       "verification": {
         "title": "Honest verification",
-        "body": "We close reviews with verified improvement or honest inconclusive outcomes — never fabricated causation."
+        "body": "We close reviews with verified improvement or honest inconclusive outcomes, never fabricated causation."
       }
     },
     "cta": "Contact SailTru"
@@ -454,5 +454,106 @@
       }
     ],
     "cta": "Start a conversation"
+  },
+  "homeV2": {
+    "productStage": {
+      "ariaLabel": "Example diagnostic readout",
+      "defaultHost": "yourcompany.com",
+      "status": "Signals found",
+      "summary": "Where opportunity leaks before the fix is built.",
+      "note": "Illustrative readout. Your scan uses your site, not this sample.",
+      "trust": {
+        "label": "Trust",
+        "body": "Credibility signals sit below category norms.",
+        "severity": "high",
+        "severityLabel": "High"
+      },
+      "cta": {
+        "label": "Action",
+        "body": "Primary next step competes with secondary noise.",
+        "severity": "med",
+        "severityLabel": "Med"
+      },
+      "ops": {
+        "label": "Ops",
+        "body": "Manual handoffs keep growth work from compounding.",
+        "severity": "med",
+        "severityLabel": "Med"
+      }
+    },
+    "opportunity": {
+      "title": "Opportunity is lost in two places.",
+      "lede": "Externally, where customers try to find and choose you. Internally, in the way the company operates. SailTru works across both.",
+      "externalTitle": "External",
+      "externalBody": "AI visibility, search, competitor positioning, website performance, conversion, and messaging gaps.",
+      "internalTitle": "Internal",
+      "internalBody": "Repetitive work, disconnected systems, manual processes, and tools that do not match how the business actually runs."
+    },
+    "territories": {
+      "title": "Four territories. One partner.",
+      "lede": "Capabilities are not positioning. These are the ways SailTru creates value.",
+      "found": {
+        "name": "Get found",
+        "title": "Be visible wherever customers are looking.",
+        "body": "Visibility across Google and modern AI search, adapted as models and platforms change."
+      },
+      "ahead": {
+        "name": "Get ahead",
+        "title": "See where competitors win, and where you can.",
+        "body": "Website, competitor, and positioning intelligence that names the gap worth acting on."
+      },
+      "automate": {
+        "name": "Automate",
+        "title": "Remove work the team should not still do by hand.",
+        "body": "Repetitive, slow, expensive processes, rebuilt with AI and automation."
+      },
+      "build": {
+        "name": "Build",
+        "title": "Technology around the business, not the other way around.",
+        "body": "Custom systems, integrations, and applications when off-the-shelf software is not enough."
+      }
+    },
+    "loop": {
+      "title": "Find. Understand. Build.",
+      "lede": "Intelligence, action, and implementation stay connected. We do not stop at insight.",
+      "find": {
+        "title": "Find",
+        "body": "Where the business is losing opportunity, with evidence rather than generic advice."
+      },
+      "understand": {
+        "title": "Understand",
+        "body": "Why the gap matters, and which intervention is worth the work."
+      },
+      "build": {
+        "title": "Build",
+        "body": "Ship the improvement with humans in the loop. Honest verification after."
+      }
+    }
+  },
+  "servicesV2": {
+    "chapters": {
+      "title": "What we do",
+      "lede": "Each territory maps to a business consequence, not a disconnected service line.",
+      "found": {
+        "name": "Get found",
+        "title": "Be visible wherever your customers are looking.",
+        "body": "AI visibility, GEO, SEO, technical and content optimization, continuously adapted to current models and platforms."
+      },
+      "ahead": {
+        "name": "Get ahead",
+        "title": "See what competitors do better, and where you can win.",
+        "body": "Website, competitor, positioning, and market analysis that names the opportunity worth acting on."
+      },
+      "automate": {
+        "name": "Automate",
+        "title": "Remove the work your team should not still be doing manually.",
+        "body": "Lead handling, reporting, sales processes, and operations, rebuilt with AI and automation."
+      },
+      "build": {
+        "name": "Build",
+        "title": "Build technology around your business.",
+        "body": "AI-powered systems, internal tools, integrations, and custom applications when off-the-shelf is not enough."
+      }
+    }
   }
 }
