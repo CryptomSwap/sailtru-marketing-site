@@ -1,0 +1,693 @@
+/* Polished glass instrument + 3D pin findings */
+
+.hero-analysis {
+  --card-ink: #132447;
+  --card-mute: #5a6f8c;
+  --scan-color: rgba(255, 255, 255, 0.98);
+  --panel-depth: 1700px;
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  width: 118%;
+  min-height: clamp(26rem, 72vh, 40rem);
+  margin-inline-end: clamp(-4.5rem, -7vw, -1.75rem);
+  margin-inline-start: clamp(-3rem, -5vw, -1.5rem);
+  animation: field-rise 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.hero-analysis__perspective {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  perspective: var(--panel-depth);
+  perspective-origin: 48% 40%;
+}
+
+.hero-analysis__bloom {
+  position: absolute;
+  inset: 6% 4% 10% 10%;
+  border-radius: 42%;
+  background: radial-gradient(circle, rgba(150, 230, 255, 0.34), transparent 68%);
+  filter: blur(32px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-analysis__camera {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: inherit;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-analysis__depth {
+  position: absolute;
+  inset: 12% 12% 16% 14%;
+  border-radius: 1.15rem;
+  border: 1px solid rgba(220, 240, 255, 0.16);
+  background: rgba(255, 255, 255, 0.035);
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.hero-analysis__depth--back {
+  transform: translateZ(-56px) rotateY(3.2deg) rotateX(-1.2deg) scale(0.95);
+  opacity: 0.38;
+}
+
+.hero-analysis__depth--mid {
+  transform: translateZ(-28px) rotateY(1.6deg) scale(0.975);
+  opacity: 0.55;
+}
+
+/* Thick glass device frame */
+.hero-analysis__device {
+  position: absolute;
+  inset: 7% 10% 14% 8%;
+  z-index: 2;
+  border-radius: 1.15rem;
+  transform-style: preserve-3d;
+  opacity: 0;
+  transform: translateZ(12px) scale(0.985);
+  transition:
+    opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(230, 244, 255, 0.38) 0%,
+      rgba(120, 170, 255, 0.18) 28%,
+      rgba(40, 80, 200, 0.22) 62%,
+      rgba(16, 36, 110, 0.45) 100%
+    );
+  border: 1px solid rgba(230, 245, 255, 0.55);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 0 0 1px rgba(90, 150, 255, 0.22),
+    0 0 56px rgba(120, 210, 255, 0.28),
+    0 36px 80px rgba(8, 20, 70, 0.52);
+  padding: 0.55rem;
+}
+
+.hero-analysis__device--visible {
+  opacity: 1;
+  transform: translateZ(12px) scale(1);
+}
+
+.hero-analysis__rim {
+  position: absolute;
+  inset: 0.28rem;
+  border-radius: 0.95rem;
+  pointer-events: none;
+  z-index: 4;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35) inset,
+    inset 0 0 24px rgba(180, 220, 255, 0.08);
+}
+
+.hero-analysis__rim--inner {
+  inset: 0.55rem;
+  border-radius: 0.78rem;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+.hero-analysis__canvas {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  min-height: 18rem;
+  border-radius: 0.72rem;
+  overflow: hidden;
+  background: #07101f;
+  box-shadow:
+    0 0 0 1px rgba(8, 20, 50, 0.35),
+    inset 0 0 40px rgba(8, 20, 70, 0.25);
+}
+
+.hero-analysis__canvas--scanning {
+  box-shadow:
+    0 0 0 1px rgba(126, 231, 255, 0.28),
+    inset 0 0 48px rgba(90, 160, 255, 0.18);
+}
+
+.hero-analysis__glass {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.18) 0%, transparent 36%),
+    radial-gradient(120% 80% at 82% 0%, rgba(255, 255, 255, 0.14), transparent 55%);
+  mix-blend-mode: soft-light;
+}
+
+.hero-analysis__chrome {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1.85rem;
+  padding: 0 0.75rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.hero-analysis__dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.hero-analysis__chrome-url {
+  margin-inline-start: 0.55rem;
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: rgba(230, 244, 255, 0.62);
+}
+
+.hero-analysis__viewport {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: calc(100% - 1.85rem);
+  min-height: 16rem;
+  overflow: hidden;
+}
+
+.hero-analysis__image {
+  object-fit: cover;
+  object-position: center top;
+}
+
+.hero-analysis__reticle {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, rgba(255, 255, 255, 0.14) 1px, transparent 1px) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.14) 1px, transparent 1px) 0 50% / 100% 1px no-repeat;
+  opacity: 0.3;
+  transition: opacity 0.35s ease;
+}
+
+.hero-analysis__canvas--scanning .hero-analysis__reticle {
+  opacity: 0.8;
+}
+
+.hero-analysis__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(8, 20, 70, 0.16), transparent 18%),
+    linear-gradient(180deg, transparent 58%, rgba(8, 20, 70, 0.28));
+  pointer-events: none;
+}
+
+/* Scan sweep */
+.hero-analysis__scan {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-analysis__scan-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 100% 18px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.hero-analysis__canvas--scanning .hero-analysis__scan-grid {
+  opacity: 0.55;
+  animation: hero-scan-grid-pulse 1.2s ease-in-out infinite;
+}
+
+.hero-analysis__scan-beam {
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  height: 3px;
+  top: -2%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(180, 210, 255, 0.55) 10%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(180, 210, 255, 0.55) 90%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 16px rgba(255, 255, 255, 0.85),
+    0 0 42px rgba(140, 180, 255, 0.65),
+    0 0 72px rgba(70, 120, 255, 0.4);
+  opacity: 0;
+  z-index: 6;
+}
+
+.hero-analysis__scan-beam--core {
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 1) 50%, transparent 100%);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 1);
+  z-index: 7;
+}
+
+.hero-analysis__scan-beam--active {
+  animation: hero-scan-sweep var(--scan-duration, 3.6s) cubic-bezier(0.4, 0, 0.2, 1) 1 forwards;
+}
+
+.hero-analysis__scan-trail {
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  height: 28%;
+  top: -2%;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(140, 180, 255, 0.22) 38%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(140, 180, 255, 0.16) 62%,
+    transparent 100%
+  );
+  filter: blur(6px);
+  z-index: 3;
+}
+
+.hero-analysis__scan-trail--active {
+  animation: hero-scan-sweep var(--scan-duration, 3.6s) cubic-bezier(0.35, 0, 0.15, 1) 1 forwards;
+}
+
+.hero-analysis__scan-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 100% 14% at 50% var(--scan-y, 50%),
+    rgba(255, 255, 255, 0.22),
+    transparent 68%
+  );
+  opacity: 0;
+}
+
+.hero-analysis__scan-glow--active {
+  animation: hero-scan-glow var(--scan-duration, 3.6s) cubic-bezier(0.4, 0, 0.2, 1) 1 forwards;
+}
+
+.hero-analysis__scan--settled .hero-analysis__scan-beam,
+.hero-analysis__scan--settled .hero-analysis__scan-trail,
+.hero-analysis__scan--settled .hero-analysis__scan-glow {
+  opacity: 0;
+  animation: none;
+}
+
+/* Findings: hotspot on 2D plane → straight stem out → expanding frost card */
+.hero-analysis__findings {
+  position: absolute;
+  inset: 7% 10% 14% 8%;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+
+.hero-analysis__finding {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.hero-analysis__hotspot {
+  position: absolute;
+  left: var(--ox);
+  top: var(--oy);
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow:
+    0 0 0 2px rgba(126, 231, 255, 0.45),
+    0 0 14px rgba(126, 231, 255, 0.95),
+    0 0 28px rgba(90, 180, 255, 0.55);
+  transform: translate(-50%, -50%) translateZ(3px) scale(0.4);
+  opacity: 0;
+  transition:
+    opacity 0.35s ease,
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-analysis__stem {
+  position: absolute;
+  left: var(--ox);
+  top: var(--oy);
+  width: var(--stem-len);
+  height: 1.5px;
+  transform-origin: 0 50%;
+  transform: translateZ(10px) rotate(var(--stem-angle)) rotateY(-12deg) scaleX(0.08);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(210, 235, 255, 0.7) 42%,
+    rgba(180, 220, 255, 0.18) 100%
+  );
+  box-shadow:
+    0 0 6px rgba(255, 255, 255, 0.55),
+    0 0 14px rgba(126, 231, 255, 0.35);
+  opacity: 0;
+  border-radius: 999px;
+  transition:
+    opacity 0.3s ease,
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-analysis__finding--visible .hero-analysis__hotspot {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateZ(3px) scale(1);
+}
+
+.hero-analysis__finding--visible .hero-analysis__stem {
+  opacity: 1;
+  transform: translateZ(10px) rotate(var(--stem-angle)) rotateY(-12deg) scaleX(1);
+  transition-delay: 0.05s;
+}
+
+.hero-analysis__card {
+  position: absolute;
+  left: var(--ox);
+  top: var(--oy);
+  width: clamp(10.5rem, 14.5vw, 13.25rem);
+  padding: 0.7rem 0.8rem 0.75rem;
+  border-radius: 0.72rem;
+  background:
+    linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.78) 0%,
+      rgba(236, 244, 255, 0.62) 48%,
+      rgba(220, 234, 255, 0.52) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    0 0 0 1px rgba(126, 231, 255, 0.14),
+    0 18px 40px rgba(8, 20, 70, 0.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  color: var(--card-ink);
+  opacity: 0;
+  transform-origin: 0 50%;
+  transform: translateZ(18px) translate(-8%, -50%) scale(0.28);
+  pointer-events: none;
+}
+
+.hero-analysis__finding--visible .hero-analysis__card {
+  opacity: 1;
+  pointer-events: auto;
+  animation: finding-expand 0.78s cubic-bezier(0.16, 1, 0.3, 1) var(--expand-delay, 0s) both;
+}
+
+/* Varied sizes + resting positions (offset along stem) */
+.hero-analysis__finding--visibility .hero-analysis__card {
+  width: clamp(12.25rem, 16.5vw, 15rem);
+  margin-left: 7.25rem;
+  margin-top: -3.4rem;
+}
+
+.hero-analysis__finding--perf .hero-analysis__card {
+  width: clamp(10.75rem, 14vw, 12.75rem);
+  margin-left: 6.75rem;
+  margin-top: -0.2rem;
+}
+
+.hero-analysis__finding--conversion .hero-analysis__card {
+  width: clamp(12.75rem, 17vw, 15.5rem);
+  margin-left: 7.75rem;
+  margin-top: 1.35rem;
+}
+
+.hero-analysis__finding--technical .hero-analysis__card {
+  width: clamp(11.25rem, 14.5vw, 13.25rem);
+  margin-left: 5rem;
+  margin-top: 3.6rem;
+}
+
+.hero-analysis__finding--speed .hero-analysis__card,
+.hero-analysis__finding--trust .hero-analysis__card {
+  width: clamp(10.25rem, 13.5vw, 12.25rem);
+  margin-left: -8.75rem;
+  margin-top: 1.8rem;
+}
+
+.hero-analysis__card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.hero-analysis__card-code {
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  color: rgba(47, 91, 255, 0.72);
+}
+
+.hero-analysis__card-category {
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(47, 91, 255, 0.88);
+}
+
+.hero-analysis__card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.3rem;
+}
+
+.hero-analysis__icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 0.35rem;
+  background: rgba(47, 91, 255, 0.1);
+  border: 1px solid rgba(47, 91, 255, 0.16);
+  flex: 0 0 auto;
+}
+
+.hero-analysis__icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  color: #2f5bff;
+}
+
+.hero-analysis__card-label {
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.54rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2f5bff;
+}
+
+.hero-analysis__card-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.28;
+  letter-spacing: -0.015em;
+  color: var(--card-ink);
+}
+
+.hero-analysis__card-body {
+  margin: 0.28rem 0 0;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  color: var(--card-mute);
+}
+
+.hero-analysis__finding--visibility .hero-analysis__card-title {
+  font-size: 0.86rem;
+}
+
+.hero-analysis__finding--conversion .hero-analysis__card-title {
+  font-size: 0.84rem;
+}
+
+.hero-analysis__finding--speed .hero-analysis__card-title,
+.hero-analysis__finding--trust .hero-analysis__card-title {
+  font-size: 0.76rem;
+}
+
+@keyframes finding-expand {
+  0% {
+    opacity: 0;
+    transform: translateZ(22px) translate(-8%, -50%) scale(0.26);
+  }
+  58% {
+    opacity: 1;
+    transform: translateZ(var(--depth)) translate(-8%, -50%) scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: translateZ(var(--depth)) translate(-8%, -50%) scale(1);
+  }
+}
+
+@keyframes hero-scan-sweep {
+  0% {
+    top: -2%;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  100% {
+    top: 102%;
+    opacity: 0;
+  }
+}
+
+@keyframes hero-scan-glow {
+  0% {
+    --scan-y: -2%;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  100% {
+    --scan-y: 102%;
+    opacity: 0;
+  }
+}
+
+@keyframes hero-scan-grid-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+@media (max-width: 1100px) {
+  .hero-analysis {
+    min-height: 26rem;
+    margin-inline: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-analysis {
+    min-height: 24rem;
+    margin: 0;
+  }
+
+  .hero-analysis__perspective {
+    perspective: none;
+  }
+
+  .hero-analysis__camera {
+    transform: none !important;
+    transition: none;
+  }
+
+  .hero-analysis__device {
+    inset: 4% 4% 22% 4%;
+  }
+
+  .hero-analysis__depth {
+    display: none;
+  }
+
+  .hero-analysis__finding--visibility,
+  .hero-analysis__finding--perf,
+  .hero-analysis__finding--speed,
+  .hero-analysis__finding--trust {
+    display: none;
+  }
+
+  .hero-analysis__finding--conversion .hero-analysis__card,
+  .hero-analysis__finding--technical .hero-analysis__card {
+    margin-left: 0;
+    margin-top: 0;
+    left: auto;
+    right: 4%;
+    top: auto;
+    bottom: 6%;
+  }
+
+  .hero-analysis__finding--technical .hero-analysis__card {
+    right: auto;
+    left: 4%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-analysis,
+  .hero-analysis__camera,
+  .hero-analysis__scan-beam--active,
+  .hero-analysis__scan-trail--active,
+  .hero-analysis__scan-glow--active,
+  .hero-analysis__scan-grid {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .hero-analysis__camera {
+    transform: none !important;
+  }
+
+  .hero-analysis__device,
+  .hero-analysis__device--visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-analysis__finding--visible .hero-analysis__card {
+    animation: none !important;
+    opacity: 1;
+    transform: translateZ(var(--depth)) translate(-8%, -50%) scale(1);
+  }
+
+  .hero-analysis__finding--visible .hero-analysis__stem,
+  .hero-analysis__finding--visible .hero-analysis__hotspot {
+    opacity: 1;
+    transform: translateZ(10px) rotate(var(--stem-angle)) scaleX(1);
+  }
+
+  .hero-analysis__finding--visible .hero-analysis__hotspot {
+    transform: translate(-50%, -50%) translateZ(3px) scale(1);
+  }
+}

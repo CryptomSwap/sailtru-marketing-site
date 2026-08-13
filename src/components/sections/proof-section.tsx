@@ -1,11 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Container } from "@/components/ui/container";
-import { ProductStage } from "@/components/ui/product-stage";
-import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { SectionShell } from "@/components/ui/section-shell";
 
 export function ProofSection() {
   const t = useTranslations("proof");
@@ -13,46 +8,39 @@ export function ProofSection() {
   const logos = t.raw("logos") as string[];
 
   return (
-    <SectionShell id="proof" ruled>
-      <Container>
-        <ProductStage size="wide">
-          <Reveal>
-            <SectionHeading
-              index={t("index")}
-              kicker={t("kicker")}
-              title={t("title")}
-              description={t("description")}
-            />
-          </Reveal>
+    <section id="proof" className="hb-section hb-proof">
+      <div className="hb-shell hb-shell--narrow">
+        <header className="hb-intro">
+          <p className="hb-eyebrow">{t("kicker")}</p>
+          <h2 className="hb-heading">{t("title")}</h2>
+          <p className="hb-lede">{t("description")}</p>
+        </header>
 
-          <Reveal>
-            <div className="metric-strip">
-              {stats.map((stat) => (
-                <div key={stat} className="metric-strip__item">
-                  <p className="metric-strip__text">{stat}</p>
-                </div>
-              ))}
-            </div>
-          </Reveal>
+        {stats.length > 0 ? (
+          <ul className="hb-proof__stats">
+            {stats.map((stat) => (
+              <li key={stat} className="hb-proof__stat">
+                {stat}
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
-          <Reveal>
-            <blockquote className="pull-quote">
-              <p className="pull-quote__text">&ldquo;{t("quote")}&rdquo;</p>
-              <cite className="pull-quote__attrib">{t("attribution")}</cite>
-            </blockquote>
-          </Reveal>
+        <blockquote className="hb-proof__quote">
+          <p className="hb-proof__quote-text">&ldquo;{t("quote")}&rdquo;</p>
+          <cite className="hb-proof__quote-attrib">{t("attribution")}</cite>
+        </blockquote>
 
-          <Reveal>
-            <div className="proof-logos">
-              {logos.map((logo) => (
-                <span key={logo} className="proof-logos__item">
-                  {logo}
-                </span>
-              ))}
-            </div>
-          </Reveal>
-        </ProductStage>
-      </Container>
-    </SectionShell>
+        {logos.length > 0 ? (
+          <ul className="hb-proof__logos">
+            {logos.map((logo) => (
+              <li key={logo} className="hb-proof__logo">
+                {logo}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </section>
   );
 }

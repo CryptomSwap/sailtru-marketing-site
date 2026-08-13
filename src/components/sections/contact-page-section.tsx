@@ -1,51 +1,53 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Container } from "@/components/ui/container";
-import { ProductStage } from "@/components/ui/product-stage";
-import { Reveal } from "@/components/ui/reveal";
-import { SectionShell } from "@/components/ui/section-shell";
+import { PageHero } from "@/components/sections/site-page/page-hero";
+import "@/components/sections/site-page/site-page.css";
 
 const CALENDLY_URL = "https://calendly.com/sailtrue";
 const CONTACT_EMAIL = "team@sailtru.com";
 
 export function ContactPageSection() {
   const t = useTranslations("contactPage");
+  const steps = t.raw("steps") as string[];
 
   return (
-    <SectionShell id="contact" className="pt-28">
-      <Container>
-        <ProductStage size="narrow">
-          <Reveal>
-            <div className="product-heading">
-              <div className="product-heading__rail">
-                <span className="product-heading__index">{t("index")}</span>
-                <span className="product-heading__line" aria-hidden />
-                <span className="product-heading__kicker">{t("kicker")}</span>
-              </div>
-              <h1 className="product-heading__title">{t("title")}</h1>
-              <p className="product-heading__body">{t("intro")}</p>
-            </div>
-          </Reveal>
-          <Reveal>
-            <ol className="product-steps">
-              {(t.raw("steps") as string[]).map((step) => (
-                <li key={step}>{step}</li>
+    <>
+      <PageHero kicker={t("kicker")} title={t("title")} body={t("intro")} />
+      <div className="sp-below">
+        <section className="sp-section sp-close">
+          <div className="sp-shell sp-shell--narrow">
+            <ol className="sp-steps">
+              {steps.map((step, index) => (
+                <li key={step}>
+                  <span className="sp-steps__num" aria-hidden>
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span>{step}</span>
+                </li>
               ))}
             </ol>
-          </Reveal>
-          <Reveal>
-            <div className="product-close product-close--inline">
-              <a href={CALENDLY_URL} className="product-close__btn" target="_blank" rel="noopener noreferrer">
-                {t("calendlyCta")}
-              </a>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="hero-cta hero-cta--ghost">
-                {CONTACT_EMAIL}
-              </a>
+
+            <div className="sp-close__panel sp-close__panel--spaced">
+              <p className="sp-eyebrow">{t("kicker")}</p>
+              <h2 className="sp-close__title">{t("title")}</h2>
+              <div className="sp-close__actions">
+                <a
+                  href={CALENDLY_URL}
+                  className="sp-btn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("calendlyCta")}
+                </a>
+                <a href={`mailto:${CONTACT_EMAIL}`} className="sp-link">
+                  {CONTACT_EMAIL}
+                </a>
+              </div>
             </div>
-          </Reveal>
-        </ProductStage>
-      </Container>
-    </SectionShell>
+          </div>
+        </section>
+      </div>
+    </>
   );
 }

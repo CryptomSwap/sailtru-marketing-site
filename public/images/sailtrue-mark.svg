@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="gBlueBig" x1="170" y1="334" x2="409" y2="411" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A73FF"/>
+      <stop offset="1" stop-color="#34B7FF"/>
+    </linearGradient>
+    <linearGradient id="gBlueSmall" x1="178" y1="318" x2="292" y2="379" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A63DB"/>
+      <stop offset="1" stop-color="#1E97FF"/>
+    </linearGradient>
+    <linearGradient id="gSail" x1="173" y1="132" x2="349" y2="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E7EBF0"/>
+    </linearGradient>
+    <filter id="shadow" x="120" y="120" width="320" height="320" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <!-- main blue swoosh -->
+    <path d="M171 344C216 376 269 393 323 391C359 390 392 380 424 358C398 405 347 430 288 430C231 430 189 399 171 344Z" fill="url(#gBlueBig)"/>
+    <!-- upper blue hull -->
+    <path d="M173 324C201 336 226 341 251 341C275 341 298 336 320 324C312 357 275 384 231 384C200 384 180 359 173 324Z" fill="url(#gBlueSmall)"/>
+    <!-- black separator band -->
+    <path d="M173 324C206 333 234 336 254 335C280 334 298 330 320 324L313 343C291 350 272 354 251 355C223 356 196 349 180 341L173 324Z" fill="#0A1015"/>
+
+    <!-- left sail -->
+    <path d="M173 321C217 281 241 225 243 160L289 296L173 321Z" fill="url(#gSail)"/>
+    <!-- right sail -->
+    <path d="M257 138C308 175 339 235 343 295L286 323L257 138Z" fill="url(#gSail)"/>
+    <!-- mast split -->
+    <path d="M246 157C252 175 255 193 256 211C258 245 255 276 246 308L257 306C265 276 268 245 266 210C264 189 260 169 254 150L246 157Z" fill="#0A1015"/>
+  </g>
+</svg>

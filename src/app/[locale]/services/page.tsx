@@ -1,14 +1,11 @@
-import { ServiceJsonLd } from "@/components/seo/service-json-ld";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { ServicesContactSection } from "@/components/sections/services/services-contact-section";
-import { ServicesGridSection } from "@/components/sections/services/services-grid-section";
-import { ServicesHeroSection } from "@/components/sections/services/services-hero-section";
 import { ServicesOutcomesSection } from "@/components/sections/services/services-outcomes-section";
-import { ServicesPhilosophySection } from "@/components/sections/services/services-philosophy-section";
 import { ServicesProcessSection } from "@/components/sections/services/services-process-section";
-import "@/components/sections/services.css";
-import "@/components/sections/sections.css";
+import { ServicesV2Hero } from "@/components/sections/services-v2/services-hero";
+import { TerritoryChapters } from "@/components/sections/services-v2/territory-chapters";
+import "@/components/sections/site-page/site-page.css";
 import { routing } from "@/i18n/routing";
 
 type PageProps = {
@@ -34,14 +31,14 @@ export default async function ServicesPage({ params }: PageProps) {
   setRequestLocale(locale);
 
   return (
-    <main id="main-content" className="relative z-10 w-full min-w-0 pb-14">
-      <ServiceJsonLd />
-      <ServicesHeroSection />
-      <ServicesPhilosophySection />
-      <ServicesGridSection />
-      <ServicesProcessSection />
-      <ServicesOutcomesSection />
-      <ServicesContactSection />
+    <main id="main-content" className="site-page relative z-10 w-full min-w-0 pb-14">
+      <ServicesV2Hero />
+      <div className="sp-below">
+        <TerritoryChapters />
+        <ServicesProcessSection />
+        <ServicesOutcomesSection />
+        <ServicesContactSection />
+      </div>
     </main>
   );
 }

@@ -2,10 +2,6 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Container } from "@/components/ui/container";
-import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { SectionShell } from "@/components/ui/section-shell";
 
 type ProcessStep = {
   label: string;
@@ -20,37 +16,36 @@ export function ServicesProcessSection() {
   const active = steps[activeIndex];
 
   return (
-    <SectionShell id="services-process" ruled>
-      <Container>
-        <Reveal>
-          <SectionHeading index={t("index")} kicker={t("kicker")} title={t("title")} />
-        </Reveal>
+    <section id="services-process" className="sp-section">
+      <div className="sp-shell">
+        <header className="sp-intro">
+          <p className="sp-eyebrow">{t("kicker")}</p>
+          <h2 className="sp-heading">{t("title")}</h2>
+        </header>
 
-        <Reveal>
-          <div className="services-process">
-            <div className="services-process__rail" role="tablist" aria-label={t("railLabel")}>
-              {steps.map((step, index) => (
-                <button
-                  key={step.label}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeIndex === index}
-                  className={`services-process__tab ${activeIndex === index ? "services-process__tab--active" : ""}`}
-                  onClick={() => setActiveIndex(index)}
-                >
-                  <span className="services-process__tab-index">0{index + 1}</span>
-                  <span className="services-process__tab-label">{step.label}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="services-process__panel" role="tabpanel">
-              <h3 className="services-process__panel-title">{active.title}</h3>
-              <p className="services-process__panel-body">{active.body}</p>
-            </div>
+        <div className="sp-process">
+          <div className="sp-process__rail" role="tablist" aria-label={t("railLabel")}>
+            {steps.map((step, index) => (
+              <button
+                key={step.label}
+                type="button"
+                role="tab"
+                aria-selected={activeIndex === index}
+                className={`sp-process__tab ${activeIndex === index ? "sp-process__tab--active" : ""}`}
+                onClick={() => setActiveIndex(index)}
+              >
+                <span className="sp-process__tab-index">0{index + 1}</span>
+                <span className="sp-process__tab-label">{step.label}</span>
+              </button>
+            ))}
           </div>
-        </Reveal>
-      </Container>
-    </SectionShell>
+
+          <div className="sp-process__panel" role="tabpanel">
+            <h3 className="sp-process__panel-title">{active.title}</h3>
+            <p className="sp-process__panel-body">{active.body}</p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

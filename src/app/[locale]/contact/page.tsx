@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { ContactPageSection } from "@/components/sections/contact-page-section";
 import { routing } from "@/i18n/routing";
-import "@/components/sections/sections.css";
+import "@/components/sections/site-page/site-page.css";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -23,7 +23,7 @@ export default async function ContactPage({ params }: PageProps) {
   setRequestLocale(locale);
 
   return (
-    <main id="main-content" className="relative z-10 w-full min-w-0 pb-14">
+    <main id="main-content" className="site-page relative z-10 w-full min-w-0">
       <ContactPageSection />
     </main>
   );
