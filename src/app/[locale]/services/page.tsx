@@ -5,9 +5,7 @@ import { ServicesOutcomesSection } from "@/components/sections/services/services
 import { ServicesProcessSection } from "@/components/sections/services/services-process-section";
 import { ServicesV2Hero } from "@/components/sections/services-v2/services-hero";
 import { TerritoryChapters } from "@/components/sections/services-v2/territory-chapters";
-import "@/components/sections/services-v2/services-v2.css";
-import "@/components/sections/services.css";
-import "@/components/sections/sections.css";
+import "@/components/sections/site-page/site-page.css";
 import { routing } from "@/i18n/routing";
 
 type PageProps = {
@@ -33,12 +31,14 @@ export default async function ServicesPage({ params }: PageProps) {
   setRequestLocale(locale);
 
   return (
-    <main id="main-content" className="relative z-10 w-full min-w-0 pb-14">
+    <main id="main-content" className="site-page relative z-10 w-full min-w-0 pb-14">
       <ServicesV2Hero />
-      <TerritoryChapters />
-      <ServicesProcessSection />
-      <ServicesOutcomesSection />
-      <ServicesContactSection />
+      <div className="sp-below">
+        <TerritoryChapters />
+        <ServicesProcessSection />
+        <ServicesOutcomesSection />
+        <ServicesContactSection />
+      </div>
     </main>
   );
 }

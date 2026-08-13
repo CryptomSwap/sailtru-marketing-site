@@ -20,7 +20,7 @@
     "approach": "הגישה",
     "proof": "עבודות",
     "about": "איך אנחנו עובדים",
-    "beginDiagnosis": "יצירת קשר",
+    "beginDiagnosis": "התחלת אבחון",
     "work": "עבודות",
     "contact": "יצירת קשר"
   },
@@ -29,14 +29,14 @@
     "headlineAria": "מוצאים היכן ההזדמנות אובדת. ואז בונים את התיקון.",
     "headlineLineA": "מוצאים היכן",
     "headlineLineB": "ההזדמנות",
-    "headlineLineC": "אובדת —",
+    "headlineLineC": "אובדת.",
     "headlineLineD": "ואז בונים את התיקון.",
     "subtitle": "SailTru היא חברת צמיחה ואוטומציה מונחות AI. אנחנו עוזרים לעסקים להשתפר בגילוי, להתחרות בחוכמה ולייעל עבודה שמעכבת.",
     "methodology": "איך אנחנו עובדים",
     "urlScan": {
       "label": "כתובת אתר",
       "placeholder": "yourcompany.com",
-      "runScan": "הרץ סריקה"
+      "runScan": "הרץ סריקה →"
     }
   },
   "problem": {
@@ -536,6 +536,58 @@
       "build": {
         "title": "לבנות",
         "body": "לשלוח את השיפור עם בני אדם בלופ. אימות כנה אחר כך."
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "איך SailTru עובדת",
+      "headlineA": "למצוא את ההזדמנות.",
+      "headlineB": "להבין את הפער.",
+      "headlineC": "לבנות את השיפור.",
+      "lede": "עסקים מאבדים הזדמנות ביותר מקומות ממה שהם מבינים — בגילוי, בתחרות ובתפעול. SailTru מזהה את הפערים ומיישמת את השיפורים שחשובים.",
+      "diagramAria": "זרימת המערכת של SailTru מאותות קלט דרך שכבת הבינה לתוצרים",
+      "inputsLabel": "אותות קלט",
+      "intelLabel": "שכבת הבינה של SailTru",
+      "tagline": "מאותות לפעולה. מתובנה להשפעה.",
+      "signals": {
+        "chatgpt": "ChatGPT",
+        "google": "Google",
+        "perplexity": "Perplexity",
+        "competitors": "מתחרים",
+        "analytics": "אנליטיקס",
+        "workflows": "תהליכים",
+        "crm": "CRM"
+      },
+      "steps": {
+        "identify": {
+          "title": "זיהוי",
+          "body": "לחשוף מה מפספסים"
+        },
+        "understand": {
+          "title": "הבנה",
+          "body": "לראות למה הפער קיים"
+        },
+        "implement": {
+          "title": "יישום",
+          "body": "להפוך תובנה לפעולה"
+        }
+      },
+      "outcomes": {
+        "found": {
+          "title": "להימצא",
+          "body": "נראות AI ב-ChatGPT, Google ו-Perplexity."
+        },
+        "ahead": {
+          "title": "להקדים",
+          "body": "מודיעין מתחרים, אתר, מיצוב והמרה."
+        },
+        "automate": {
+          "title": "לאוטמט",
+          "body": "להפחית עבודה ידנית עם AI ואוטומציה."
+        },
+        "build": {
+          "title": "לבנות",
+          "body": "סוכני AI, כלים, אינטגרציות ותוכנה מותאמים."
+        }
       }
     }
   },

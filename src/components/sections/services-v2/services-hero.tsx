@@ -2,21 +2,22 @@
 
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { SiteHeader } from "@/components/layout/site-header";
+import { PageHero } from "@/components/sections/site-page/page-hero";
+import "@/components/sections/site-page/site-page.css";
 
 export function ServicesV2Hero() {
   const t = useTranslations("servicesPage.hero");
 
   return (
-    <section className="services-v2-hero">
-      <SiteHeader compact />
-      <div className="services-v2-hero__content">
-        <h1 className="services-v2-hero__title">{t("title")}</h1>
-        <p className="services-v2-hero__body">{t("body")}</p>
-        <Link href="#services-contact" className="services-v2-hero__cta">
+    <PageHero
+      kicker={t("kicker")}
+      title={t("title")}
+      body={t("body")}
+      actions={
+        <Link href="#services-contact" className="sp-hero__cta">
           {t("cta")}
         </Link>
-      </div>
-    </section>
+      }
+    />
   );
 }

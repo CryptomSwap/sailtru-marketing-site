@@ -19,23 +19,23 @@
     "approach": "Approach",
     "proof": "Work",
     "about": "How we work",
-    "beginDiagnosis": "Contact",
+    "beginDiagnosis": "Begin diagnosis",
     "work": "Work",
     "contact": "Contact"
   },
   "hero": {
     "railLabel": "AI-native growth & automation",
-    "headlineAria": "Find opportunity. Understand the gap. Build the improvement.",
+    "headlineAria": "Find where opportunity is lost. Then build the fix.",
     "headlineLineA": "Find where",
     "headlineLineB": "opportunity",
-    "headlineLineC": "is lost —",
-    "headlineLineD": "then build the fix.",
+    "headlineLineC": "is lost.",
+    "headlineLineD": "Then build the fix.",
     "subtitle": "SailTru is an AI-native growth and automation company. We help businesses improve discovery, compete intelligently, and automate work that slows them down.",
     "methodology": "How we work",
     "urlScan": {
       "label": "Website URL",
       "placeholder": "yourcompany.com",
-      "runScan": "Run scan"
+      "runScan": "Run scan →"
     }
   },
   "problem": {
@@ -188,7 +188,7 @@
     "hero": {
       "kicker": "What we do",
       "title": "Four territories. One growth partner.",
-      "body": "SailTru helps businesses externally — where customers find and choose them — and internally — where work slows teams down.",
+      "body": "SailTru helps businesses externally, where customers find and choose them, and internally, where work slows teams down.",
       "cta": "Contact SailTru"
     },
     "philosophy": {
@@ -347,35 +347,35 @@
       },
       {
         "id": "conversion",
-        "eyebrow": "CONV.FLOW",
+        "eyebrow": "CONVERSION",
         "title": "Decision friction detected",
         "body": "CTA hierarchy conflict",
         "severity": "medium"
       },
       {
         "id": "visibility",
-        "eyebrow": "AI.VIS",
+        "eyebrow": "AI VISIBILITY",
         "title": "Discovery signal incomplete",
-        "body": "Schema coverage at 41%",
+        "body": "Schema coverage ≈ 41%",
         "severity": "medium"
       },
       {
         "id": "lcp",
-        "eyebrow": "PERF.LCP",
+        "eyebrow": "PERFORMANCE",
         "title": "Largest contentful paint slow",
-        "body": "3.8s · target ≤ 2.5s",
+        "body": "3.8s · target < 2.5s",
         "severity": "high"
       },
       {
         "id": "ttfb",
-        "eyebrow": "NET.TTFB",
+        "eyebrow": "SPEED",
         "title": "Server response delayed",
-        "body": "TTFB 840ms · p75 620ms",
+        "body": "TTFB 846ms · p75 628ms",
         "severity": "medium"
       },
       {
         "id": "assets",
-        "eyebrow": "ASSET.JS",
+        "eyebrow": "TECHNICAL",
         "title": "Render-blocking payload",
         "body": "1.2MB JS · 4 blocking scripts",
         "severity": "medium"
@@ -527,6 +527,58 @@
       "build": {
         "title": "Build",
         "body": "Ship the improvement with humans in the loop. Honest verification after."
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "How SailTru works",
+      "headlineA": "Find the opportunity.",
+      "headlineB": "Understand the gap.",
+      "headlineC": "Build the improvement.",
+      "lede": "Businesses lose opportunity in more places than they realize — in how they’re discovered, how they compete, and how they operate. SailTru helps identify those gaps and implement the improvements that matter.",
+      "diagramAria": "SailTru system flow from input signals through intelligence to outcomes",
+      "inputsLabel": "Input signals",
+      "intelLabel": "SailTru intelligence layer",
+      "tagline": "Signals to action. Insight to impact.",
+      "signals": {
+        "chatgpt": "ChatGPT",
+        "google": "Google",
+        "perplexity": "Perplexity",
+        "competitors": "Competitors",
+        "analytics": "Analytics",
+        "workflows": "Workflows",
+        "crm": "CRM"
+      },
+      "steps": {
+        "identify": {
+          "title": "Identify",
+          "body": "uncover what is being missed"
+        },
+        "understand": {
+          "title": "Understand",
+          "body": "see why the gap exists"
+        },
+        "implement": {
+          "title": "Implement",
+          "body": "turn insight into action"
+        }
+      },
+      "outcomes": {
+        "found": {
+          "title": "Get found",
+          "body": "AI visibility across ChatGPT, Google, and Perplexity."
+        },
+        "ahead": {
+          "title": "Get ahead",
+          "body": "Competitive, website, positioning, and conversion intelligence."
+        },
+        "automate": {
+          "title": "Automate",
+          "body": "Reduce manual work with AI workflows and automation."
+        },
+        "build": {
+          "title": "Build",
+          "body": "Custom AI agents, tools, integrations, and software."
+        }
       }
     }
   },

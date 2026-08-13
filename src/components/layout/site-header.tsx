@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
@@ -18,7 +19,7 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
     { label: tNav("home"), href: "/" as const },
     { label: tNav("services"), href: "/services" as const },
     { label: tNav("howItWorks"), href: "/how-we-work" as const },
-    { label: tNav("work"), href: "/work" as const },
+    { label: tNav("work"), href: "/work" as const }
   ];
 
   const alternateLocale = routing.locales.find((l) => l !== locale) ?? routing.defaultLocale;
@@ -26,9 +27,14 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
   return (
     <header className={`site-header site-header--v2 ${compact ? "site-header--compact" : ""}`}>
       <Link href="/" className="site-header__brand" aria-label={tCommon("brandHome")}>
-        <span className="site-header__wordmark">
-          Sail<span className="site-header__wordmark-accent">Tru</span>
-        </span>
+        <Image
+          src="/images/sailtru-lockup.png"
+          alt="SailTru"
+          width={220}
+          height={62}
+          className="site-header__logo"
+          priority
+        />
       </Link>
 
       <nav aria-label={tCommon("primaryNav")} className="site-header__links">
@@ -36,7 +42,9 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
           const isActive =
             item.href === "/services"
               ? pathname === "/services"
-              : item.href === "/" && pathname === "/";
+              : item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
 
           return (
             <Link

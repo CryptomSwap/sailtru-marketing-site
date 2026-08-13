@@ -1,10 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Container } from "@/components/ui/container";
-import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { SectionShell } from "@/components/ui/section-shell";
 
 type OutcomeCard = {
   title: string;
@@ -18,40 +14,37 @@ export function ServicesOutcomesSection() {
   const cards = t.raw("cards") as OutcomeCard[];
 
   return (
-    <SectionShell id="services-outcomes" ruled>
-      <Container>
-        <Reveal>
-          <SectionHeading
-            index={t("index")}
-            kicker={t("kicker")}
-            title={t("title")}
-            description={t("description")}
-          />
-        </Reveal>
+    <section id="services-outcomes" className="sp-section">
+      <div className="sp-shell">
+        <header className="sp-intro">
+          <p className="sp-eyebrow">{t("kicker")}</p>
+          <h2 className="sp-heading">{t("title")}</h2>
+          <p className="sp-lede">{t("description")}</p>
+        </header>
 
-        <div className="services-outcomes">
-          {cards.map((card) => (
-            <Reveal key={card.title}>
-              <article className="services-outcome">
-                <h3 className="services-outcome__title">{card.title}</h3>
-                <div className="services-outcome__metrics">
-                  <div className="services-outcome__metric">
-                    <span className="services-outcome__metric-value">{card.metric}</span>
-                    <span className="services-outcome__metric-label">{card.label}</span>
-                  </div>
-                </div>
-                <ul className="services-outcome__tags">
+        <ol className="sp-rows">
+          {cards.map((card, index) => (
+            <li key={card.title} className="sp-row">
+              <span className="sp-row__num" aria-hidden>
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h3 className="sp-row__title">{card.title}</h3>
+                <p className="sp-row__metric">
+                  {card.metric} · {card.label}
+                </p>
+                <ul className="sp-row__tags">
                   {card.tags.map((tag) => (
-                    <li key={tag} className="services-outcome__tag">
+                    <li key={tag} className="sp-row__tag">
                       {tag}
                     </li>
                   ))}
                 </ul>
-              </article>
-            </Reveal>
+              </div>
+            </li>
           ))}
-        </div>
-      </Container>
-    </SectionShell>
+        </ol>
+      </div>
+    </section>
   );
 }

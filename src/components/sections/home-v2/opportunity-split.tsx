@@ -6,20 +6,30 @@ export function OpportunitySplit() {
   const t = useTranslations("homeV2.opportunity");
 
   return (
-    <section id="opportunity" className="home-v2-split">
-      <div className="home-v2-split__intro">
-        <h2 className="home-v2-heading">{t("title")}</h2>
-        <p className="home-v2-lede">{t("lede")}</p>
-      </div>
-      <div className="home-v2-split__pair">
-        <article className="home-v2-split__col">
-          <h3 className="home-v2-split__label">{t("externalTitle")}</h3>
-          <p>{t("externalBody")}</p>
-        </article>
-        <article className="home-v2-split__col home-v2-split__col--internal">
-          <h3 className="home-v2-split__label">{t("internalTitle")}</h3>
-          <p>{t("internalBody")}</p>
-        </article>
+    <section id="opportunity" className="hb-section hb-split">
+      <div className="hb-shell">
+        <header className="hb-intro">
+          <p className="hb-eyebrow">Opportunity</p>
+          <h2 className="hb-heading">{t("title")}</h2>
+          <p className="hb-lede">{t("lede")}</p>
+        </header>
+
+        <div className="hb-split__pair">
+          <article className="hb-split__col">
+            <span className="hb-split__index" aria-hidden>
+              01
+            </span>
+            <h3 className="hb-split__label">{t("externalTitle")}</h3>
+            <p className="hb-split__body">{t("externalBody")}</p>
+          </article>
+          <article className="hb-split__col">
+            <span className="hb-split__index" aria-hidden>
+              02
+            </span>
+            <h3 className="hb-split__label">{t("internalTitle")}</h3>
+            <p className="hb-split__body">{t("internalBody")}</p>
+          </article>
+        </div>
       </div>
     </section>
   );

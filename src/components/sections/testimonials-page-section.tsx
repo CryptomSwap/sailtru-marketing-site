@@ -2,7 +2,8 @@
 
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { SiteHeader } from "@/components/layout/site-header";
+import { PageHero } from "@/components/sections/site-page/page-hero";
+import "@/components/sections/site-page/site-page.css";
 
 export function TestimonialsPageSection() {
   const t = useTranslations("workPage");
@@ -10,26 +11,26 @@ export function TestimonialsPageSection() {
 
   return (
     <>
-      <div className="site-inner__bar">
-        <SiteHeader compact />
+      <PageHero kicker={t("kicker")} title={t("title")} body={t("intro")} />
+      <div className="sp-below">
+        <section className="sp-section">
+          <div className="sp-shell sp-shell--narrow">
+            <div className="sp-blocks">
+              {items.map((item) => (
+                <blockquote key={item.attribution} className="sp-quote">
+                  <p>&ldquo;{item.quote}&rdquo;</p>
+                  <footer>{item.attribution}</footer>
+                </blockquote>
+              ))}
+            </div>
+            <div className="sp-close__actions sp-close__actions--after">
+              <Link href="/contact" className="sp-btn">
+                {t("cta")}
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
-      <article className="site-inner__main">
-        <h1 className="site-inner__title">{t("title")}</h1>
-        <p className="site-inner__lede">{t("intro")}</p>
-        <div className="site-inner__blocks">
-          {items.map((item) => (
-            <blockquote key={item.attribution} className="site-inner__quote">
-              <p>{item.quote}</p>
-              <footer>{item.attribution}</footer>
-            </blockquote>
-          ))}
-        </div>
-        <div className="site-inner__actions">
-          <Link href="/contact" className="site-inner__cta">
-            {t("cta")}
-          </Link>
-        </div>
-      </article>
     </>
   );
 }
