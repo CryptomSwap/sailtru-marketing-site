@@ -24,13 +24,13 @@
     "contact": "Contact"
   },
   "hero": {
-    "railLabel": "AI-native growth & automation",
+    "railLabel": "SEO · GEO · Custom AI solutions",
     "headlineAria": "Find where opportunity is lost. Then build the fix.",
     "headlineLineA": "Find where",
-    "headlineLineB": "opportunity",
-    "headlineLineC": "is lost.",
-    "headlineLineD": "Then build the fix.",
-    "subtitle": "SailTru is an AI-native growth and automation company. We help businesses improve discovery, compete intelligently, and automate work that slows them down.",
+    "headlineLineB": "competitors",
+    "headlineLineC": "differ.",
+    "headlineLineD": "Then make it yours.",
+    "subtitle": "SailTru improves your SEO and GEO performance, shows you how to use what competitors do differently, and creates custom AI solutions for your business.",
     "methodology": "How we work",
     "urlScan": {
       "label": "Website URL",
@@ -531,18 +531,18 @@
     },
     "howItWorks": {
       "eyebrow": "How SailTru works",
-      "headlineA": "Find the opportunity.",
-      "headlineB": "Understand the gap.",
-      "headlineC": "Build the improvement.",
-      "lede": "Businesses lose opportunity in more places than they realize — in how they’re discovered, how they compete, and how they operate. SailTru helps identify those gaps and implement the improvements that matter.",
+      "headlineA": "Spot the difference.",
+      "headlineB": "Analyze what it means.",
+      "headlineC": "Turn it to your advantage.",
+      "lede": "Your competitors do some things differently than you do. SailTru identifies those differences, analyzes them, and shows you how to take advantage of them, while improving your SEO and GEO performance and creating custom AI solutions built for your business.",
       "diagramAria": "SailTru system flow from input signals through the intelligence layer",
       "inputsLabel": "Input signals",
       "intelLabel": "SailTru intelligence layer",
-      "tagline": "Signals to action. Insight to impact.",
+      "tagline": "Gaps to insight. Insight to advantage.",
       "sequence": {
-        "scanning": "Reading the homepage you submitted.",
-        "signals": "Checking it against ChatGPT, Google, Perplexity, competitors, analytics, workflows, and the CRM.",
-        "intel": "SailTru identifies what is missed, sees why the gap exists, and turns it into action."
+        "scanning": "Spotting what competitors do differently.",
+        "signals": "Analyzing that difference and where your SEO and GEO performance can improve.",
+        "intel": "SailTru shows how you can take advantage of it, and creates custom AI solutions where they help."
       },
       "signals": {
         "chatgpt": "ChatGPT",
