@@ -238,9 +238,24 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.65rem;
-  margin: 0 0 5.75rem;
+  margin: 0 0 2.4rem;
   padding: 0;
   list-style: none;
+}
+
+.hsw__scan {
+  position: relative;
+  z-index: 4;
+  width: min(100%, 34rem);
+  margin: 0 auto 2.6rem;
+}
+
+.hsw__scan.field-scan--ref {
+  margin-top: 0;
+}
+
+.hsw__scan .hero-url-scan {
+  background: linear-gradient(180deg, rgba(16, 42, 120, 0.88), rgba(10, 28, 88, 0.92));
 }
 
 @media (min-width: 1100px) {

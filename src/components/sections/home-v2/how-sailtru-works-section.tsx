@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useCallback, useLayoutEffect, useRef, useState, Fragment } from "react";
+import { HeroUrlScan } from "@/components/sections/hero-url-scan";
 import { HeroAnalysisStage } from "@/components/sections/home-v2/hero-analysis-stage";
 import "@/components/sections/home-v2/how-sailtru-works.css";
 
@@ -188,22 +189,31 @@ function measureWires(root: HTMLElement): WireLayout | null {
   const intelBox = rel(intel);
   const hubInY = intelBox.topY;
   const hubOutY = intelBox.topY + intelBox.height;
+  const scan = root.querySelector<HTMLElement>("[data-hsw='scan'] .hero-url-scan");
 
-  const inTargets = signals.map((_, i) => {
-    const t = signals.length === 1 ? 0.5 : i / (signals.length - 1);
-    const spread = Math.min(intelBox.width * 0.72, width * 0.7);
-    return {
-      x: intelBox.cx - spread / 2 + spread * t,
-      y: hubInY
-    };
-  });
+  const spreadTargets = (count: number, box: { cx: number; width: number }, y: number) => {
+    const spread = Math.min(box.width * 0.72, width * 0.7);
+    return Array.from({ length: count }, (_, i) => {
+      const t = count === 1 ? 0.5 : i / (count - 1);
+      return { x: box.cx - spread / 2 + spread * t, y };
+    });
+  };
 
   const inStarts = signals.map((el) => {
     const b = rel(el);
     return { x: b.cx, y: b.bottom };
   });
 
-  const inPaths = inStarts.map((start, i) => curveDown(start, inTargets[i]!));
+  let inPaths: string[];
+  if (scan) {
+    const scanBox = rel(scan);
+    const ontoScan = spreadTargets(signals.length, scanBox, scanBox.topY);
+    inPaths = inStarts.map((start, i) => curveDown(start, ontoScan[i]!));
+    inPaths.push(curveDown({ x: scanBox.cx, y: scanBox.topY + scanBox.height }, { x: intelBox.cx, y: hubInY }));
+  } else {
+    const inTargets = spreadTargets(signals.length, intelBox, hubInY);
+    inPaths = inStarts.map((start, i) => curveDown(start, inTargets[i]!));
+  }
 
   const outEnds = outcomes.map((el) => {
     const b = rel(el);
@@ -325,16 +335,13 @@ export function HowSailtruWorksDiagram({ className = "" }: { className?: string 
     const root = diagramRef.current;
     if (!root) return;
 
-    let raf = 0;
+    let frame = 0;
     const schedule = () => {
-      window.cancelAnimationFrame(raf);
-      raf = window.requestAnimationFrame(() => {
-        refreshWires();
-        raf = window.requestAnimationFrame(() => refreshWires());
-      });
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => refreshWires());
     };
 
-    schedule();
+    refreshWires();
 
     const ro = new ResizeObserver(() => schedule());
     ro.observe(root);
@@ -343,17 +350,15 @@ export function HowSailtruWorksDiagram({ className = "" }: { className?: string 
     }
 
     window.addEventListener("resize", schedule);
-    window.addEventListener("load", schedule);
     const fontsReady = document.fonts?.ready;
     if (fontsReady) {
       void fontsReady.then(() => schedule());
     }
 
     return () => {
-      window.cancelAnimationFrame(raf);
+      window.cancelAnimationFrame(frame);
       ro.disconnect();
       window.removeEventListener("resize", schedule);
-      window.removeEventListener("load", schedule);
     };
   }, [refreshWires]);
 
@@ -383,6 +388,10 @@ export function HowSailtruWorksDiagram({ className = "" }: { className?: string 
           </li>
         ))}
       </ul>
+
+      <div className="field-scan field-scan--ref hsw__scan" data-hsw="scan">
+        <HeroUrlScan />
+      </div>
 
       <div data-hsw="intel" className={`hsw-intel ${reduceMotion ? "" : "hsw-intel--live"}`}>
         <div className="hsw-intel__glow" aria-hidden />
