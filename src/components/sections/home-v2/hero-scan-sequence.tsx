@@ -15,12 +15,15 @@ type Phase = "idle" | "scan" | "signals" | "intel" | "mockup";
 
 /** How long each phase plays before advancing, in ms. The mockup phase is terminal. */
 const PHASE_DURATION: Record<"scan" | "signals" | "intel", number> = {
-  scan: 1800,
-  signals: 1700,
-  intel: 2400
+  scan: 4600,
+  signals: 6200,
+  intel: 6800
 };
 
-const PHASE_TRANSITION = { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const };
+const PHASE_TRANSITION = { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const };
+const PHASE_ENTER = { opacity: 0, y: 36, filter: "blur(10px)" };
+const PHASE_SHOW = { opacity: 1, y: 0, filter: "blur(0px)" };
+const PHASE_EXIT = { opacity: 0, y: -22, filter: "blur(8px)" };
 
 /**
  * The homepage hero's one animated sequence: URL field only, then — after Run scan —
@@ -87,12 +90,14 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
 
   return (
     <div className={`hsw__diagram hsw__sequence ${className}`.trim()} aria-label={t("diagramAria")}>
-      <p className="sr-only" aria-live="polite">
-        {phase === "scan" && t("sequence.scanning")}
-        {phase === "signals" && t("sequence.signals")}
-        {phase === "intel" && t("sequence.intel")}
-        {phase === "mockup" && t("sequence.ready")}
-      </p>
+      {phase !== "idle" ? (
+        <p className="hsw__phase-caption" aria-live="polite">
+          {phase === "scan" && t("sequence.scanning")}
+          {phase === "signals" && t("sequence.signals")}
+          {phase === "intel" && t("sequence.intel")}
+          {phase === "mockup" && t("sequence.ready")}
+        </p>
+      ) : null}
 
       <AnimatePresence mode="wait">
         {phase === "idle" ? (
@@ -114,9 +119,9 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
           <motion.div
             key="scan"
             className="hsw__scan-stage"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={PHASE_ENTER}
+            animate={PHASE_SHOW}
+            exit={PHASE_EXIT}
             transition={PHASE_TRANSITION}
           >
             <HeroAnalysisVisual
@@ -136,12 +141,12 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
           <motion.div
             key="signals"
             className="hsw__scan-stage"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={PHASE_ENTER}
+            animate={PHASE_SHOW}
+            exit={PHASE_EXIT}
             transition={PHASE_TRANSITION}
           >
-            <SignalChips />
+            <SignalChips stagger />
           </motion.div>
         ) : null}
 
@@ -149,12 +154,12 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
           <motion.div
             key="intel"
             className="hsw__scan-stage"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={PHASE_ENTER}
+            animate={PHASE_SHOW}
+            exit={PHASE_EXIT}
             transition={PHASE_TRANSITION}
           >
-            <IntelPanel />
+            <IntelPanel stagger />
           </motion.div>
         ) : null}
 
@@ -162,9 +167,9 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
           <motion.div
             key="mockup"
             className="hsw__scan-stage"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={PHASE_ENTER}
+            animate={PHASE_SHOW}
+            exit={PHASE_EXIT}
             transition={PHASE_TRANSITION}
           >
             <HeroAnalysisVisual
