@@ -1,10 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useCallback, useLayoutEffect, useRef, useState, Fragment } from "react";
-import { HeroUrlScan } from "@/components/sections/hero-url-scan";
+import { Fragment } from "react";
 import { HeroAnalysisStage } from "@/components/sections/home-v2/hero-analysis-stage";
 import "@/components/sections/home-v2/how-sailtru-works.css";
 
@@ -12,12 +10,6 @@ type Signal = {
   id: string;
   label: string;
   kind: "major" | "minor";
-};
-
-type Outcome = {
-  id: string;
-  title: string;
-  body: string;
 };
 
 const SIGNALS: Signal[] = [
@@ -35,29 +27,6 @@ const STEPS = [
   { id: "understand", num: "2" },
   { id: "implement", num: "3" }
 ] as const;
-
-const OUTCOMES: Outcome[] = [
-  {
-    id: "found",
-    title: "GET FOUND",
-    body: "AI visibility across ChatGPT, Google, and Perplexity."
-  },
-  {
-    id: "ahead",
-    title: "GET AHEAD",
-    body: "Competitor, website, positioning, and conversion intelligence."
-  },
-  {
-    id: "automate",
-    title: "AUTOMATE",
-    body: "Reduce manual work with AI workflows and automation."
-  },
-  {
-    id: "build",
-    title: "BUILD",
-    body: "Custom AI agents, tools, integrations, and software."
-  }
-];
 
 const SIGNAL_BRANDS: Record<
   string,
@@ -96,280 +65,12 @@ function SignalMark({ id }: { id: string }) {
   );
 }
 
-function OutcomeIcon({ id }: { id: string }) {
-  switch (id) {
-    case "found":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden className="hsw-out__icon">
-          <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
-          <path d="m16 16 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-      );
-    case "ahead":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden className="hsw-out__icon">
-          <path
-            d="M4 16 9 10l4 3 7-8"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "automate":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden className="hsw-out__icon">
-          <path
-            d="M13 3 5 13h6l-1 8 9-12h-6l0-6Z"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    default:
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden className="hsw-out__icon">
-          <path
-            d="M12 4 5 8v8l7 4 7-4V8l-7-4Z"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinejoin="round"
-          />
-          <path d="M12 12 5 8m7 4 7-4M12 12v8" stroke="currentColor" strokeWidth="1.4" />
-        </svg>
-      );
-  }
-}
-
-type Pt = { x: number; y: number };
-
-type WireLayout = {
-  width: number;
-  height: number;
-  inPaths: string[];
-  outPaths: string[];
-  inStarts: Pt[];
-  outEnds: Pt[];
-  hubIn: Pt | null;
-  hubOut: Pt | null;
-};
-
-function curveDown(from: Pt, to: Pt): string {
-  const midY = from.y + (to.y - from.y) * 0.55;
-  return `M ${from.x.toFixed(1)} ${from.y.toFixed(1)} C ${from.x.toFixed(1)} ${midY.toFixed(1)}, ${to.x.toFixed(1)} ${midY.toFixed(1)}, ${to.x.toFixed(1)} ${to.y.toFixed(1)}`;
-}
-
-function measureWires(root: HTMLElement): WireLayout | null {
-  const rootBox = root.getBoundingClientRect();
-  const width = root.clientWidth;
-  const height = root.clientHeight;
-  if (width < 40 || height < 40) return null;
-
-  const signals = Array.from(root.querySelectorAll<HTMLElement>("[data-hsw='signal']"));
-  const intel = root.querySelector<HTMLElement>("[data-hsw='intel']");
-  const outcomes = Array.from(root.querySelectorAll<HTMLElement>("[data-hsw='outcome']"));
-  if (!intel || signals.length === 0 || outcomes.length === 0) return null;
-
-  const rel = (el: HTMLElement) => {
-    const b = el.getBoundingClientRect();
-    return {
-      cx: b.left - rootBox.left + b.width / 2,
-      bottom: b.bottom - rootBox.top,
-      topY: b.top - rootBox.top,
-      width: b.width,
-      height: b.height
-    };
-  };
-
-  const intelBox = rel(intel);
-  const hubInY = intelBox.topY;
-  const hubOutY = intelBox.topY + intelBox.height;
-  const scan = root.querySelector<HTMLElement>("[data-hsw='scan'] .hero-url-scan");
-
-  const spreadTargets = (count: number, box: { cx: number; width: number }, y: number) => {
-    const spread = Math.min(box.width * 0.72, width * 0.7);
-    return Array.from({ length: count }, (_, i) => {
-      const t = count === 1 ? 0.5 : i / (count - 1);
-      return { x: box.cx - spread / 2 + spread * t, y };
-    });
-  };
-
-  const inStarts = signals.map((el) => {
-    const b = rel(el);
-    return { x: b.cx, y: b.bottom };
-  });
-
-  let inPaths: string[];
-  if (scan) {
-    const scanBox = rel(scan);
-    const ontoScan = spreadTargets(signals.length, scanBox, scanBox.topY);
-    inPaths = inStarts.map((start, i) => curveDown(start, ontoScan[i]!));
-    inPaths.push(curveDown({ x: scanBox.cx, y: scanBox.topY + scanBox.height }, { x: intelBox.cx, y: hubInY }));
-  } else {
-    const inTargets = spreadTargets(signals.length, intelBox, hubInY);
-    inPaths = inStarts.map((start, i) => curveDown(start, inTargets[i]!));
-  }
-
-  const outEnds = outcomes.map((el) => {
-    const b = rel(el);
-    return { x: b.cx, y: b.topY };
-  });
-
-  const outPaths = outEnds.map((end, i) => {
-    const t = outcomes.length === 1 ? 0.5 : i / (outcomes.length - 1);
-    const spread = Math.min(intelBox.width * 0.78, width * 0.75);
-    const from: Pt = {
-      x: intelBox.cx - spread / 2 + spread * t,
-      y: hubOutY
-    };
-    return curveDown(from, end);
-  });
-
-  return {
-    width,
-    height,
-    inPaths,
-    outPaths,
-    inStarts,
-    outEnds,
-    hubIn: { x: intelBox.cx, y: hubInY },
-    hubOut: { x: intelBox.cx, y: hubOutY }
-  };
-}
-
-function PowerLines({
-  layout,
-  reduceMotion
-}: {
-  layout: WireLayout | null;
-  reduceMotion: boolean;
-}) {
-  if (!layout || layout.inPaths.length === 0) {
-    return <svg className="hsw-wires" aria-hidden />;
-  }
-
-  const pulses = reduceMotion
-    ? []
-    : [
-        ...layout.inPaths.map((path, i) => ({
-          path,
-          dur: `${2.7 + (i % 3) * 0.2}s`,
-          delay: `${(i * 0.18).toFixed(2)}s`
-        })),
-        ...layout.outPaths.map((path, i) => ({
-          path,
-          dur: `${2.9 + (i % 2) * 0.25}s`,
-          delay: `${(0.2 + i * 0.28).toFixed(2)}s`
-        }))
-      ];
-
-  return (
-    <svg
-      className="hsw-wires"
-      viewBox={`0 0 ${layout.width} ${layout.height}`}
-      width={layout.width}
-      height={layout.height}
-      preserveAspectRatio="none"
-      aria-hidden
-    >
-      <defs>
-        <filter id="hswGlow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="1.8" result="b" />
-          <feMerge>
-            <feMergeNode in="b" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-
-      {layout.inPaths.map((d, i) => (
-        <path key={`in-b-${i}`} className="hsw-wires__base" d={d} />
-      ))}
-      {layout.inPaths.map((d, i) => (
-        <path key={`in-f-${i}`} className="hsw-wires__flow" d={d} />
-      ))}
-
-      {layout.outPaths.map((d, i) => (
-        <path key={`out-b-${i}`} className="hsw-wires__base" d={d} />
-      ))}
-      {layout.outPaths.map((d, i) => (
-        <path key={`out-f-${i}`} className="hsw-wires__flow" d={d} />
-      ))}
-
-      {pulses.map((pulse, index) => (
-        <circle key={`p-${index}`} r="2.5" className="hsw-wires__pulse" filter="url(#hswGlow)">
-          <animateMotion
-            dur={pulse.dur}
-            begin={pulse.delay}
-            repeatCount="indefinite"
-            path={pulse.path}
-          />
-        </circle>
-      ))}
-    </svg>
-  );
-}
-
-/**
- * Signals → intelligence → outcomes diagram (power lines + glass cards).
- * Used in the hero ATF after the visual swap with the analysis stage.
- */
-export function HowSailtruWorksDiagram({ className = "" }: { className?: string }) {
+/** Input-signal chip band — reused by the hero's scan sequence. Render inside a `.hsw__diagram` ancestor. */
+export function SignalChips({ className = "" }: { className?: string }) {
   const t = useTranslations("homeV2.howItWorks");
-  const reduceMotion = useReducedMotion() ?? false;
-  const diagramRef = useRef<HTMLDivElement | null>(null);
-  const [wireLayout, setWireLayout] = useState<WireLayout | null>(null);
-
-  const refreshWires = useCallback(() => {
-    const root = diagramRef.current;
-    if (!root) return;
-    setWireLayout(measureWires(root));
-  }, []);
-
-  useLayoutEffect(() => {
-    const root = diagramRef.current;
-    if (!root) return;
-
-    let frame = 0;
-    const schedule = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => refreshWires());
-    };
-
-    refreshWires();
-
-    const ro = new ResizeObserver(() => schedule());
-    ro.observe(root);
-    for (const el of root.querySelectorAll("[data-hsw]")) {
-      ro.observe(el);
-    }
-
-    window.addEventListener("resize", schedule);
-    const fontsReady = document.fonts?.ready;
-    if (fontsReady) {
-      void fontsReady.then(() => schedule());
-    }
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      ro.disconnect();
-      window.removeEventListener("resize", schedule);
-    };
-  }, [refreshWires]);
 
   return (
-    <div
-      ref={diagramRef}
-      className={`hsw__diagram ${className}`.trim()}
-      aria-label={t("diagramAria")}
-    >
-      <PowerLines layout={wireLayout} reduceMotion={reduceMotion} />
-
+    <div className={className}>
       <div className="hsw__band">
         <span className="hsw__band-line" aria-hidden />
         <p className="hsw__band-label">{t("inputsLabel")}</p>
@@ -380,7 +81,6 @@ export function HowSailtruWorksDiagram({ className = "" }: { className?: string 
         {SIGNALS.map((signal) => (
           <li
             key={signal.id}
-            data-hsw="signal"
             className={`hsw-chip hsw-chip--${signal.kind} hsw-chip--${signal.id}`}
           >
             <SignalMark id={signal.id} />
@@ -388,12 +88,17 @@ export function HowSailtruWorksDiagram({ className = "" }: { className?: string 
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
 
-      <div className="field-scan field-scan--ref hsw__scan" data-hsw="scan">
-        <HeroUrlScan />
-      </div>
+/** SailTru intelligence layer panel (Identify / Understand / Implement) — reused by the hero's scan sequence. Render inside a `.hsw__diagram` ancestor. */
+export function IntelPanel({ className = "" }: { className?: string }) {
+  const t = useTranslations("homeV2.howItWorks");
 
-      <div data-hsw="intel" className={`hsw-intel ${reduceMotion ? "" : "hsw-intel--live"}`}>
+  return (
+    <div className={className}>
+      <div className="hsw-intel hsw-intel--live">
         <div className="hsw-intel__glow" aria-hidden />
         <div className="hsw-intel__head">
           <Image
@@ -434,43 +139,12 @@ export function HowSailtruWorksDiagram({ className = "" }: { className?: string 
           ))}
         </ol>
       </div>
-
-      <ul className="hsw__outcomes">
-        {OUTCOMES.map((outcome, index) => (
-          <li
-            key={outcome.id}
-            data-hsw="outcome"
-            className={`hsw-out hsw-out--${outcome.id}`}
-            style={{ ["--out-i" as string]: index }}
-          >
-            <div className="hsw-out__head">
-              <span className="hsw-out__mark">
-                <OutcomeIcon id={outcome.id} />
-              </span>
-              <h3 className="hsw-out__title">{t(`outcomes.${outcome.id}.title`)}</h3>
-            </div>
-            <p className="hsw-out__body">{t(`outcomes.${outcome.id}.body`)}</p>
-          </li>
-        ))}
-      </ul>
-
-      <p className="hsw__tag">
-        <span className="hsw__tag-rail" aria-hidden>
-          <span className="hsw__tag-dot" />
-          <span className="hsw__tag-line" />
-        </span>
-        {t("tagline")}
-        <span className="hsw__tag-rail" aria-hidden>
-          <span className="hsw__tag-line" />
-          <span className="hsw__tag-dot" />
-        </span>
-      </p>
     </div>
   );
 }
 
 /**
- * Second homepage section — narrative + customer-site analysis stage.
+ * Second homepage section — narrative + a looping illustrative example (always Northline, captioned as such).
  */
 export function HowSailtruWorksSection() {
   const t = useTranslations("homeV2.howItWorks");

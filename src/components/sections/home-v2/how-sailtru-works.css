@@ -149,6 +149,27 @@
   width: 100%;
 }
 
+.hsw__sequence {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.hsw__scan-stage {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hsw__scan-stage--idle .hero-url-scan {
+  width: min(100%, 30rem);
+}
+
 .hsw__stage {
   position: relative;
   z-index: 2;

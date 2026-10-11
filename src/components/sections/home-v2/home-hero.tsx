@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { SiteHeader } from "@/components/layout/site-header";
-import { HowSailtruWorksDiagram } from "@/components/sections/home-v2/how-sailtru-works-section";
+import { HeroScanSequence } from "@/components/sections/home-v2/hero-scan-sequence";
 import "@/components/sections/home-v2/home-v2.css";
 import "@/components/sections/home-v2/field-hero-ref.css";
 import "@/components/sections/home-v2/how-sailtru-works.css";
@@ -85,7 +85,7 @@ export function HomeHero() {
             </div>
           </div>
 
-          <HowSailtruWorksDiagram className="hsw__diagram--hero" />
+          <HeroScanSequence className="hsw__diagram--hero" />
         </div>
       </div>
     </section>

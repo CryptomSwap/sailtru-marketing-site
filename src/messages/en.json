@@ -535,10 +535,16 @@
       "headlineB": "Understand the gap.",
       "headlineC": "Build the improvement.",
       "lede": "Businesses lose opportunity in more places than they realize — in how they’re discovered, how they compete, and how they operate. SailTru helps identify those gaps and implement the improvements that matter.",
-      "diagramAria": "SailTru system flow from input signals through intelligence to outcomes",
+      "diagramAria": "SailTru system flow from input signals through the intelligence layer",
       "inputsLabel": "Input signals",
       "intelLabel": "SailTru intelligence layer",
       "tagline": "Signals to action. Insight to impact.",
+      "sequence": {
+        "scanning": "Scanning the homepage.",
+        "signals": "Reading input signals.",
+        "intel": "Running the intelligence layer.",
+        "ready": "Here's the read."
+      },
       "signals": {
         "chatgpt": "ChatGPT",
         "google": "Google",
