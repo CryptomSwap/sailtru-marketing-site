@@ -1,4 +1,22 @@
+import { Fraunces, Outfit } from "next/font/google";
 import localFont from "next/font/local";
+
+/** Display. Replaces Instrument Serif. The italic is the accent word. */
+export const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+/** UI and body. Replaces IBM Plex Sans. */
+export const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const plexSans = localFont({
   src: [

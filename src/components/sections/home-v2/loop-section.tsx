@@ -2,6 +2,7 @@
 
 import { Fragment } from "react";
 import { useTranslations } from "next-intl";
+import { Enter } from "@/components/ui/enter";
 
 const STEPS = ["find", "understand", "build"] as const;
 
@@ -11,16 +12,18 @@ export function LoopSection() {
   return (
     <section id="methodology" className="hb-section hb-loop">
       <div className="hb-shell">
-        <header className="hb-intro">
-          <p className="hb-eyebrow">Method</p>
-          <h2 className="hb-heading">{t("title")}</h2>
-          <p className="hb-lede">{t("lede")}</p>
-        </header>
+        <Enter>
+          <header className="hb-intro">
+            <p className="hb-eyebrow">Method</p>
+            <h2 className="hb-heading">{t("title")}</h2>
+            <p className="hb-lede">{t("lede")}</p>
+          </header>
+        </Enter>
 
         <ol className="hb-loop__steps">
           {STEPS.map((step, index) => (
             <Fragment key={step}>
-              <li className="hb-loop__step">
+              <Enter as="li" delay={index * 0.1} className="hb-loop__step">
                 <span className="hb-loop__index" aria-hidden>
                   {String(index + 1).padStart(2, "0")}
                 </span>
@@ -28,7 +31,7 @@ export function LoopSection() {
                   <h3 className="hb-loop__title">{t(`${step}.title`)}</h3>
                   <p className="hb-loop__body">{t(`${step}.body`)}</p>
                 </div>
-              </li>
+              </Enter>
               {index < STEPS.length - 1 ? (
                 <li className="hb-loop__rail" aria-hidden>
                   <span className="hb-loop__rail-line" />
