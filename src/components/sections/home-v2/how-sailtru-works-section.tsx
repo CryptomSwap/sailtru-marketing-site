@@ -105,9 +105,56 @@ function OutcomeIcon({ id }: { id: string }) {
   }
 }
 
+function SignalChip({
+  signal,
+  index,
+  stagger,
+  label,
+}: {
+  signal: Signal;
+  index: number;
+  stagger: boolean;
+  label: string;
+}) {
+  const className = `hsw-chip hsw-chip--${signal.kind} hsw-chip--${signal.id}`;
+  const body = (
+    <>
+      <SignalMark id={signal.id} />
+      <span>{label}</span>
+    </>
+  );
+  if (!stagger) {
+    return (
+      <li key={signal.id} className={className}>
+        {body}
+      </li>
+    );
+  }
+  return (
+    <motion.li
+      key={signal.id}
+      className={className}
+      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.38, delay: 0.05 + index * 0.06, ease: REVEAL }}
+    >
+      {body}
+    </motion.li>
+  );
+}
+
 /** Input-signal chip band — reused by the hero's scan sequence. Render inside a `.hsw__diagram` ancestor. */
-export function SignalChips({ className = "", stagger = false }: { className?: string; stagger?: boolean }) {
+export function SignalChips({
+  className = "",
+  stagger = false,
+  layout = "wrap",
+}: {
+  className?: string;
+  stagger?: boolean;
+  layout?: "wrap" | "rows";
+}) {
   const t = useTranslations("homeV2.howItWorks");
+  const rows = layout === "rows" ? [SIGNALS.slice(0, 3), SIGNALS.slice(3)] : [SIGNALS];
 
   return (
     <div className={className}>
@@ -117,34 +164,21 @@ export function SignalChips({ className = "", stagger = false }: { className?: s
         <span className="hsw__band-line" aria-hidden />
       </div>
 
-      <ul className="hsw__signals">
-        {SIGNALS.map((signal, index) => {
-          const chip = (
-            <>
-              <SignalMark id={signal.id} />
-              <span>{t(`signals.${signal.id}`)}</span>
-            </>
-          );
-          if (!stagger) {
-            return (
-              <li key={signal.id} className={`hsw-chip hsw-chip--${signal.kind} hsw-chip--${signal.id}`}>
-                {chip}
-              </li>
-            );
-          }
-          return (
-            <motion.li
-              key={signal.id}
-              className={`hsw-chip hsw-chip--${signal.kind} hsw-chip--${signal.id}`}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.15 + index * 0.14, ease: REVEAL }}
-            >
-              {chip}
-            </motion.li>
-          );
-        })}
-      </ul>
+      <div className={layout === "rows" ? "hsw__signal-rows" : undefined}>
+        {rows.map((row) => (
+          <ul key={row[0]?.id} className="hsw__signals">
+            {row.map((signal) => (
+              <SignalChip
+                key={signal.id}
+                signal={signal}
+                index={SIGNALS.findIndex((item) => item.id === signal.id)}
+                stagger={stagger}
+                label={t(`signals.${signal.id}`)}
+              />
+            ))}
+          </ul>
+        ))}
+      </div>
     </div>
   );
 }
@@ -177,7 +211,7 @@ export function IntelPanel({ className = "", stagger = false }: { className?: st
                 style={{ ["--step-i" as string]: index }}
                 initial={stagger ? { opacity: 0, y: 14 } : false}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: stagger ? 0.2 + index * 0.45 : 0, ease: REVEAL }}
+                transition={{ duration: 0.45, delay: stagger ? 0.08 + index * 0.18 : 0, ease: REVEAL }}
               >
                 <span className="hsw-intel__num">{step.num}</span>
                 <div className="hsw-intel__copy">

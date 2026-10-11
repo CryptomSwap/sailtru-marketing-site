@@ -15,15 +15,15 @@ type Phase = "idle" | "scan" | "signals" | "intel" | "mockup";
 
 /** How long each phase plays before advancing, in ms. The mockup phase is terminal. */
 const PHASE_DURATION: Record<"scan" | "signals" | "intel", number> = {
-  scan: 4600,
-  signals: 6200,
-  intel: 6800
+  scan: 4400,
+  signals: 4600,
+  intel: 4800
 };
 
-const PHASE_TRANSITION = { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const };
-const PHASE_ENTER = { opacity: 0, y: 36, filter: "blur(10px)" };
-const PHASE_SHOW = { opacity: 1, y: 0, filter: "blur(0px)" };
-const PHASE_EXIT = { opacity: 0, y: -22, filter: "blur(8px)" };
+const PHASE_TRANSITION = { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const };
+const PHASE_ENTER = { opacity: 0, scale: 0.992 };
+const PHASE_SHOW = { opacity: 1, scale: 1 };
+const PHASE_EXIT = { opacity: 0, scale: 1.008 };
 
 /**
  * The homepage hero's one animated sequence: URL field only, then — after Run scan —
@@ -88,18 +88,25 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
 
   const handleImageError = useCallback(() => setPreviewFailed(true), []);
 
+  const caption =
+    phase === "scan"
+      ? t("sequence.scanning")
+      : phase === "signals"
+        ? t("sequence.signals")
+        : phase === "intel"
+          ? t("sequence.intel")
+          : "";
+
   return (
     <div className={`hsw__diagram hsw__sequence ${className}`.trim()} aria-label={t("diagramAria")}>
-      {phase !== "idle" ? (
-        <p className="hsw__phase-caption" aria-live="polite">
-          {phase === "scan" && t("sequence.scanning")}
-          {phase === "signals" && t("sequence.signals")}
-          {phase === "intel" && t("sequence.intel")}
-          {phase === "mockup" && t("sequence.ready")}
-        </p>
-      ) : null}
-
-      <AnimatePresence mode="wait">
+      <div className="hsw__play">
+        <div className="hsw__play-caption">
+          <p className="hsw__phase-caption" data-on={caption ? "" : undefined} aria-live="polite">
+            {caption}
+          </p>
+        </div>
+        <div className="hsw__play-visual">
+      <AnimatePresence mode="popLayout">
         {phase === "idle" ? (
           <motion.div
             key="idle"
@@ -146,7 +153,7 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
             exit={PHASE_EXIT}
             transition={PHASE_TRANSITION}
           >
-            <SignalChips stagger />
+            <SignalChips stagger layout="rows" />
           </motion.div>
         ) : null}
 
@@ -185,6 +192,8 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
           </motion.div>
         ) : null}
       </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }

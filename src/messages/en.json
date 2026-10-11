@@ -542,8 +542,7 @@
       "sequence": {
         "scanning": "Reading the homepage you submitted.",
         "signals": "Checking it against ChatGPT, Google, Perplexity, competitors, analytics, workflows, and the CRM.",
-        "intel": "SailTru identifies what is missed, sees why the gap exists, and turns it into action.",
-        "ready": "The read lands on the page."
+        "intel": "SailTru identifies what is missed, sees why the gap exists, and turns it into action."
       },
       "signals": {
         "chatgpt": "ChatGPT",

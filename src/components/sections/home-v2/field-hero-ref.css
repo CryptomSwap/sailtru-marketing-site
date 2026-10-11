@@ -25,10 +25,21 @@
   filter: blur(2px);
 }
 
-.field-hero--ref .field-hero__bearing {
-  inset: -4% -8% -10% 18%;
-  opacity: 0.9;
-  animation: field-bearing 42s linear infinite;
+.field-hero--ref .field-hero__dots {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+  opacity: 0;
+}
+
+.field-hero--ref .field-hero__dots[data-ready] {
+  opacity: 1;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 94%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 94%);
 }
 
 .field-hero--ref .field-hero__inner {

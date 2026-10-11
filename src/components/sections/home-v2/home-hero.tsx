@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { SiteHeader } from "@/components/layout/site-header";
+import { HeroDotField } from "@/components/sections/home-v2/hero-dot-field";
 import { HeroScanSequence } from "@/components/sections/home-v2/hero-scan-sequence";
 import "@/components/sections/home-v2/home-v2.css";
 import "@/components/sections/home-v2/field-hero-ref.css";
@@ -25,37 +26,7 @@ export function HomeHero() {
       <div className="field-hero__wash" aria-hidden />
       <div className="field-hero__grain" aria-hidden />
       <div className="field-hero__radial" aria-hidden />
-      <svg className="field-hero__bearing" aria-hidden viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <linearGradient id="fieldBearingFadeRef" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(186, 230, 255, 0.34)" />
-            <stop offset="55%" stopColor="rgba(255,255,255,0.12)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.03)" />
-          </linearGradient>
-        </defs>
-        <g fill="none" stroke="url(#fieldBearingFadeRef)" strokeWidth="1">
-          <circle cx="980" cy="320" r="160" />
-          <circle cx="980" cy="320" r="250" />
-          <circle cx="980" cy="320" r="360" />
-          <circle cx="980" cy="320" r="480" strokeDasharray="2 11" />
-          <path d="M980 320 L1180 180" />
-          <path d="M980 320 L1220 360" />
-          <path d="M980 320 L1120 520" />
-          <path d="M980 320 L780 160" />
-          <path d="M620 120 H980" opacity="0.45" />
-          <path d="M700 700 H1180" opacity="0.35" />
-        </g>
-        <g fill="rgba(186, 230, 255, 0.55)">
-          <circle cx="980" cy="320" r="3" />
-          <circle cx="1180" cy="180" r="2.2" />
-          <circle cx="1220" cy="360" r="2.2" />
-          <circle cx="1120" cy="520" r="2.2" />
-          <circle cx="780" cy="160" r="2" />
-          <circle cx="700" cy="700" r="1.8" />
-          <circle cx="860" cy="240" r="1.5" />
-          <circle cx="1040" cy="440" r="1.5" />
-        </g>
-      </svg>
+      <HeroDotField />
 
       <div className="field-hero__inner">
         <SiteHeader />

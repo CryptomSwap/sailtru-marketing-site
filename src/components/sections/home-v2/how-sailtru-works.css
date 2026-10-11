@@ -154,19 +154,132 @@
   flex-direction: column;
   height: 100%;
   justify-content: center;
-  gap: 1.25rem;
+}
+
+.hsw__play {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.hsw__play-caption {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: min(100%, 34rem);
+  min-height: 4.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.hsw__play-caption:not(:has([data-on])) {
+  display: none;
+}
+
+.hsw__play-visual {
+  position: relative;
+  width: 100%;
+}
+
+.hsw__play-visual .hsw__scan-stage {
+  flex: none;
+  width: 100%;
+  min-height: 0;
 }
 
 .hsw__phase-caption {
-  margin: 0;
-  max-width: 36rem;
-  align-self: center;
+  margin: 0 0 0.55rem;
+  max-width: 22rem;
   text-align: center;
-  font-family: var(--font-sans), var(--font-sans-he), "Outfit", "Heebo", system-ui, sans-serif;
-  font-size: 1.05rem;
-  line-height: 1.45;
-  letter-spacing: -0.01em;
-  color: rgba(244, 248, 255, 0.92);
+  font-family: var(--font-serif), "Fraunces", "Iowan Old Style", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.2rem, 1.7vw, 1.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  background-image: linear-gradient(
+    105deg,
+    rgba(244, 248, 255, 0.62) 0%,
+    rgba(244, 248, 255, 0.62) 42%,
+    #ffffff 49%,
+    #7ee7ff 52%,
+    rgba(244, 248, 255, 0.62) 60%,
+    rgba(244, 248, 255, 0.62) 100%
+  );
+  background-size: 240% 100%;
+  background-position: 120% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hsw-caption-shimmer 2.2s ease-in-out infinite;
+  transition: opacity 0.35s ease;
+}
+
+.hsw__phase-caption:not([data-on]) {
+  opacity: 0;
+}
+
+@keyframes hsw-caption-shimmer {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -140% 0;
+  }
+}
+
+.hsw__sequence .hsw__band {
+  display: none;
+}
+
+.hsw__sequence .hsw__signals,
+.hsw__sequence .hsw-intel {
+  margin-bottom: 0;
+}
+
+.hsw__signal-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(100%, 34rem);
+  gap: 0.55rem;
+}
+
+.hsw__signal-rows .hsw__signals {
+  display: grid;
+  width: 100%;
+  margin: 0;
+  gap: 0.5rem;
+}
+
+.hsw__signal-rows .hsw__signals:first-child {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hsw__signal-rows .hsw__signals:last-child {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.hsw__signal-rows .hsw-chip {
+  justify-content: center;
+  width: 100%;
+  min-height: 2.4rem;
+  border-radius: 999px;
+  padding: 0.4rem 0.7rem;
+}
+
+@media (max-width: 719px) {
+  .hsw__signal-rows .hsw__signals:first-child,
+  .hsw__signal-rows .hsw__signals:last-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hsw__signal-rows .hsw__signals:first-child li:last-child {
+    grid-column: 1 / -1;
+    width: min(100%, 12rem);
+    justify-self: center;
+  }
 }
 
 .hsw__diagram--board .hsw-intel {
@@ -305,6 +418,10 @@
   .hsw__signals {
     flex-wrap: nowrap;
     gap: 0.5rem;
+  }
+
+  .hsw__signal-rows .hsw__signals {
+    flex-wrap: nowrap;
   }
 
   .hsw-chip {
@@ -1202,6 +1319,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hsw__phase-caption {
+    animation: none;
+    background: none;
+    color: rgba(244, 248, 255, 0.92);
+  }
+
   .hsw-wires__flow,
   .hsw-wires__pulse,
   .hsw-chip,
@@ -1219,6 +1342,7 @@
   }
 }
 
-[dir="rtl"] .hsw__title {
+[dir="rtl"] .hsw__title,
+[dir="rtl"] .hsw__phase-caption {
   font-family: var(--font-serif-he), var(--font-serif), "Frank Ruhl Libre", serif;
 }
