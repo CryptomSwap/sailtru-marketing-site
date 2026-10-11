@@ -3,8 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { SiteHeader } from "@/components/layout/site-header";
-import { HeroUrlScan } from "@/components/sections/hero-url-scan";
-import { HowSailtruWorksDiagram } from "@/components/sections/home-v2/how-sailtru-works-section";
+import { HeroScanSequence } from "@/components/sections/home-v2/hero-scan-sequence";
 import "@/components/sections/home-v2/home-v2.css";
 import "@/components/sections/home-v2/field-hero-ref.css";
 import "@/components/sections/home-v2/how-sailtru-works.css";
@@ -75,7 +74,6 @@ export function HomeHero() {
             <p className="field-lede field-lede--ref">{t("subtitle")}</p>
 
             <div className="field-scan field-scan--ref">
-              <HeroUrlScan />
               <Link href="/how-we-work" className="field-scan__secondary field-scan__secondary--ref">
                 <span className="field-scan__play" aria-hidden>
                   <svg viewBox="0 0 20 20" width="12" height="12">
@@ -87,7 +85,7 @@ export function HomeHero() {
             </div>
           </div>
 
-          <HowSailtruWorksDiagram className="hsw__diagram--hero" />
+          <HeroScanSequence className="hsw__diagram--hero" />
         </div>
       </div>
     </section>

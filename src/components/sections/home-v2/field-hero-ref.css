@@ -51,18 +51,21 @@
 }
 
 .field-hero--ref .site-header__cta {
-  padding: 0.68rem 1.15rem;
-  border-radius: 0.45rem;
-  background: linear-gradient(180deg, #f7fbff 0%, #e8f1ff 100%);
-  color: #0b1632;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.35),
-    0 0 24px rgba(126, 231, 255, 0.28),
-    0 10px 28px rgba(8, 20, 70, 0.28);
+  padding: 0.2rem 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(236, 246, 255, 0.86);
+  font-weight: 500;
+  box-shadow: none;
 }
 
 .field-hero--ref .site-header__cta::after {
-  content: " →";
+  content: none;
+}
+
+.field-hero--ref .site-header__cta:hover {
+  background: transparent;
+  color: #fff;
 }
 
 .field-stage--ref {
@@ -83,10 +86,10 @@
 
 .field-eyebrow {
   margin: 0 0 1.15rem;
-  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-sans), var(--font-sans-he), "Outfit", "Heebo", system-ui, sans-serif;
   font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
+  font-weight: 600;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--hero-cyan-soft);
   animation: field-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -155,7 +158,7 @@
   max-width: none;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
   border: 1px solid rgba(220, 240, 255, 0.38);
-  border-radius: 0.55rem;
+  border-radius: 999px;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.28),
     0 16px 36px rgba(8, 20, 70, 0.28);
@@ -202,14 +205,15 @@
   margin: 0.2rem;
   padding: 0.7rem 1.15rem;
   border: 0;
-  border-radius: 0.45rem;
+  border-radius: 999px;
   border-inline-start: 0;
-  background: linear-gradient(135deg, #5b8cff 0%, #3d6bff 42%, #6a5cff 100%);
-  color: #fff;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
-    0 0 22px rgba(110, 160, 255, 0.35),
-    0 10px 24px rgba(8, 20, 70, 0.28);
+  background: #fff;
+  color: #12182a;
+  font-family: var(--font-sans), var(--font-sans-he), "Outfit", "Heebo", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  box-shadow: 0 10px 28px rgba(8, 20, 70, 0.28);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   --mx: 50%;
   --my: 50%;
 }
@@ -254,7 +258,10 @@
 
 .field-scan--ref .hero-url-scan__button:hover,
 .field-scan--ref .hero-cta--primary:hover {
-  background: linear-gradient(135deg, #5b8cff 0%, #3d6bff 42%, #6a5cff 100%);
+  background: #fff;
+  color: #12182a;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(8, 20, 70, 0.34);
 }
 
 .field-scan--ref .hero-url-scan__button--bloom-live:hover {

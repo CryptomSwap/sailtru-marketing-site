@@ -4,10 +4,10 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import {
   frankRuhlLibre,
+  fraunces,
   heebo,
-  instrumentSerif,
+  outfit,
   plexMono,
-  plexSans,
 } from "@/lib/fonts";
 import { CodeWaveBackground } from "@/components/ui/code-wave-background";
 import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
@@ -79,7 +79,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     <html
       lang={locale}
       dir={isRtl ? "rtl" : "ltr"}
-      className={`${plexSans.variable} ${heebo.variable} ${plexMono.variable} ${instrumentSerif.variable} ${frankRuhlLibre.variable}`}
+      className={`${outfit.variable} ${heebo.variable} ${plexMono.variable} ${fraunces.variable} ${frankRuhlLibre.variable}`}
     >
       <body className={`font-sans antialiased ${isRtl ? "locale-he" : "locale-en"}`}>
         <CodeWaveBackground />

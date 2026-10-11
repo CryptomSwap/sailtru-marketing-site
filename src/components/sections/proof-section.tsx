@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Enter } from "@/components/ui/enter";
 
 export function ProofSection() {
   const t = useTranslations("proof");
@@ -26,10 +27,12 @@ export function ProofSection() {
           </ul>
         ) : null}
 
-        <blockquote className="hb-proof__quote">
-          <p className="hb-proof__quote-text">&ldquo;{t("quote")}&rdquo;</p>
-          <cite className="hb-proof__quote-attrib">{t("attribution")}</cite>
-        </blockquote>
+        <Enter delay={0.12}>
+          <blockquote className="hb-proof__quote">
+            <p className="hb-proof__quote-text">&ldquo;{t("quote")}&rdquo;</p>
+            <cite className="hb-proof__quote-attrib">{t("attribution")}</cite>
+          </blockquote>
+        </Enter>
 
         {logos.length > 0 ? (
           <ul className="hb-proof__logos">

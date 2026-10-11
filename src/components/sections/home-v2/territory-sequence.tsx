@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Enter } from "@/components/ui/enter";
 
 const KEYS = ["found", "ahead", "automate", "build"] as const;
 
@@ -10,16 +11,20 @@ export function TerritorySequence() {
   return (
     <section id="territories" className="hb-section hb-territories">
       <div className="hb-shell">
-        <header className="hb-intro">
-          <p className="hb-eyebrow">Territories</p>
-          <h2 className="hb-heading">{t("title")}</h2>
-          <p className="hb-lede">{t("lede")}</p>
-        </header>
+        <Enter>
+          <header className="hb-intro">
+            <p className="hb-eyebrow">Territories</p>
+            <h2 className="hb-heading">{t("title")}</h2>
+            <p className="hb-lede">{t("lede")}</p>
+          </header>
+        </Enter>
 
         <ol className="hb-territories__list">
           {KEYS.map((key, index) => (
-            <li
+            <Enter
+              as="li"
               key={key}
+              delay={index * 0.08}
               className={`hb-territories__item hb-territories__item--${key}`}
             >
               <span className="hb-territories__num" aria-hidden>
@@ -30,7 +35,7 @@ export function TerritorySequence() {
                 <h3 className="hb-territories__title">{t(`${key}.title`)}</h3>
                 <p className="hb-territories__body">{t(`${key}.body`)}</p>
               </div>
-            </li>
+            </Enter>
           ))}
         </ol>
       </div>

@@ -142,11 +142,35 @@ function CardIcon({ id }: { id: string }) {
   }
 }
 
-export function HeroAnalysisStage() {
+export type HeroAnalysisVisualProps = {
+  imageSrc: string;
+  /** Hostname shown in the fake browser chrome bar; falls back to the translated default. */
+  chromeUrl?: string;
+  scanActive: boolean;
+  websiteVisible: boolean;
+  websiteSettled: boolean;
+  scanComplete: boolean;
+  /** "all" reveals every finding card at once; a set reveals only those ids. */
+  visibleCardIds: Set<string> | "all";
+  onImageError?: () => void;
+};
+
+/**
+ * Presentational device mockup — the website canvas, scan beam, and finding cards.
+ * Driven by props so both the looping example below the fold and the hero's
+ * one-shot scan sequence can reuse the exact same visual.
+ */
+export function HeroAnalysisVisual({
+  imageSrc,
+  chromeUrl,
+  scanActive,
+  websiteVisible,
+  websiteSettled,
+  scanComplete,
+  visibleCardIds,
+  onImageError
+}: HeroAnalysisVisualProps) {
   const t = useTranslations("diagnostics");
-  const tPreview = useTranslations("preview");
-  const sequence = useDiagnosticSequence();
-  const reduceMotion = useReducedMotion();
   const sceneRef = useRef<HTMLElement>(null);
   const [cursorTilt, setCursorTilt] = useState({ x: 0, y: 0 });
 
@@ -164,8 +188,7 @@ export function HeroAnalysisStage() {
     return ordered.slice(0, 5);
   }, [t]);
 
-  const imageSrc =
-    tPreview("mode") === "mock" ? "/images/hero-panel-northline.jpg" : tPreview("primary");
+  const reduceMotion = useReducedMotion();
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
@@ -189,10 +212,8 @@ export function HeroAnalysisStage() {
   const cameraRotateX = BASE_ROTATE_X + cursorTilt.x;
   const cameraRotateY = BASE_ROTATE_Y + cursorTilt.y;
 
-  const scanActive = sequence.scanActive && !reduceMotion;
-  const visibleCardIds = reduceMotion
-    ? new Set(cards.map((card) => card.id))
-    : new Set(sequence.visibleCards);
+  const resolvedCardIds =
+    visibleCardIds === "all" ? new Set(cards.map((card) => card.id)) : visibleCardIds;
 
   return (
     <aside
@@ -220,14 +241,14 @@ export function HeroAnalysisStage() {
           <div className="hero-analysis__depth hero-analysis__depth--mid" aria-hidden />
 
           <div
-            className={`hero-analysis__device ${sequence.websiteVisible ? "hero-analysis__device--visible" : ""}`}
+            className={`hero-analysis__device ${websiteVisible ? "hero-analysis__device--visible" : ""}`}
           >
             <div className="hero-analysis__rim" aria-hidden />
             <div className="hero-analysis__rim hero-analysis__rim--inner" aria-hidden />
 
             <div
               className={`hero-analysis__canvas ${scanActive ? "hero-analysis__canvas--scanning" : ""} ${
-                sequence.websiteSettled || sequence.sequenceComplete ? "hero-analysis__canvas--settled" : ""
+                websiteSettled ? "hero-analysis__canvas--settled" : ""
               }`}
             >
               <div className="hero-analysis__glass" aria-hidden />
@@ -235,7 +256,7 @@ export function HeroAnalysisStage() {
                 <span className="hero-analysis__dot" />
                 <span className="hero-analysis__dot" />
                 <span className="hero-analysis__dot" />
-                <span className="hero-analysis__chrome-url">{t("chromeUrl")}</span>
+                <span className="hero-analysis__chrome-url">{chromeUrl ?? t("chromeUrl")}</span>
               </div>
               <div className="hero-analysis__viewport">
                 <Image
@@ -246,12 +267,14 @@ export function HeroAnalysisStage() {
                   quality={90}
                   sizes="(max-width: 900px) 92vw, 58vw"
                   className="hero-analysis__image"
+                  onError={onImageError}
+                  unoptimized={imageSrc.startsWith("/api/")}
                 />
                 <div className="hero-analysis__reticle" aria-hidden />
                 <div className="hero-analysis__vignette" aria-hidden />
 
                 <div
-                  className={`hero-analysis__scan ${sequence.scanComplete ? "hero-analysis__scan--settled" : ""}`}
+                  className={`hero-analysis__scan ${scanComplete ? "hero-analysis__scan--settled" : ""}`}
                   aria-hidden
                 >
                   <div className="hero-analysis__scan-grid" />
@@ -277,7 +300,7 @@ export function HeroAnalysisStage() {
           <ul className="hero-analysis__findings">
             {cards.map((card, index) => {
               const layout = FINDING_LAYOUT[card.id] ?? FINDING_LAYOUT.visibility;
-              const isVisible = visibleCardIds.has(card.id);
+              const isVisible = resolvedCardIds.has(card.id);
               return (
                 <li
                   key={card.id}
@@ -318,5 +341,29 @@ export function HeroAnalysisStage() {
         </div>
       </div>
     </aside>
+  );
+}
+
+/**
+ * Looping illustrative example used below the hero's own real sequence —
+ * always the Northline sample, captioned as an example, not a scan of the visitor's site.
+ */
+export function HeroAnalysisStage() {
+  const tPreview = useTranslations("preview");
+  const sequence = useDiagnosticSequence();
+  const reduceMotion = useReducedMotion() ?? false;
+
+  const imageSrc =
+    tPreview("mode") === "mock" ? "/images/hero-panel-northline.jpg" : tPreview("primary");
+
+  return (
+    <HeroAnalysisVisual
+      imageSrc={imageSrc}
+      scanActive={sequence.scanActive && !reduceMotion}
+      websiteVisible={sequence.websiteVisible}
+      websiteSettled={sequence.websiteSettled || sequence.sequenceComplete}
+      scanComplete={sequence.scanComplete}
+      visibleCardIds={reduceMotion ? "all" : new Set(sequence.visibleCards)}
+    />
   );
 }

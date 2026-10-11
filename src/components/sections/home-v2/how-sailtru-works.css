@@ -149,6 +149,49 @@
   width: 100%;
 }
 
+.hsw__sequence {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.hsw__phase-caption {
+  margin: 0;
+  max-width: 36rem;
+  align-self: center;
+  text-align: center;
+  font-family: var(--font-sans), var(--font-sans-he), "Outfit", "Heebo", system-ui, sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: rgba(244, 248, 255, 0.92);
+}
+
+.hsw__diagram--board .hsw-intel {
+  margin-bottom: 1.6rem;
+}
+
+.hsw__diagram--board .hsw__signals {
+  margin-bottom: 1.6rem;
+}
+
+.hsw__scan-stage {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hsw__scan-stage--idle .hero-url-scan {
+  width: min(100%, 30rem);
+}
+
 .hsw__stage {
   position: relative;
   z-index: 2;
@@ -238,9 +281,24 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.65rem;
-  margin: 0 0 5.75rem;
+  margin: 0 0 2.4rem;
   padding: 0;
   list-style: none;
+}
+
+.hsw__scan {
+  position: relative;
+  z-index: 4;
+  width: min(100%, 34rem);
+  margin: 0 auto 2.6rem;
+}
+
+.hsw__scan.field-scan--ref {
+  margin-top: 0;
+}
+
+.hsw__scan .hero-url-scan {
+  background: linear-gradient(180deg, rgba(16, 42, 120, 0.88), rgba(10, 28, 88, 0.92));
 }
 
 @media (min-width: 1100px) {

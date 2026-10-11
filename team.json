@@ -1,0 +1,6 @@
+{
+  "verify": [
+    ["npm", "exec", "tsc", "--", "--noEmit"],
+    ["npm", "run", "build"]
+  ]
+}

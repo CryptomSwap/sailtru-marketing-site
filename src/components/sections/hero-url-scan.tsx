@@ -5,7 +5,12 @@ import { useCallback, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useDiagnosticScanContext } from "@/components/diagnostics/diagnostic-scan-context";
 
-export function HeroUrlScan() {
+type HeroUrlScanProps = {
+  /** When provided, drives this submit instead of the shared diagnostic scan context. */
+  onRunScan?: (url: string) => void;
+};
+
+export function HeroUrlScan({ onRunScan }: HeroUrlScanProps = {}) {
   const t = useTranslations("hero.urlScan");
   const scanContext = useDiagnosticScanContext();
   const reduceMotion = useReducedMotion() ?? false;
@@ -26,7 +31,11 @@ export function HeroUrlScan() {
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    scanContext?.runScan(url);
+    if (onRunScan) {
+      onRunScan(url);
+    } else {
+      scanContext?.runScan(url);
+    }
   }
 
   return (
