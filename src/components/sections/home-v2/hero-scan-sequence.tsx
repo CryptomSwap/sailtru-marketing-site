@@ -104,7 +104,9 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
             exit={{ opacity: 0 }}
             transition={PHASE_TRANSITION}
           >
-            <HeroUrlScan onRunScan={runScan} />
+            <div className="field-scan field-scan--ref">
+              <HeroUrlScan onRunScan={runScan} />
+            </div>
           </motion.div>
         ) : null}
 
