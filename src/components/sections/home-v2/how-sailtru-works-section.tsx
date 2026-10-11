@@ -485,7 +485,6 @@ export function HowSailtruWorksSection() {
         </div>
 
         <div className="hsw__stage">
-          <p className="hsw__example">{t("exampleCaption")}</p>
           <HeroAnalysisStage />
         </div>
       </div>
