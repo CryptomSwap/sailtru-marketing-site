@@ -150,6 +150,40 @@
   width: min(100%, 30rem);
 }
 
+.field-book {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.35rem;
+  padding: 0.75rem 1.35rem;
+  border-radius: 0.45rem;
+  background: linear-gradient(135deg, #5b8cff 0%, #3d6bff 42%, #6a5cff 100%);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 560;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+    0 0 22px rgba(110, 160, 255, 0.35),
+    0 10px 24px rgba(8, 20, 70, 0.28);
+}
+
+.field-book:hover {
+  color: #fff;
+}
+
+.field-book:focus-visible {
+  outline: 2px solid rgba(126, 231, 255, 0.9);
+  outline-offset: 3px;
+}
+
+.field-receipt {
+  margin: 0.15rem 0 0;
+  max-width: 28rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(236, 246, 255, 0.78);
+}
+
 .field-scan--ref .hero-url-scan {
   width: 100%;
   max-width: none;

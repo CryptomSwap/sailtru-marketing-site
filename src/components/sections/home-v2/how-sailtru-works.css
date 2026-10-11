@@ -131,6 +131,15 @@
   color: var(--hsw-mute);
 }
 
+.hsw__example {
+  margin: 0 0 0.85rem;
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(200, 230, 255, 0.78);
+}
+
 .hsw__diagram {
   position: relative;
   min-width: 0;

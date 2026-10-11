@@ -19,7 +19,7 @@
     "approach": "Approach",
     "proof": "Work",
     "about": "How we work",
-    "beginDiagnosis": "Begin diagnosis",
+    "beginDiagnosis": "Book a call",
     "work": "Work",
     "contact": "Contact"
   },
@@ -32,6 +32,8 @@
     "headlineLineD": "Then build the fix.",
     "subtitle": "SailTru is an AI-native growth and automation company. We help businesses improve discovery, compete intelligently, and automate work that slows them down.",
     "methodology": "How we work",
+    "bookCall": "Book a call",
+    "receipt": "We look at your site and draft what we would change. A person reviews it before you are told anything is true.",
     "urlScan": {
       "label": "Website URL",
       "placeholder": "yourcompany.com",
@@ -170,7 +172,7 @@
     "index": "08",
     "kicker": "Next step",
     "title": "Ready to find where opportunity is hiding?",
-    "body": "Book time with the team or email us. Share your website and what you want to improve.",
+    "body": "Book a call or email us. We draft what we would change, and a person reviews it before you are told anything is true.",
     "button": "Book a call",
     "note": "team@sailtru.com · Calendly available",
     "calendlyUrl": "https://calendly.com/sailtrue",
@@ -342,7 +344,7 @@
         "id": "trust",
         "eyebrow": "TRUST.SIG",
         "title": "Credibility below benchmark",
-        "body": "−34% vs category median",
+        "body": "Credibility signals sit below what buyers in the category usually see.",
         "severity": "high"
       },
       {
@@ -356,28 +358,28 @@
         "id": "visibility",
         "eyebrow": "AI VISIBILITY",
         "title": "Discovery signal incomplete",
-        "body": "Schema coverage ≈ 41%",
+        "body": "Answer engines have little to cite.",
         "severity": "medium"
       },
       {
         "id": "lcp",
         "eyebrow": "PERFORMANCE",
         "title": "Largest contentful paint slow",
-        "body": "3.8s · target < 2.5s",
+        "body": "The main content is slow to appear.",
         "severity": "high"
       },
       {
         "id": "ttfb",
         "eyebrow": "SPEED",
         "title": "Server response delayed",
-        "body": "TTFB 846ms · p75 628ms",
+        "body": "The server is slow to answer.",
         "severity": "medium"
       },
       {
         "id": "assets",
         "eyebrow": "TECHNICAL",
         "title": "Render-blocking payload",
-        "body": "1.2MB JS · 4 blocking scripts",
+        "body": "Scripts delay the first paint.",
         "severity": "medium"
       }
     ]
@@ -430,11 +432,11 @@
     "index": "01",
     "kicker": "Contact",
     "title": "Let's find the gap worth fixing.",
-    "intro": "Share your website and what you want to improve. We'll return a focused direction and practical next steps.",
+    "intro": "Share your website. We draft what we would change. A person reviews that draft before you are told anything is true.",
     "steps": [
-      "Share your website and business context",
-      "We run an initial diagnostic read",
-      "You get a scoped recommendation and next step"
+      "Share your website and what you want to improve",
+      "We draft the changes",
+      "A person reviews the draft before you are told anything is true"
     ],
     "calendlyCta": "Book on Calendly"
   },
@@ -461,7 +463,7 @@
       "defaultHost": "yourcompany.com",
       "status": "Signals found",
       "summary": "Where opportunity leaks before the fix is built.",
-      "note": "Illustrative readout. Your scan uses your site, not this sample.",
+      "note": "Example only. This is not a scan of your site.",
       "trust": {
         "label": "Trust",
         "body": "Credibility signals sit below category norms.",
@@ -535,6 +537,7 @@
       "headlineB": "Understand the gap.",
       "headlineC": "Build the improvement.",
       "lede": "Businesses lose opportunity in more places than they realize — in how they’re discovered, how they compete, and how they operate. SailTru helps identify those gaps and implement the improvements that matter.",
+      "exampleCaption": "Example of a draft. Not a scan of your site.",
       "diagramAria": "SailTru system flow from input signals through intelligence to outcomes",
       "inputsLabel": "Input signals",
       "intelLabel": "SailTru intelligence layer",
