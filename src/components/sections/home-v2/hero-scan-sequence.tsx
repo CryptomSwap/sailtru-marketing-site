@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HeroUrlScan } from "@/components/sections/hero-url-scan";
 import { HeroAnalysisVisual } from "@/components/sections/home-v2/hero-analysis-stage";
 import { IntelPanel, SignalChips } from "@/components/sections/home-v2/how-sailtru-works-section";
+import { useRouter } from "@/i18n/navigation";
 import { isPublicHttpsUrl, normalizeToHttpsUrl } from "@/lib/url-safety";
 import "@/components/sections/home-v2/how-sailtru-works.css";
 
@@ -31,6 +32,7 @@ const PHASE_EXIT = { opacity: 0, scale: 1.008 };
  */
 export function HeroScanSequence({ className = "" }: { className?: string }) {
   const t = useTranslations("homeV2.howItWorks");
+  const router = useRouter();
   const reduceMotion = useReducedMotion() ?? false;
   const [phase, setPhase] = useState<Phase>("idle");
   const [submittedUrl, setSubmittedUrl] = useState("");
@@ -52,8 +54,13 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
       setSubmittedUrl(url);
       setPreviewFailed(false);
 
+      const nextHost = normalizeToHttpsUrl(url)?.hostname;
+      const goLogin = () => {
+        router.push(nextHost ? { pathname: "/login", query: { host: nextHost } } : "/login");
+      };
+
       if (reduceMotion) {
-        setPhase("mockup");
+        goLogin();
         return;
       }
 
@@ -65,10 +72,10 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
       timersRef.current.push(
         setTimeout(() => setPhase("signals"), afterScan),
         setTimeout(() => setPhase("intel"), afterSignals),
-        setTimeout(() => setPhase("mockup"), afterIntel)
+        setTimeout(goLogin, afterIntel)
       );
     },
-    [reduceMotion]
+    [reduceMotion, router]
   );
 
   const target = useMemo(() => normalizeToHttpsUrl(submittedUrl), [submittedUrl]);

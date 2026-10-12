@@ -13,7 +13,7 @@ export function TerritorySequence() {
       <div className="hb-shell">
         <Enter>
           <header className="hb-intro">
-            <p className="hb-eyebrow">Territories</p>
+            <p className="hb-eyebrow">{t("eyebrow")}</p>
             <h2 className="hb-heading">{t("title")}</h2>
             <p className="hb-lede">{t("lede")}</p>
           </header>

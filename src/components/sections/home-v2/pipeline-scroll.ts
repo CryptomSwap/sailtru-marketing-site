@@ -87,7 +87,12 @@ export function mountPipeline(root: HTMLElement) {
       tl.fromTo(path, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none", immediateRender: false }, "optimize+=1.2");
     }
     if (cta) {
-      tl.fromTo(cta, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "none", immediateRender: false }, "optimize+=0.55");
+      tl.fromTo(
+        cta,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: 0.8, ease: "none", immediateRender: false },
+        "optimize+=0.55"
+      );
     }
 
     const marks = [0, 1.2, 2.15, 3.4];
