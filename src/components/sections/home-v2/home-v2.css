@@ -5,6 +5,17 @@
   --font-sans: var(--font-sans-he);
   --font-mono: var(--font-sans-he);
   font-family: var(--font-sans-he), "Heebo", system-ui, sans-serif;
+  background: linear-gradient(
+    180deg,
+    #4f78ff 0%,
+    #3d6cff 14%,
+    #2c58ee 28%,
+    #1d46c8 42%,
+    #143690 56%,
+    #0d2468 70%,
+    #081640 84%,
+    #040c22 100%
+  );
 }
 
 /* Continuous cobalt atmosphere across hero + how-it-works (no hard section seam) */
@@ -12,7 +23,7 @@
   position: relative;
   isolation: isolate;
   overflow: clip;
-  background: #1e3fd4;
+  background: transparent;
   color: #f4f6ff;
 }
 
@@ -25,15 +36,13 @@
     radial-gradient(ellipse 48% 26% at 72% 14%, rgba(110, 190, 255, 0.36), transparent 62%),
     radial-gradient(ellipse 42% 22% at 78% 48%, rgba(150, 210, 255, 0.22), transparent 64%),
     radial-gradient(ellipse 46% 24% at 18% 62%, rgba(90, 150, 255, 0.16), transparent 68%),
-    radial-gradient(ellipse 40% 28% at 10% 92%, rgba(6, 18, 70, 0.52), transparent 68%),
-    linear-gradient(
-      168deg,
-      #4f78ff 0%,
-      #2f5bff 18%,
-      #2146e2 42%,
-      #1a3ad0 68%,
-      #1632b8 100%
-    );
+    radial-gradient(ellipse 40% 28% at 10% 92%, rgba(6, 18, 70, 0.28), transparent 68%);
+}
+
+.home-cobalt-field__wash,
+.home-cobalt-field__grain {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 100%);
 }
 
 .home-cobalt-field__grain {
@@ -43,6 +52,8 @@
   pointer-events: none;
   opacity: 0.2;
   mix-blend-mode: soft-light;
+  background-repeat: repeat;
+  background-size: 180px 180px;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
 }
 
@@ -751,32 +762,19 @@
 
 /* Below-fold: cool off-white editorial band (SailTru design language) */
 .home-below {
-  --hb-bg: #f4f6fb;
-  --hb-panel: #ffffff;
-  --hb-ink: #0b1632;
-  --hb-mute: #4a5878;
-  --hb-line: rgba(11, 22, 50, 0.12);
-  --hb-accent: #2f5bff;
-  --hb-accent-soft: rgba(47, 91, 255, 0.1);
+  --hb-bg: transparent;
+  --hb-panel: rgba(6, 14, 36, 0.42);
+  --hb-ink: #f4f8ff;
+  --hb-mute: rgba(214, 226, 255, 0.74);
+  --hb-line: rgba(186, 220, 255, 0.16);
+  --hb-accent: #7ee7ff;
+  --hb-accent-soft: rgba(126, 231, 255, 0.12);
   position: relative;
   z-index: 1;
   margin-top: -2.75rem;
   padding-top: 2.75rem;
-  background: var(--hb-bg);
+  background: transparent;
   color: var(--hb-ink);
-}
-
-.home-below::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 6.5rem;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(30, 63, 212, 0.16) 0%,
-    rgba(244, 246, 251, 0) 100%
-  );
 }
 
 .hb-shell {
@@ -1100,7 +1098,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(11, 22, 50, 0.45);
+  color: rgba(214, 226, 255, 0.5);
 }
 
 /* Final CTA */
@@ -1110,14 +1108,14 @@
 
 .hb-close__panel {
   padding: clamp(2rem, 4vw, 2.75rem);
-  border: 1px solid rgba(47, 91, 255, 0.16);
+  border: 1px solid rgba(126, 231, 255, 0.22);
   border-radius: 1rem;
   background:
-    radial-gradient(ellipse 70% 80% at 100% 0%, rgba(47, 91, 255, 0.08), transparent 55%),
+    radial-gradient(ellipse 70% 80% at 100% 0%, rgba(126, 231, 255, 0.1), transparent 55%),
     var(--hb-panel);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 18px 40px rgba(11, 22, 50, 0.06);
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 18px 40px rgba(2, 6, 16, 0.28);
 }
 
 .hb-close__title {
@@ -1154,8 +1152,8 @@
   min-height: 3.15rem;
   padding: 0.85rem 1.45rem;
   border-radius: 999px;
-  background: #12182a;
-  color: #fff;
+  background: #fff;
+  color: #07122f;
   font-family: var(--font-sans), var(--font-sans-he), "Outfit", system-ui, sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
@@ -1180,7 +1178,7 @@
   font-weight: 500;
   color: var(--hb-ink);
   text-decoration: none;
-  border-bottom: 1px solid rgba(11, 22, 50, 0.22);
+  border-bottom: 1px solid rgba(244, 248, 255, 0.28);
 }
 
 .hb-close__email:hover {
