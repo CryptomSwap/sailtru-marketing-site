@@ -27,8 +27,8 @@ export default async function HomePage({ params }: PageProps) {
     <main id="main-content" className="site-home relative z-10 w-full min-w-0 pb-14">
       <HomeScanSurface>
         <HomeHero />
-        <HowSailtruWorksSection />
       </HomeScanSurface>
+      <HowSailtruWorksSection />
 
       <div className="home-below">
         <OpportunitySplit />

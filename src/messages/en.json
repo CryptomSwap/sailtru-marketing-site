@@ -584,6 +584,90 @@
           "title": "Build",
           "body": "Custom AI agents, tools, integrations, and software."
         }
+      },
+      "engine": {
+        "headlineD": "Keep getting better.",
+        "bodyA": "Your business leaves signals across search, AI platforms, competitors, and everyday operations. We bring those signals together to uncover what you might be missing.",
+        "bodyB": "Scattered information becomes a clearer picture of where your business can improve — and which opportunities deserve attention first.",
+        "bodyC": "Insights become practical improvements across visibility, positioning, automation, and custom technology.",
+        "bodyD": "Each improvement creates new information. Track what changes, learn what works, and identify the next opportunity.",
+        "cta": "See what your business is missing.",
+        "status": {
+          "a": {
+            "kicker": "Collecting signals",
+            "body": "Discovering information across your digital presence."
+          },
+          "b": {
+            "kicker": "Analyzing opportunities",
+            "body": "Connecting signals and identifying gaps."
+          },
+          "c": {
+            "kicker": "Preparing solutions",
+            "body": "Turning findings into an actionable plan."
+          },
+          "d": {
+            "kicker": "From insight to impact",
+            "body": "Intelligence becomes practical improvements."
+          }
+        },
+        "outputs": {
+          "agents": {
+            "title": "AI Agents",
+            "body": "Intelligent automation"
+          },
+          "report": {
+            "title": "Intelligence Report",
+            "body": "Actionable findings"
+          },
+          "implement": {
+            "title": "Implement",
+            "body": "Practical improvements"
+          }
+        },
+        "deliver": {
+          "running": "Running",
+          "progress": "In progress",
+          "agents": {
+            "research": { "title": "Research Agent", "body": "Scans the market" },
+            "insight": { "title": "Insight Agent", "body": "Finds the gap" },
+            "strategy": { "title": "Strategy Agent", "body": "Ranks the moves" },
+            "implementation": { "title": "Implementation Agent", "body": "Ships the fix" }
+          },
+          "tabs": {
+            "summary": "Executive Summary",
+            "findings": "Findings",
+            "opportunities": "Opportunities",
+            "steps": "Next Steps"
+          },
+          "findingKicker": "Key finding",
+          "findingTitle": "Conversion drop on mobile checkout flow",
+          "findingStat": "-32% vs. industry avg.",
+          "recoKicker": "Recommendation",
+          "recoBody": "Shorten the mobile checkout and test a single-screen payment step.",
+          "checkout": "Website Checkout",
+          "before": "Before",
+          "after": "After",
+          "tasks": {
+            "design": "Design and build update",
+            "test": "Run A/B test",
+            "deploy": "Deploy to production",
+            "monitor": "Monitor results"
+          }
+        },
+        "illustrative": "Illustrative",
+        "you": "You",
+        "field": "Category",
+        "visibilityTitle": "AI and search visibility",
+        "gapTitle": "Competitive position",
+        "gapBody": "Where competitors show up and you do not.",
+        "opportunityTitle": "First opportunity",
+        "opportunityBody": "Be visible in AI answers for the category you already sell.",
+        "cycle": {
+          "baseline": "Baseline",
+          "implemented": "Improvement",
+          "observation": "Observation",
+          "next": "Next opportunity"
+        }
       }
     }
   },

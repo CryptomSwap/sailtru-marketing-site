@@ -1,0 +1,492 @@
+/* Intelligence engine scene. Scoped so hero diagram styles stay untouched. */
+
+.intel-stage {
+  position: relative;
+  direction: ltr;
+  aspect-ratio: 1000 / 1080;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  isolation: isolate;
+}
+
+.intel-paths {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.intel-path__base,
+.intel-path__draw,
+.intel-path__pulse {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.intel-path__base {
+  stroke: rgba(186, 230, 255, 0.28);
+  stroke-width: 1.25;
+}
+
+.intel-path__draw {
+  stroke: #e7fbff;
+  stroke-width: 1.6;
+}
+
+.intel-path__pulse {
+  stroke: #7ee7ff;
+  stroke-width: 2.25;
+}
+
+.intel-path--minor .intel-path__base {
+  stroke: rgba(186, 230, 255, 0.16);
+}
+
+.intel-path--minor .intel-path__draw {
+  stroke: rgba(214, 244, 255, 0.72);
+  stroke-width: 1.15;
+}
+
+.intel-source,
+.intel-out,
+.intel-core,
+.intel-insight,
+.intel-opportunity,
+.intel-cycle {
+  position: absolute;
+  z-index: 2;
+}
+
+.intel-source,
+.intel-out,
+.intel-opportunity {
+  transform: translate(-50%, -50%);
+}
+
+.intel-source {
+  width: 11.5%;
+}
+
+.intel-source [data-source] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.4rem 0.3rem 0.45rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(220, 240, 255, 0.28);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(10, 24, 70, 0.42));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 10px 24px rgba(4, 10, 30, 0.22);
+  text-align: center;
+}
+
+.intel-source img {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.intel-source span,
+.intel-out p,
+.intel-insight p,
+.intel-opportunity p,
+.intel-cycle {
+  font-family: var(--font-sans-he), "Heebo", system-ui, sans-serif;
+}
+
+.intel-source span {
+  font-size: 0.68rem;
+  line-height: 1.15;
+  color: rgba(244, 248, 255, 0.92);
+}
+
+.intel-core {
+  left: 50%;
+  top: 34.1%;
+  width: min(17.5rem, 46%);
+  transform: translate(-50%, 0);
+  z-index: 3;
+}
+
+.intel-core__glow {
+  position: absolute;
+  inset: -22% -16%;
+  background: radial-gradient(circle, rgba(126, 231, 255, 0.42), rgba(80, 140, 255, 0.08) 46%, transparent 70%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.intel-core__plate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem 1rem 0.85rem;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(190, 236, 255, 0.55);
+  background:
+    linear-gradient(180deg, rgba(186, 230, 255, 0.2), rgba(20, 48, 120, 0.18) 22%, rgba(8, 18, 48, 0.78));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 18px 40px rgba(3, 8, 24, 0.38),
+    0 0 36px rgba(90, 170, 255, 0.2);
+  text-align: center;
+}
+
+.intel-core__mark {
+  width: 3.4rem;
+  height: 3.4rem;
+}
+
+.intel-core__label {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(232, 248, 255, 0.86);
+}
+
+.intel-core__traces {
+  display: grid;
+  gap: 0.28rem;
+  width: 68%;
+}
+
+.intel-core__traces i,
+.intel-core__dots i {
+  display: block;
+}
+
+.intel-core__traces i {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(190, 240, 255, 0.85), transparent);
+}
+
+.intel-core__traces i:nth-child(2) {
+  width: 78%;
+  margin-inline: auto;
+}
+
+.intel-core__dots {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.intel-core__dots i {
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: #7ee7ff;
+  box-shadow: 0 0 8px rgba(126, 231, 255, 0.8);
+}
+
+.intel-core__dots i:nth-child(2) {
+  opacity: 0.55;
+}
+
+.intel-core__dots i:nth-child(3) {
+  opacity: 0.3;
+}
+
+.intel-insight,
+.intel-opportunity {
+  z-index: 4;
+  width: 27%;
+}
+
+.intel-insight,
+.intel-opportunity [data-opportunity] {
+  padding: 0.7rem 0.75rem 0.75rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(210, 236, 255, 0.32);
+  background: linear-gradient(180deg, rgba(16, 36, 90, 0.72), rgba(8, 16, 42, 0.78));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset, 0 14px 28px rgba(3, 8, 24, 0.28);
+}
+
+.intel-insight--visibility {
+  left: 2.5%;
+  top: 33%;
+}
+
+.intel-insight--gap {
+  right: 2.5%;
+  top: 33%;
+}
+
+.intel-opportunity {
+  left: 50%;
+  top: 67%;
+  width: 34%;
+}
+
+.intel-kicker,
+.intel-insight h3,
+.intel-opportunity h3,
+.intel-out h3,
+.intel-cycle {
+  margin: 0;
+}
+
+.intel-kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(126, 231, 255, 0.9);
+}
+
+.intel-insight h3,
+.intel-opportunity h3,
+.intel-out h3 {
+  margin-top: 0.28rem;
+  font-family: var(--font-sans-he), "Heebo", system-ui, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #f4f8ff;
+}
+
+.intel-insight p,
+.intel-opportunity p,
+.intel-out p {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: rgba(220, 236, 255, 0.8);
+}
+
+.intel-bar {
+  display: grid;
+  grid-template-columns: 4.6rem 1fr;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 0.45rem;
+}
+
+.intel-bar__name {
+  font-size: 0.68rem;
+  color: rgba(232, 244, 255, 0.8);
+}
+
+.intel-bar__track {
+  display: block;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.intel-bar__fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  transform-origin: left center;
+  background: linear-gradient(90deg, rgba(126, 231, 255, 0.55), #f4fdff);
+}
+
+.intel-bar__fill--you {
+  transform: scaleX(0.46);
+}
+
+.intel-bar__fill--field {
+  transform: scaleX(0.82);
+  background: rgba(186, 220, 255, 0.45);
+}
+
+.intel-out {
+  width: 20%;
+  min-width: 6.5rem;
+}
+
+.intel-out [data-output] {
+  padding: 0.65rem 0.6rem 0.7rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(210, 236, 255, 0.28);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(8, 20, 56, 0.55));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
+  text-align: center;
+}
+
+.intel-out--found [data-output] {
+  border-color: rgba(190, 246, 255, 0.7);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 0 22px rgba(126, 231, 255, 0.18);
+}
+
+.intel-out h3 {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.intel-cycle {
+  left: 50%;
+  top: 95.2%;
+  z-index: 4;
+  width: 86%;
+  transform: translate(-50%, -50%);
+}
+
+.intel-cycle ol {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.intel-cycle li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: rgba(236, 248, 255, 0.88);
+}
+
+.intel-cycle li span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  border: 1px solid rgba(126, 231, 255, 0.7);
+  font-size: 0.58rem;
+  color: #e9fbff;
+}
+
+[dir="rtl"] .intel-insight,
+[dir="rtl"] .intel-opportunity,
+[dir="rtl"] .intel-out,
+[dir="rtl"] .intel-core__label,
+[dir="rtl"] .intel-cycle {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .intel-out,
+[dir="rtl"] .intel-source,
+[dir="rtl"] .intel-core__plate {
+  text-align: center;
+}
+
+[dir="rtl"] .intel-bar__fill {
+  transform-origin: right center;
+}
+
+/* Live opening frame. GSAP overrides these once the pin is running. */
+.intel-stage--live [data-source],
+.intel-stage--live [data-insight],
+.intel-stage--live [data-opportunity],
+.intel-stage--live [data-output],
+.intel-stage--live [data-progress] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.intel-stage--live .intel-path__base,
+.intel-stage--live .intel-path__pulse {
+  opacity: 0;
+}
+
+.intel-stage--live .intel-path__draw,
+.intel-stage--live .intel-path__pulse {
+  stroke-dasharray: 1600;
+  stroke-dashoffset: 1600;
+}
+
+.intel-stage--live .intel-core__glow {
+  opacity: 0.4;
+}
+
+/* Static chapters. Paths are fully drawn. Hidden layers stay out of the way. */
+.intel-stage--discover .intel-insight,
+.intel-stage--discover .intel-opportunity,
+.intel-stage--discover .intel-out,
+.intel-stage--discover .intel-cycle,
+.intel-stage--discover [data-path-group="out"],
+.intel-stage--discover [data-path-group="back"] {
+  display: none;
+}
+
+.intel-stage--understand .intel-source,
+.intel-stage--understand [data-path-group="in"] {
+  opacity: 0.38;
+}
+
+.intel-stage--understand .intel-out,
+.intel-stage--understand .intel-cycle,
+.intel-stage--understand [data-path-group="out"],
+.intel-stage--understand [data-path-group="back"] {
+  display: none;
+}
+
+.intel-stage--implement .intel-source,
+.intel-stage--implement [data-path-group="in"] {
+  opacity: 0.34;
+}
+
+.intel-stage--implement .intel-insight,
+.intel-stage--implement .intel-opportunity {
+  opacity: 0.45;
+}
+
+.intel-stage--implement .intel-cycle,
+.intel-stage--implement [data-path-group="back"] {
+  display: none;
+}
+
+.intel-stage--optimize .intel-source,
+.intel-stage--optimize [data-path-group="in"] {
+  opacity: 0.32;
+}
+
+.intel-stage--optimize .intel-insight,
+.intel-stage--optimize .intel-opportunity {
+  opacity: 0.4;
+}
+
+.intel-fallback .intel-path__pulse {
+  display: none;
+}
+
+.intel-fallback .intel-path__draw {
+  stroke-dasharray: none;
+  stroke-dashoffset: 0;
+}
+
+@media (max-width: 719px) {
+  .intel-source--minor,
+  .intel-path--minor {
+    display: none;
+  }
+
+  .intel-insight,
+  .intel-opportunity {
+    width: 42%;
+  }
+
+  .intel-insight h3,
+  .intel-opportunity h3,
+  .intel-out h3 {
+    font-size: 0.84rem;
+  }
+
+  .intel-out {
+    width: 28%;
+  }
+
+  .intel-cycle {
+    width: 94%;
+  }
+}
