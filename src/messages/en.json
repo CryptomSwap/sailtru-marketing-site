@@ -7,6 +7,8 @@
     "skipToContent": "Skip to main content",
     "brandHome": "SailTru home",
     "primaryNav": "Primary navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
     "localeSwitch": "Switch language",
     "localeEn": "EN",
     "localeHe": "HE"
@@ -30,7 +32,7 @@
     "headlineLineB": "opportunity",
     "headlineLineC": "is lost.",
     "headlineLineD": "Then build the fix.",
-    "subtitle": "SailTru is an AI-native growth and automation company. We help businesses improve discovery, compete intelligently, and automate work that slows them down.",
+    "subtitle": "We find where demand, deals, and time leak out of the business, then build the fix.",
     "methodology": "How we work",
     "urlScan": {
       "label": "Website URL",
@@ -138,7 +140,7 @@
     "title": "Evidence over claims.",
     "description": "Real client outcomes when we have permission to share them.",
     "stats": [],
-    "quote": "Sailtru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
+    "quote": "SailTru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
     "attribution": "Laba Records",
     "logos": []
   },
@@ -259,7 +261,7 @@
         {
           "label": "Deep dive",
           "title": "Understand the business better than the brief",
-          "body": "We map your model, technology, market, and bottlenecks — website signals, discovery gaps, manual ops, and build requirements. Then we define storylines for what to fix, automate, or build first."
+          "body": "We map your model, technology, market, and bottlenecks — website signals, discovery gaps, manual ops, and build requirements. Then we decide what to fix, automate, or build first."
         },
         {
           "label": "Build & optimize",
@@ -274,7 +276,7 @@
         {
           "label": "Compound",
           "title": "Measure, iterate, and expand what works",
-          "body": "New storylines, new optimizations, new automations — we recalibrate based on outcomes and keep compounding gains as the business scales."
+          "body": "New priorities, new optimizations, new automations — we recalibrate based on outcomes and keep compounding gains as the business scales."
         }
       ]
     },
@@ -282,36 +284,15 @@
       "index": "03",
       "kicker": "Outcomes",
       "title": "Evidence over claims.",
-      "description": "Representative results from engagements across diagnosis, SEO, automation, and custom build.",
+      "description": "The outcome we have permission to share. We do not publish numbers we cannot stand behind.",
       "cards": [
         {
-          "title": "B2B SaaS platform",
-          "metric": "+38%",
-          "label": "Qualified conversion",
+          "title": "Laba Records",
+          "metric": "+275%",
+          "label": "Traffic, with about 10× more conversions",
           "tags": [
-            "Diagnosis",
-            "UX clarity",
-            "Conversion flow"
-          ]
-        },
-        {
-          "title": "Regional services brand",
-          "metric": "3.2×",
-          "label": "Organic visibility",
-          "tags": [
-            "SEO",
-            "Technical fixes",
-            "Content signals"
-          ]
-        },
-        {
-          "title": "Operations-heavy business",
-          "metric": "−60%",
-          "label": "Manual processing time",
-          "tags": [
-            "Automation",
-            "AI integration",
-            "Custom tools"
+            "Website",
+            "Growth channel"
           ]
         }
       ]
@@ -389,7 +370,7 @@
   },
   "homeTestimonial": {
     "ariaLabel": "Client testimonial",
-    "quote": "Sailtru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
+    "quote": "SailTru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
     "attribution": "Laba Records",
     "moreLink": "See client stories"
   },
@@ -436,7 +417,8 @@
       "We run an initial diagnostic read",
       "You get a scoped recommendation and next step"
     ],
-    "calendlyCta": "Book on Calendly"
+    "calendlyCta": "Book on Calendly",
+    "panelTitle": "Book a call or write us."
   },
   "workPage": {
     "metadata": {
@@ -449,7 +431,7 @@
     "intro": "Verified testimonials from businesses we've helped. Metrics only when we have permission to share them.",
     "testimonials": [
       {
-        "quote": "Sailtru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
+        "quote": "SailTru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
         "attribution": "Laba Records"
       }
     ],
@@ -482,6 +464,7 @@
       }
     },
     "opportunity": {
+      "eyebrow": "Opportunity",
       "title": "Opportunity is lost in two places.",
       "lede": "Externally, where customers try to find and choose you. Internally, in the way the company operates. SailTru works across both.",
       "externalTitle": "External",
@@ -490,8 +473,9 @@
       "internalBody": "Repetitive work, disconnected systems, manual processes, and tools that do not match how the business actually runs."
     },
     "territories": {
+      "eyebrow": "Territories",
       "title": "Four territories. One partner.",
-      "lede": "Capabilities are not positioning. These are the ways SailTru creates value.",
+      "lede": "Get found, get ahead, automate, and build — one partner across all four.",
       "found": {
         "name": "Get found",
         "title": "Be visible wherever customers are looking.",
@@ -514,19 +498,20 @@
       }
     },
     "loop": {
-      "title": "Find. Understand. Build.",
-      "lede": "Intelligence, action, and implementation stay connected. We do not stop at insight.",
-      "find": {
-        "title": "Find",
-        "body": "Where the business is losing opportunity, with evidence rather than generic advice."
+      "eyebrow": "Delivery",
+      "title": "We don't stop at the report.",
+      "lede": "Finding the gap is the start. We ship the fix and check whether it moved.",
+      "diagnose": {
+        "title": "Diagnose",
+        "body": "Name the gap with evidence you can inspect, not a generic audit."
       },
-      "understand": {
-        "title": "Understand",
-        "body": "Why the gap matters, and which intervention is worth the work."
+      "ship": {
+        "title": "Ship",
+        "body": "Implement the change with people still in the loop."
       },
-      "build": {
-        "title": "Build",
-        "body": "Ship the improvement with humans in the loop. Honest verification after."
+      "verify": {
+        "title": "Verify",
+        "body": "Tell you what changed, including when the result is inconclusive."
       }
     },
     "howItWorks": {
@@ -674,7 +659,7 @@
   "servicesV2": {
     "chapters": {
       "title": "What we do",
-      "lede": "Each territory maps to a business consequence, not a disconnected service line.",
+      "lede": "What changes for the business, not a list of disconnected services.",
       "found": {
         "name": "Get found",
         "title": "Be visible wherever your customers are looking.",
@@ -695,6 +680,38 @@
         "title": "Build technology around your business.",
         "body": "AI-powered systems, internal tools, integrations, and custom applications when off-the-shelf is not enough."
       }
+    }
+  },
+  "freemium": {
+    "gate": {
+      "metadataTitle": "Log in | SailTru",
+      "metadataDescription": "Log in or create a free SailTru account to see the first finding.",
+      "kicker": "Free account",
+      "title": "Log in or create an account.",
+      "body": "See the first finding for {host}. The rest unlocks when you start a project.",
+      "bodyNoHost": "Log in to open your dashboard. New here? This creates your free account.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@company.com",
+      "submit": "Continue",
+      "pending": "Opening…",
+      "note": "New here? This creates your free account.",
+      "error": "Use a real email to continue."
+    },
+    "dashboard": {
+      "metadataTitle": "Dashboard | SailTru",
+      "metadataDescription": "A free SailTru readout with one open signal. The live scan stays off until you start a project.",
+      "kicker": "Freemium",
+      "title": "One signal is open.",
+      "lede": "Free accounts see a single sample signal for {host}. Nothing else runs — a visit should not start a scan.",
+      "sample": "Sample",
+      "openLabel": "Open",
+      "lockedLabel": "Locked",
+      "lockedNote": "Included when you start a project",
+      "upgrade": "Start a project",
+      "signOut": "Log out",
+      "emptyTitle": "Run a scan, then log in.",
+      "emptyBody": "The free dashboard opens from the homepage scan. It stays limited on purpose.",
+      "emptyCta": "Back to the scan"
     }
   }
 }

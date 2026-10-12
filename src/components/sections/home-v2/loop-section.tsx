@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { useTranslations } from "next-intl";
 import { Enter } from "@/components/ui/enter";
 
-const STEPS = ["find", "understand", "build"] as const;
+const STEPS = ["diagnose", "ship", "verify"] as const;
 
 export function LoopSection() {
   const t = useTranslations("homeV2.loop");
@@ -14,7 +14,7 @@ export function LoopSection() {
       <div className="hb-shell">
         <Enter>
           <header className="hb-intro">
-            <p className="hb-eyebrow">Method</p>
+            <p className="hb-eyebrow">{t("eyebrow")}</p>
             <h2 className="hb-heading">{t("title")}</h2>
             <p className="hb-lede">{t("lede")}</p>
           </header>

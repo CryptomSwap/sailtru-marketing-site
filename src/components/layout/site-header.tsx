@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -14,6 +15,11 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
   const tCommon = useTranslations("common");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname, locale]);
 
   const navItems = [
     { label: tNav("home"), href: "/" as const },
@@ -37,7 +43,11 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
         />
       </Link>
 
-      <nav aria-label={tCommon("primaryNav")} className="site-header__links">
+      <nav
+        id="site-primary-nav"
+        aria-label={tCommon("primaryNav")}
+        className={`site-header__links${menuOpen ? " is-open" : ""}`}
+      >
         {navItems.map((item) => {
           const isActive =
             item.href === "/services"
@@ -71,6 +81,17 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
           {tNav("beginDiagnosis")}
         </Link>
       </div>
+
+      <button
+        type="button"
+        className="site-header__menu"
+        aria-expanded={menuOpen}
+        aria-controls="site-primary-nav"
+        onClick={() => setMenuOpen((open) => !open)}
+      >
+        <span className="sr-only">{menuOpen ? tCommon("closeMenu") : tCommon("openMenu")}</span>
+        <span className="site-header__menu-bars" aria-hidden />
+      </button>
     </header>
   );
 }

@@ -29,8 +29,7 @@ export function ContactPageSection() {
             </ol>
 
             <div className="sp-close__panel sp-close__panel--spaced">
-              <p className="sp-eyebrow">{t("kicker")}</p>
-              <h2 className="sp-close__title">{t("title")}</h2>
+              <h2 className="sp-close__title">{t("panelTitle")}</h2>
               <div className="sp-close__actions">
                 <a
                   href={CALENDLY_URL}
