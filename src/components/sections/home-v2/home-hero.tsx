@@ -36,10 +36,18 @@ export function HomeHero() {
             <p className="field-eyebrow">{t("railLabel")}</p>
 
             <h1 className="field-headline field-headline--ref" aria-label={t("headlineAria")}>
-              <span className="field-headline__line field-headline__line--lead">{t("headlineLineA")}</span>
-              <span className="field-headline__line field-headline__line--loud">{t("headlineLineB")}</span>
-              <span className="field-headline__line field-headline__line--mid">{t("headlineLineC")}</span>
-              <span className="field-headline__line field-headline__line--close">{t("headlineLineD")}</span>
+              {t("headlineLineA") ? (
+                <span className="field-headline__line field-headline__line--lead">{t("headlineLineA")}</span>
+              ) : null}
+              {t("headlineLineB") ? (
+                <span className="field-headline__line field-headline__line--loud">{t("headlineLineB")}</span>
+              ) : null}
+              {t("headlineLineC") ? (
+                <span className="field-headline__line field-headline__line--mid">{t("headlineLineC")}</span>
+              ) : null}
+              {t("headlineLineD") ? (
+                <span className="field-headline__line field-headline__line--close">{t("headlineLineD")}</span>
+              ) : null}
             </h1>
 
             <p className="field-lede field-lede--ref">{t("subtitle")}</p>
