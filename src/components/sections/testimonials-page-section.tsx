@@ -11,7 +11,7 @@ export function TestimonialsPageSection() {
 
   return (
     <>
-      <PageHero kicker={t("kicker")} title={t("title")} body={t("intro")} />
+      <PageHero variant="field" kicker={t("kicker")} title={t("title")} body={t("intro")} />
       <div className="sp-below">
         <section className="sp-section">
           <div className="sp-shell sp-shell--narrow">
@@ -19,14 +19,21 @@ export function TestimonialsPageSection() {
               {items.map((item) => (
                 <blockquote key={item.attribution} className="sp-quote">
                   <p>&ldquo;{item.quote}&rdquo;</p>
-                  <footer>{item.attribution}</footer>
+                  <cite>{item.attribution}</cite>
                 </blockquote>
               ))}
             </div>
-            <div className="sp-close__actions sp-close__actions--after">
-              <Link href="/contact" className="sp-btn">
-                {t("cta")}
-              </Link>
+          </div>
+        </section>
+
+        <section className="sp-section sp-close">
+          <div className="sp-shell sp-shell--narrow">
+            <div className="sp-close__panel">
+              <div className="sp-close__actions">
+                <Link href="/contact" className="sp-btn">
+                  {t("cta")}
+                </Link>
+              </div>
             </div>
           </div>
         </section>

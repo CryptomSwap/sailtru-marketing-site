@@ -53,6 +53,45 @@
   padding: 0 clamp(1.1rem, 3vw, 2.75rem) clamp(3.5rem, 8vh, 5.5rem);
 }
 
+/* Field variant — the taller, richer cobalt field hero shared by the
+   marketing subpages (services, how-we-work, work, contact). Scoped to this
+   modifier so the plain .sp-hero used by login/dashboard is unaffected. */
+.sp-hero--field .sp-hero__wash {
+  background:
+    radial-gradient(ellipse 52% 48% at 92% 8%, rgba(255, 255, 255, 0.22), transparent 58%),
+    radial-gradient(ellipse 40% 36% at 6% 92%, rgba(6, 14, 56, 0.5), transparent 66%),
+    radial-gradient(ellipse 70% 60% at 36% 46%, transparent 38%, rgba(10, 24, 110, 0.22) 100%),
+    linear-gradient(148deg, #5a7dff 0%, #3a66ff 32%, #2446e8 64%, #1834c4 100%);
+}
+
+.sp-hero--field .sp-hero__inner {
+  min-height: clamp(26rem, 58svh, 38rem);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Faint orbit dots, kept to the trailing side like the homepage field hero */
+.sp-hero--field .field-hero__dots {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+  opacity: 0;
+}
+
+.sp-hero--field .field-hero__dots[data-ready] {
+  opacity: 0.6;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 72%, transparent 100%);
+}
+
+[dir="rtl"] .sp-hero--field .field-hero__dots {
+  transform: scaleX(-1);
+}
+
 .sp-hero .site-header--v2 {
   display: flex;
   align-items: center;
@@ -228,6 +267,11 @@
   margin-top: clamp(2.25rem, 6vh, 3.75rem);
 }
 
+.sp-hero--field .sp-hero__content {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 .sp-hero__kicker {
   margin: 0 0 0.85rem;
   font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
@@ -367,38 +411,6 @@
   flex-direction: column;
   gap: 1.5rem;
   margin-top: clamp(2rem, 4vh, 2.75rem);
-}
-
-.sp-block {
-  padding-top: 1.15rem;
-  border-top: 1px solid var(--sp-ink);
-  box-shadow: inset 0 2px 0 var(--sp-accent);
-}
-
-.sp-block__index {
-  display: block;
-  margin-bottom: 0.65rem;
-  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--sp-accent);
-}
-
-.sp-block h2,
-.sp-block__title {
-  margin: 0 0 0.5rem;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--sp-ink);
-}
-
-.sp-block p,
-.sp-block__body {
-  margin: 0;
-  max-width: 40rem;
-  line-height: 1.55;
-  color: var(--sp-mute);
 }
 
 /* Territory / chapter rows */
@@ -566,12 +578,11 @@
   color: var(--sp-mute);
 }
 
-/* Quotes */
+/* Quotes — evidence over claims: no rule above, just the voice */
 .sp-quote {
   margin: 0;
-  padding-top: 1.15rem;
-  border-top: 1px solid var(--sp-ink);
-  box-shadow: inset 0 2px 0 var(--sp-accent);
+  padding: 0;
+  border: 0;
 }
 
 .sp-quote p {
@@ -597,35 +608,45 @@
   color: var(--sp-accent);
 }
 
-/* Steps list */
-.sp-steps {
+/* Method form — homepage step/method language: columns under a thick cobalt rule */
+.sp-method__steps {
   list-style: none;
-  margin: 2rem 0 0;
+  margin: clamp(2rem, 4vh, 2.75rem) 0 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.sp-steps li {
   display: grid;
-  grid-template-columns: 2.25rem 1fr;
-  gap: 0.85rem;
-  padding: 1rem 0;
-  border-top: 1px solid var(--sp-line);
-  color: var(--sp-mute);
-  line-height: 1.5;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
 }
 
-.sp-steps li:last-child {
-  border-bottom: 1px solid var(--sp-line);
+.sp-method__step {
+  padding-top: 1rem;
+  border-top: 1px solid var(--sp-ink);
+  box-shadow: inset 0 2px 0 var(--sp-accent);
 }
 
-.sp-steps__num {
+.sp-method__index {
+  display: block;
+  margin-bottom: 0.55rem;
   font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--sp-accent);
+}
+
+.sp-method__title {
+  margin: 0 0 0.45rem;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--sp-ink);
+}
+
+.sp-method__body {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--sp-mute);
 }
 
 /* Close / CTA panel */
@@ -675,10 +696,6 @@
   margin-top: 2.5rem;
 }
 
-.sp-close__panel--spaced {
-  margin-top: 2.5rem;
-}
-
 .sp-close__note {
   margin-top: 1.15rem;
   max-width: 32rem;
@@ -712,6 +729,15 @@
 
 .sp-btn:active {
   transform: translateY(0) scale(0.98);
+}
+
+.sp-close .sp-btn {
+  background: var(--sp-accent);
+  box-shadow: 0 12px 28px rgba(47, 91, 255, 0.28);
+}
+
+.sp-close .sp-btn:hover {
+  box-shadow: 0 18px 36px rgba(47, 91, 255, 0.36);
 }
 
 .sp-link {

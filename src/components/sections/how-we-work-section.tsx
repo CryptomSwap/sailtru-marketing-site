@@ -12,25 +12,32 @@ export function HowWeWorkSection() {
 
   return (
     <>
-      <PageHero kicker={t("kicker")} title={t("title")} body={t("intro")} />
+      <PageHero variant="field" kicker={t("kicker")} title={t("title")} body={t("intro")} />
       <div className="sp-below">
         <section className="sp-section">
-          <div className="sp-shell sp-shell--narrow">
-            <div className="sp-blocks">
+          <div className="sp-shell">
+            <ol className="sp-method__steps">
               {SECTION_KEYS.map((key, index) => (
-                <section key={key} className="sp-block">
-                  <span className="sp-block__index" aria-hidden>
+                <li key={key} className="sp-method__step">
+                  <span className="sp-method__index" aria-hidden>
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <h2 className="sp-block__title">{t(`sections.${key}.title`)}</h2>
-                  <p className="sp-block__body">{t(`sections.${key}.body`)}</p>
-                </section>
+                  <h3 className="sp-method__title">{t(`sections.${key}.title`)}</h3>
+                  <p className="sp-method__body">{t(`sections.${key}.body`)}</p>
+                </li>
               ))}
-            </div>
-            <div className="sp-close__actions sp-close__actions--after">
-              <Link href="/contact" className="sp-btn">
-                {t("cta")}
-              </Link>
+            </ol>
+          </div>
+        </section>
+
+        <section className="sp-section sp-close">
+          <div className="sp-shell sp-shell--narrow">
+            <div className="sp-close__panel">
+              <div className="sp-close__actions">
+                <Link href="/contact" className="sp-btn">
+                  {t("cta")}
+                </Link>
+              </div>
             </div>
           </div>
         </section>

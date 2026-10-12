@@ -10,6 +10,7 @@ export function ServicesV2Hero() {
 
   return (
     <PageHero
+      variant="field"
       kicker={t("kicker")}
       title={t("title")}
       body={t("body")}
