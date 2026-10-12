@@ -1,10 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef, useState, type ComponentType } from "react";
+import { DeliverBoards } from "@/components/sections/home-v2/deliver-boards";
+import { mountPipeline } from "@/components/sections/home-v2/pipeline-scroll";
+
+type StreamProps = { paused?: boolean; onReady?: () => void };
 import "@/components/sections/home-v2/how-sailtru-works.css";
+
+gsap.registerPlugin(useGSAP);
 
 type Signal = {
   id: string;
@@ -125,7 +133,7 @@ function SignalChip({
   );
   if (!stagger) {
     return (
-      <li key={signal.id} className={className}>
+      <li key={signal.id} className={className} data-pipe-id={signal.id}>
         {body}
       </li>
     );
@@ -134,6 +142,7 @@ function SignalChip({
     <motion.li
       key={signal.id}
       className={className}
+      data-pipe-id={signal.id}
       initial={{ opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.38, delay: 0.05 + index * 0.06, ease: REVEAL }}
@@ -189,7 +198,7 @@ export function IntelPanel({ className = "", stagger = false }: { className?: st
 
   return (
     <div className={className}>
-      <div className="hsw-intel hsw-intel--live">
+      <div className="hsw-intel hsw-intel--live" data-pipe="core">
         <div className="hsw-intel__glow" aria-hidden />
         <div className="hsw-intel__head">
           <Image
@@ -243,7 +252,13 @@ export function OutcomeBoard({ className = "" }: { className?: string }) {
   return (
     <ul className={`hsw__outcomes ${className}`.trim()}>
       {OUTCOMES.map((outcome, index) => (
-        <li key={outcome.id} className={`hsw-out hsw-out--${outcome.id}`} style={{ ["--out-i" as string]: index }}>
+        <li
+          key={outcome.id}
+          className={`hsw-out hsw-out--${outcome.id}`}
+          style={{ ["--out-i" as string]: index }}
+          data-pipe="card"
+          data-pipe-id={outcome.id}
+        >
           <div className="hsw-out__head">
             <span className="hsw-out__mark">
               <OutcomeIcon id={outcome.id} />
@@ -257,49 +272,151 @@ export function OutcomeBoard({ className = "" }: { className?: string }) {
   );
 }
 
+const CHAPTERS: { id: "discover" | "understand" | "implement" | "optimize"; step: "a" | "b" | "c" | "d"; index: string }[] = [
+  { id: "discover", step: "a", index: "01" },
+  { id: "understand", step: "b", index: "02" },
+  { id: "implement", step: "c", index: "03" },
+  { id: "optimize", step: "d", index: "04" }
+];
+
+const DESKTOP_MOTION = "(min-width: 980px) and (prefers-reduced-motion: no-preference)";
+
+function SignalPoster({ tone = "cubes", hidden = false }: { tone?: "cubes" | "orbit" | "outputs"; hidden?: boolean }) {
+  return <div className={`signal-poster signal-poster--${tone}${hidden ? " is-hidden" : ""}`} aria-hidden />;
+}
+
 /**
- * Second homepage section — the system diagram: signals, intelligence layer, four outcomes.
+ * Second homepage section. Desktop keeps one intelligence engine on screen and
+ * scrubs four chapters through it. Smaller viewports and reduced motion get
+ * the same four chapters in document order, with a static poster instead of WebGL.
  */
 export function HowSailtruWorksSection() {
   const t = useTranslations("homeV2.howItWorks");
+  const rootRef = useRef<HTMLElement>(null);
+  const [liveDesktop, setLiveDesktop] = useState(false);
+  const [armed, setArmed] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [Stream, setStream] = useState<ComponentType<StreamProps> | null>(null);
+
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node) return;
+    const query = window.matchMedia(DESKTOP_MOTION);
+    const apply = () => setLiveDesktop(query.matches);
+    apply();
+    query.addEventListener("change", apply);
+    const preload = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setArmed(true);
+    }, { rootMargin: "100% 0px", threshold: 0 });
+    const view = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.2 });
+    preload.observe(node);
+    view.observe(node);
+    return () => {
+      query.removeEventListener("change", apply);
+      preload.disconnect();
+      view.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!liveDesktop || !armed || Stream) return;
+    let cancel = false;
+    void import("@/components/sections/home-v2/how-it-works/SignalStream").then((mod) => {
+      if (!cancel) setStream(() => mod.SignalStream);
+    });
+    return () => {
+      cancel = true;
+    };
+  }, [liveDesktop, armed, Stream]);
+
+  useEffect(() => {
+    if (!liveDesktop) setReady(false);
+  }, [liveDesktop]);
+  const headline = (step: "a" | "b" | "c" | "d") => {
+    if (step === "a") return t("headlineA");
+    if (step === "b") return t("headlineB");
+    if (step === "c") return t("headlineC");
+    return t("engine.headlineD");
+  };
+  const body = (step: "a" | "b" | "c" | "d") => {
+    if (step === "a") return t("engine.bodyA");
+    if (step === "b") return t("engine.bodyB");
+    if (step === "c") return t("engine.bodyC");
+    return t("engine.bodyD");
+  };
+
+  useGSAP(
+    () => {
+      const root = rootRef.current;
+      if (!root) return;
+      return mountPipeline(root);
+    },
+    { scope: rootRef }
+  );
 
   return (
-    <section id="how-sailtru-works" className="hsw" aria-labelledby="hsw-title">
+    <section id="how-sailtru-works" ref={rootRef} className="hsw hsw--engine" aria-label={t("eyebrow")}>
       <div className="hsw__wash" aria-hidden />
       <div className="hsw__grain" aria-hidden />
-      <div className="hsw__sail" aria-hidden />
 
-      <div className="hsw__inner">
-        <div className="hsw__copy">
-          <p className="hsw__eyebrow">{t("eyebrow")}</p>
-          <h2 id="hsw-title" className="hsw__title">
-            <span>{t("headlineA")}</span>
-            <span>{t("headlineB")}</span>
-            <span>{t("headlineC")}</span>
-          </h2>
-          <div className="hsw__rule" aria-hidden />
-          <p className="hsw__lede">{t("lede")}</p>
-        </div>
-
-        <div className="hsw__stage">
-          <div className="hsw__diagram hsw__diagram--board" aria-label={t("diagramAria")}>
-            <SignalChips />
-            <IntelPanel />
-            <OutcomeBoard />
-            <p className="hsw__tag">
-              <span className="hsw__tag-rail" aria-hidden>
-                <span className="hsw__tag-dot" />
-                <span className="hsw__tag-line" />
-              </span>
-              {t("tagline")}
-              <span className="hsw__tag-rail" aria-hidden>
-                <span className="hsw__tag-line" />
-                <span className="hsw__tag-dot" />
-              </span>
-            </p>
+      <div className="intel-live">
+        <div className="hsw__frame">
+          <div className="hsw__copy">
+            <p className="hsw__eyebrow">{t("eyebrow")}</p>
+            <div className="intel-index" aria-hidden>
+              {CHAPTERS.map((chapter, index) => (
+                <span key={chapter.index} data-chapter-index={index} className={index === 0 ? "is-on" : undefined}>
+                  {chapter.index}
+                </span>
+              ))}
+            </div>
+            <h2 id="hsw-title" className="hsw__title">
+              {CHAPTERS.map((chapter) => (
+                <span key={chapter.step} data-pipe-step={chapter.step} aria-hidden={chapter.step !== "a" ? true : undefined}>
+                  {headline(chapter.step)}
+                </span>
+              ))}
+            </h2>
+            <div className="hsw__rule" aria-hidden />
+            <div className="hsw__bodies">
+              {CHAPTERS.map((chapter) => (
+                <p key={chapter.step} data-chapter-body={chapter.step} aria-hidden={chapter.step !== "a" ? true : undefined}>
+                  {body(chapter.step)}
+                </p>
+              ))}
+            </div>
+            <a className="intel-cta" data-cta href="#hero">
+              {t("engine.cta")}
+            </a>
+          </div>
+          <div className="intel-stage-wrap">
+            <SignalPoster hidden={ready} />
+            {liveDesktop && Stream ? <Stream paused={!inView} onReady={() => setReady(true)} /> : null}
+            <DeliverBoards />
           </div>
         </div>
       </div>
+
+      <ol className="intel-fallback">
+        {CHAPTERS.map((chapter) => (
+          <li key={chapter.id}>
+            <p className="intel-fallback__index">{chapter.index}</p>
+            <h2 className="hsw__title">{headline(chapter.step)}</h2>
+            <p className="hsw__lede">{body(chapter.step)}</p>
+            {chapter.step === "d" ? (
+              <DeliverBoards staticMode />
+            ) : (
+              <SignalPoster tone={chapter.id === "discover" ? "cubes" : "orbit"} />
+            )}
+          </li>
+        ))}
+        <li>
+          <a className="intel-cta" href="#hero">
+            {t("engine.cta")}
+          </a>
+        </li>
+      </ol>
     </section>
   );
 }

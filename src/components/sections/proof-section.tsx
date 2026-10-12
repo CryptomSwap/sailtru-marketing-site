@@ -11,20 +11,24 @@ export function ProofSection() {
   return (
     <section id="proof" className="hb-section hb-proof">
       <div className="hb-shell hb-shell--narrow">
-        <header className="hb-intro">
-          <p className="hb-eyebrow">{t("kicker")}</p>
-          <h2 className="hb-heading">{t("title")}</h2>
-          <p className="hb-lede">{t("description")}</p>
-        </header>
+        <Enter>
+          <header className="hb-intro">
+            <p className="hb-eyebrow">{t("kicker")}</p>
+            <h2 className="hb-heading">{t("title")}</h2>
+            <p className="hb-lede">{t("description")}</p>
+          </header>
+        </Enter>
 
         {stats.length > 0 ? (
-          <ul className="hb-proof__stats">
-            {stats.map((stat) => (
-              <li key={stat} className="hb-proof__stat">
-                {stat}
-              </li>
-            ))}
-          </ul>
+          <Enter delay={0.08}>
+            <ul className="hb-proof__stats">
+              {stats.map((stat) => (
+                <li key={stat} className="hb-proof__stat">
+                  {stat}
+                </li>
+              ))}
+            </ul>
+          </Enter>
         ) : null}
 
         <Enter delay={0.12}>
@@ -35,13 +39,15 @@ export function ProofSection() {
         </Enter>
 
         {logos.length > 0 ? (
-          <ul className="hb-proof__logos">
-            {logos.map((logo) => (
-              <li key={logo} className="hb-proof__logo">
-                {logo}
-              </li>
-            ))}
-          </ul>
+          <Enter delay={0.2}>
+            <ul className="hb-proof__logos">
+              {logos.map((logo) => (
+                <li key={logo} className="hb-proof__logo">
+                  {logo}
+                </li>
+              ))}
+            </ul>
+          </Enter>
         ) : null}
       </div>
     </section>
