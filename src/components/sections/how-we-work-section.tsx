@@ -16,11 +16,6 @@ export function HowWeWorkSection() {
       <div className="sp-below">
         <section className="sp-section">
           <div className="sp-shell">
-            <header className="sp-intro">
-              <p className="sp-eyebrow">{t("kicker")}</p>
-              <h2 className="sp-heading">{t("title")}</h2>
-            </header>
-
             <ol className="sp-method__steps">
               {SECTION_KEYS.map((key, index) => (
                 <li key={key} className="sp-method__step">
