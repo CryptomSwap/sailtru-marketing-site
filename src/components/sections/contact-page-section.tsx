@@ -2,11 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import { PageHero } from "@/components/sections/site-page/page-hero";
+import { WHATSAPP_URL } from "@/components/ui/whatsapp-cta";
 import "@/components/sections/site-page/site-page.css";
 
 const CALENDLY_URL = "https://calendly.com/sailtrue";
 const CONTACT_EMAIL = "team@sailtru.com";
-const WHATSAPP_URL = "https://wa.me/972547634464";
 
 export function ContactPageSection() {
   const t = useTranslations("contactPage");

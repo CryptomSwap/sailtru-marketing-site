@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import "./whatsapp-cta.css";
 
 const WHATSAPP_NUMBER = "972547634464";
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
+export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
 export function WhatsAppCta() {
   const t = useTranslations("whatsapp");
