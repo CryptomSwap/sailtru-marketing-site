@@ -19,6 +19,14 @@ export function ProofSection() {
           </header>
         </Enter>
 
+        <Enter delay={0.06}>
+          <p className="hb-proof__metric">
+            <span className="hb-proof__metric-value">{t("metric")}</span>
+            <span className="hb-proof__metric-label">{t("metricLabel")}</span>
+          </p>
+          <p className="hb-proof__implement">{t("implementNote")}</p>
+        </Enter>
+
         {stats.length > 0 ? (
           <Enter delay={0.08}>
             <ul className="hb-proof__stats">

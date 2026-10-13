@@ -1,4 +1,4 @@
-import { Fraunces, Outfit } from "next/font/google";
+import { Fraunces, Heebo } from "next/font/google";
 import localFont from "next/font/local";
 
 /** Display. Replaces Instrument Serif. The italic is the accent word. */
@@ -7,15 +7,18 @@ export const fraunces = Fraunces({
   weight: ["400", "500"],
   style: ["normal", "italic"],
   variable: "--font-serif",
-  display: "swap",
+  display: "swap"
 });
 
-/** UI and body. Replaces IBM Plex Sans. */
-export const outfit = Outfit({
-  subsets: ["latin"],
+/**
+ * UI + body for EN and HE. Headers keep serif (Fraunces / Frank Ruhl).
+ * One family sitewide so non-header text never falls back to Outfit / system.
+ */
+export const heebo = Heebo({
+  subsets: ["latin", "hebrew"],
   weight: ["400", "500", "600"],
   variable: "--font-sans",
-  display: "swap",
+  display: "swap"
 });
 
 export const plexSans = localFont({
@@ -25,17 +28,6 @@ export const plexSans = localFont({
     { path: "../../public/fonts/ibm-plex-sans-latin-600-normal.woff2", weight: "600", style: "normal" }
   ],
   variable: "--font-sans",
-  display: "swap"
-});
-
-export const heebo = localFont({
-  src: [
-    { path: "../../public/fonts/heebo-hebrew-400-normal.woff2", weight: "400", style: "normal" },
-    { path: "../../public/fonts/heebo-hebrew-500-normal.woff2", weight: "500", style: "normal" },
-    { path: "../../public/fonts/heebo-hebrew-600-normal.woff2", weight: "600", style: "normal" },
-    { path: "../../public/fonts/heebo-latin-400-normal.woff2", weight: "400", style: "normal" }
-  ],
-  variable: "--font-sans-he",
   display: "swap"
 });
 

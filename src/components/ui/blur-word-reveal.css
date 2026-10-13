@@ -1,0 +1,16 @@
+.blur-words {
+  display: inline;
+}
+
+.blur-words__word {
+  display: inline-block;
+  will-change: filter, opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blur-words__word {
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

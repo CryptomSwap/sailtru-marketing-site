@@ -7,7 +7,7 @@
   flex-direction: column;
   direction: rtl;
   text-align: right;
-  font-family: var(--font-sans), "IBM Plex Sans", system-ui, sans-serif;
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   color: rgba(28, 32, 42, 0.92);
   background: linear-gradient(168deg, #f6f4f0 0%, #eceae4 38%, #e4e2dc 100%);
   overflow: hidden;

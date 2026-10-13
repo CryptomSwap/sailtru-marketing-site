@@ -1,15 +1,14 @@
 /* Shared inner-page language — mirrors homepage cobalt ATF + cool off-white body */
 
 .site-page {
-  --font-sans: var(--font-sans-he);
-  --font-mono: var(--font-sans-he);
+  --font-mono: var(--font-sans);
   --sp-bg: #f4f6fb;
   --sp-panel: #ffffff;
   --sp-ink: #0b1632;
   --sp-mute: #4a5878;
   --sp-line: rgba(11, 22, 50, 0.12);
   --sp-accent: #2f5bff;
-  font-family: var(--font-sans-he), "Heebo", system-ui, sans-serif;
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   background: var(--sp-bg);
   color: var(--sp-ink);
 }
@@ -218,6 +217,10 @@
   font-weight: 500;
   color: rgba(255, 255, 255, 0.72);
   text-decoration: none;
+}
+
+.sp-hero .site-header__link--cta {
+  display: none;
 }
 
 .sp-hero .site-header__link:hover,
@@ -713,7 +716,7 @@
   border-radius: 999px;
   background: #12182a;
   color: #fff;
-  font-family: var(--font-sans), var(--font-sans-he), "Outfit", system-ui, sans-serif;
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -764,4 +767,85 @@
 [dir="rtl"] .sp-quote p {
   font-family: var(--font-serif-he), var(--font-serif), "Frank Ruhl Libre", serif;
   font-style: normal;
+}
+
+@media (max-width: 899px) {
+  .sp-hero__inner {
+    padding-inline: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+    padding-bottom: 2.5rem;
+  }
+
+  .sp-hero--field .sp-hero__inner {
+    min-height: auto;
+  }
+
+  .sp-hero .site-header--v2 {
+    flex-wrap: nowrap;
+    padding-top: max(0.85rem, env(safe-area-inset-top));
+  }
+
+  .sp-hero .site-header--v2:has(.site-header__links.is-open) {
+    flex-wrap: wrap;
+  }
+
+  .sp-hero .site-header__logo {
+    height: 2.05rem;
+    max-width: 8.75rem;
+  }
+
+  .sp-hero .site-header__cta {
+    display: inline-flex;
+    min-height: 2.35rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.72rem;
+    border-radius: 999px;
+  }
+
+  .sp-hero .site-header__menu {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .sp-hero .site-header__link--cta {
+    display: none;
+  }
+
+  .sp-hero .site-header__links.is-open .site-header__link--cta {
+    display: none;
+  }
+
+  .sp-hero__content {
+    margin-top: 1.5rem;
+  }
+
+  .sp-hero__title {
+    font-size: clamp(1.85rem, 8.5vw, 2.55rem);
+    line-height: 1.12;
+  }
+
+  .sp-hero__body {
+    font-size: 0.98rem;
+  }
+
+  .sp-hero__cta,
+  .sp-btn {
+    width: 100%;
+    min-height: 3.15rem;
+  }
+
+  .sp-shell {
+    padding-inline: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+  }
+
+  .sp-section {
+    padding: clamp(2.35rem, 6vh, 3.75rem) 0;
+  }
+
+  .sp-heading {
+    font-size: clamp(1.55rem, 7.5vw, 2.1rem);
+  }
+
+  .sp-process__tab {
+    min-height: 3rem;
+  }
 }

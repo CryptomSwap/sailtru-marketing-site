@@ -2,6 +2,8 @@
 
 Official SailTru marketing website.
 
+**What the company is:** [docs/what-sailtru-is.md](docs/what-sailtru-is.md) — read this before copy, design, or positioning. Mike treats that file as canonical.
+
 **Production domain:** [sailtru.com](https://sailtru.com)
 
 **Framework:** Next.js 16 (App Router), React 19, TypeScript, next-intl (EN/HE), Tailwind CSS 4

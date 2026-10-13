@@ -322,7 +322,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-sans), "IBM Plex Sans", system-ui, sans-serif;
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   font-size: 0.9375rem;
   font-weight: 500;
   letter-spacing: 0.01em;

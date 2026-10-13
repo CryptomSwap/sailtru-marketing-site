@@ -18,9 +18,20 @@ export function FinalCtaSection() {
           <h2 className="hb-close__title">{t("title")}</h2>
           <p className="hb-close__body">{t("body")}</p>
           <div className="hb-close__actions">
+            <a href="#observe" className="hb-close__btn hb-close__btn--observe">
+              {t("observeCta")}
+            </a>
             <a
               href={CALENDLY_URL}
-              className="hb-close__btn"
+              className="hb-close__btn hb-close__btn--build"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("buildCta")}
+            </a>
+            <a
+              href={CALENDLY_URL}
+              className="hb-close__btn hb-close__btn--desktop"
               target="_blank"
               rel="noopener noreferrer"
             >

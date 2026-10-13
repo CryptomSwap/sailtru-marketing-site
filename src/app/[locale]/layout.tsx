@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
@@ -6,7 +6,6 @@ import {
   frankRuhlLibre,
   fraunces,
   heebo,
-  outfit,
   plexMono,
 } from "@/lib/fonts";
 import { CodeWaveBackground } from "@/components/ui/code-wave-background";
@@ -24,6 +23,12 @@ type LayoutProps = {
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover"
+};
 
 export async function generateMetadata({ params }: LayoutProps): Promise<Metadata> {
   const { locale } = await params;
@@ -79,7 +84,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     <html
       lang={locale}
       dir={isRtl ? "rtl" : "ltr"}
-      className={`${outfit.variable} ${heebo.variable} ${plexMono.variable} ${fraunces.variable} ${frankRuhlLibre.variable}`}
+      className={`${heebo.variable} ${plexMono.variable} ${fraunces.variable} ${frankRuhlLibre.variable}`}
     >
       <body className={`font-sans antialiased ${isRtl ? "locale-he" : "locale-en"}`}>
         <CodeWaveBackground />

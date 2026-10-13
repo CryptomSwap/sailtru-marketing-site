@@ -18,6 +18,8 @@
   --paper: #f4f6fa;
   --radius-panel: 0;
   --radius-shell: 0;
+  /* Alias: older HE stacks referenced --font-sans-he; Heebo is now the site sans. */
+  --font-sans-he: var(--font-sans);
 }
 
 * {
@@ -27,6 +29,8 @@
 html {
   width: 100%;
   overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html,
@@ -40,12 +44,18 @@ body {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  font-family: var(--font-sans), "Outfit", "Avenir Next", "Segoe UI", sans-serif;
+  min-height: 100svh;
+  padding-bottom: env(safe-area-inset-bottom);
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   color: var(--foreground);
   background: var(--paper, var(--background));
   line-height: 1.45;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+body.nav-open {
+  overflow: hidden;
 }
 
 body::before {
@@ -130,9 +140,9 @@ button:focus-visible {
   color: rgba(220, 228, 248, 0.9);
 }
 
-/* Hebrew locale — premium sans + editorial serif */
+/* Hebrew locale — same Heebo UI; display headers keep Frank Ruhl via --font-serif-he */
 .locale-he {
-  font-family: var(--font-sans-he), var(--font-sans), "Heebo", "IBM Plex Sans", system-ui, sans-serif;
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
 }
 
 .locale-he .hero-intel__line {

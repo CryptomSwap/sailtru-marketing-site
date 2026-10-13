@@ -400,15 +400,16 @@ export function HowSailtruWorksSection() {
 
       <ol className="intel-fallback">
         {CHAPTERS.map((chapter) => (
-          <li key={chapter.id}>
+          <li key={chapter.id} className="intel-fallback__chapter">
             <p className="intel-fallback__index">{chapter.index}</p>
             <h2 className="hsw__title">{headline(chapter.step)}</h2>
             <p className="hsw__lede">{body(chapter.step)}</p>
-            {chapter.step === "d" ? (
-              <DeliverBoards staticMode />
-            ) : (
-              <SignalPoster tone={chapter.id === "discover" ? "cubes" : "orbit"} />
-            )}
+            <div className="hsw__diagram hsw__diagram--fallback">
+              {chapter.step === "a" ? <SignalChips layout="rows" /> : null}
+              {chapter.step === "b" ? <IntelPanel /> : null}
+              {chapter.step === "c" ? <OutcomeBoard /> : null}
+              {chapter.step === "d" ? <DeliverBoards staticMode /> : null}
+            </div>
           </li>
         ))}
         <li>

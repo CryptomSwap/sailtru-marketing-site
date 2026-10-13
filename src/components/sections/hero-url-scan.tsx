@@ -8,9 +8,17 @@ import { useDiagnosticScanContext } from "@/components/diagnostics/diagnostic-sc
 type HeroUrlScanProps = {
   /** When provided, drives this submit instead of the shared diagnostic scan context. */
   onRunScan?: (url: string) => void;
+  inputId?: string;
+  submitLabel?: string;
+  stacked?: boolean;
 };
 
-export function HeroUrlScan({ onRunScan }: HeroUrlScanProps = {}) {
+export function HeroUrlScan({
+  onRunScan,
+  inputId = "hero-url-input",
+  submitLabel,
+  stacked = false
+}: HeroUrlScanProps = {}) {
   const t = useTranslations("hero.urlScan");
   const scanContext = useDiagnosticScanContext();
   const reduceMotion = useReducedMotion() ?? false;
@@ -39,8 +47,8 @@ export function HeroUrlScan({ onRunScan }: HeroUrlScanProps = {}) {
   }
 
   return (
-    <form className="hero-url-scan" onSubmit={handleSubmit}>
-      <label className="sr-only" htmlFor="hero-url-input">
+    <form className={`hero-url-scan${stacked ? " hero-url-scan--stacked" : ""}`} onSubmit={handleSubmit}>
+      <label className="sr-only" htmlFor={inputId}>
         {t("label")}
       </label>
       <span className="hero-url-scan__globe" aria-hidden>
@@ -50,7 +58,7 @@ export function HeroUrlScan({ onRunScan }: HeroUrlScanProps = {}) {
         </svg>
       </span>
       <input
-        id="hero-url-input"
+        id={inputId}
         className="hero-url-scan__input"
         type="text"
         inputMode="url"
@@ -66,7 +74,7 @@ export function HeroUrlScan({ onRunScan }: HeroUrlScanProps = {}) {
         onPointerEnter={trackPointer}
         onPointerMove={trackPointer}
       >
-        <span className="hero-url-scan__button-label">{t("runScan")}</span>
+        <span className="hero-url-scan__button-label">{submitLabel ?? t("runScan")}</span>
       </button>
     </form>
   );

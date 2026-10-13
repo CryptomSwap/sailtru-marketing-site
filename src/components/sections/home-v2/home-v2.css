@@ -1,10 +1,9 @@
 /* Home v2 — one cobalt field, bright at the fold and dark at the foot */
 
-/* Non-headers → Heebo; display headers keep Instrument / Frank Ruhl via --font-serif* */
+/* Non-headers → Heebo (--font-sans); display headers keep Fraunces / Frank Ruhl */
 .site-home {
-  --font-sans: var(--font-sans-he);
-  --font-mono: var(--font-sans-he);
-  font-family: var(--font-sans-he), "Heebo", system-ui, sans-serif;
+  --font-mono: var(--font-sans);
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   background: linear-gradient(
     180deg,
     #4f78ff 0%,
@@ -205,7 +204,7 @@
   flex-direction: column;
   gap: 0;
   margin: 0;
-  font-family: var(--font-sans), "IBM Plex Sans", system-ui, sans-serif;
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   font-size: clamp(3.4rem, 9.2vw, 6.75rem);
   font-weight: 600;
   line-height: 0.86;
@@ -747,14 +746,7 @@
 
 @media (max-width: 560px) {
   .field-scan .hero-url-scan {
-    flex-wrap: wrap;
-  }
-
-  .field-scan .hero-url-scan__button,
-  .field-scan .hero-cta--primary {
-    flex: 1 1 100%;
-    border-inline-start: 0;
-    border-top: 1px solid rgba(14, 21, 36, 0.08);
+    flex-wrap: nowrap;
   }
 }
 
@@ -803,7 +795,7 @@
 
 .hb-eyebrow {
   margin: 0 0 0.85rem;
-  font-family: var(--font-sans), var(--font-sans-he), "Outfit", "Heebo", system-ui, sans-serif;
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -1153,7 +1145,7 @@
   border-radius: 999px;
   background: #fff;
   color: #07122f;
-  font-family: var(--font-sans), var(--font-sans-he), "Outfit", system-ui, sans-serif;
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -1446,4 +1438,185 @@
   text-decoration: none;
   font-weight: 600;
   font-size: 0.85rem;
+}
+
+.site-header__link--cta {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .field-hero,
+  .field-hero__inner {
+    min-height: auto;
+  }
+
+  .home-cobalt-field .field-stage--with-diagram {
+    min-height: auto;
+  }
+
+  .home-cobalt-field .hsw__diagram--hero {
+    min-height: 0;
+    padding-bottom: 1.25rem;
+  }
+
+  .home-cobalt-field .hsw {
+    margin-top: 0;
+  }
+
+  .home-cobalt-field .hsw__inner {
+    padding-top: 1.75rem;
+  }
+
+  .field-hero .site-header--v2,
+  .site-header--v2 {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding-top: max(0.85rem, env(safe-area-inset-top));
+  }
+
+  .field-hero .site-header--v2:has(.site-header__links.is-open),
+  .site-header--v2:has(.site-header__links.is-open) {
+    flex-wrap: wrap;
+  }
+
+  .field-hero .site-header__logo {
+    height: 2.05rem;
+    max-width: 8.75rem;
+  }
+
+  .field-hero .site-header__cta,
+  .sp-hero .site-header__cta {
+    display: inline-flex;
+    min-height: 2.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: #fff;
+    color: #0b1632;
+    font-size: 0.72rem;
+    font-weight: 600;
+    box-shadow: none;
+  }
+
+  .field-hero .site-header__menu,
+  .sp-hero .site-header__menu {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-inline-start: 0;
+  }
+
+  .field-hero .site-header__links.is-open,
+  .sp-hero .site-header__links.is-open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: 1 0 100%;
+    order: 5;
+    gap: 0;
+    margin: 0.65rem -0.15rem 0;
+    padding: 0.35rem 0 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .field-hero .site-header__link,
+  .sp-hero .site-header__link {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    padding: 0.35rem 0.15rem;
+    font-size: 1rem;
+  }
+
+  .field-hero .site-header__link--cta,
+  .sp-hero .site-header__link--cta,
+  .site-header__links.is-open .site-header__link--cta {
+    display: none;
+  }
+
+  .field-headline {
+    font-size: clamp(2.7rem, 11.5vw, 3.45rem);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+  }
+
+  .field-lede {
+    margin-top: 1.1rem;
+    font-size: 0.98rem;
+  }
+
+  .field-scan {
+    margin-top: 1.35rem;
+    width: 100%;
+  }
+
+  .field-scan .hero-url-scan,
+  .field-scan--ref .hero-url-scan {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: 100%;
+    max-width: none;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .field-scan .hero-url-scan__globe,
+  .field-scan--ref .hero-url-scan__globe {
+    width: 2.15rem;
+    flex: 0 0 auto;
+  }
+
+  .field-scan .hero-url-scan__input,
+  .field-scan--ref .hero-url-scan__input {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    min-height: 3.05rem;
+    font-size: 16px;
+    padding: 0.55rem 0.35rem 0.55rem 0;
+  }
+
+  .field-scan .hero-url-scan__button,
+  .field-scan .hero-cta--primary,
+  .field-scan--ref .hero-url-scan__button,
+  .field-scan--ref .hero-cta--primary {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 2.65rem;
+    margin: 0.18rem;
+    padding: 0.45rem 0.85rem;
+    border-inline-start: 0;
+    border-top: 0;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .hb-section {
+    padding: clamp(2.5rem, 7vh, 4rem) 0;
+  }
+
+  .hb-heading {
+    font-size: clamp(1.7rem, 8vw, 2.15rem);
+    line-height: 1.18;
+  }
+
+  .hb-close__panel {
+    padding: 1.35rem 1.15rem 1.5rem;
+  }
+
+  .hb-close__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .hb-close__btn {
+    width: 100%;
+  }
+
+  .home-below {
+    margin-top: 0;
+    padding-top: 0.5rem;
+  }
 }
