@@ -126,3 +126,29 @@
 [dir="rtl"] .scan-gate__title {
   font-family: var(--font-serif-he), var(--font-serif), "Frank Ruhl Libre", serif;
 }
+
+@media (max-width: 719px) {
+  .scan-gate {
+    padding: 1.25rem 0 2.5rem;
+    align-items: start;
+  }
+
+  .scan-gate__panel {
+    padding: 1.35rem 1.1rem 1.6rem;
+    border-radius: 1rem;
+  }
+
+  .scan-gate__title {
+    font-size: clamp(1.85rem, 9vw, 2.6rem);
+  }
+
+  .scan-gate__body {
+    font-size: 1.02rem;
+  }
+
+  .scan-gate__input,
+  .scan-gate__submit {
+    width: 100%;
+    font-size: 16px;
+  }
+}

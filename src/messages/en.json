@@ -27,17 +27,29 @@
   },
   "hero": {
     "railLabel": "SEO · GEO · Custom AI solutions",
-    "headlineAria": "See the opportunity. Make your move.",
-    "headlineLineA": "See the opportunity.",
-    "headlineLineB": "Make your move.",
+    "headlineAria": "What should your business improve next?",
+    "headlineLineA": "What should your business",
+    "headlineLineB": "improve next?",
     "headlineLineC": "",
     "headlineLineD": "",
-    "subtitle": "We find what competitors do differently, show you how to use it to your advantage, and improve your search and AI visibility. We also build custom AI solutions for your business.",
+    "subtitle": "SailTrue studies your business, market, and digital presence, prioritizes what matters, and helps implement the right solution.",
     "methodology": "How we work",
+    "mobile": {
+      "headline": "What should your business improve next?",
+      "headlineLead": "What should your business",
+      "headlineLoud": "improve next?",
+      "subtitle": "SailTrue studies your business, market, and digital presence, prioritizes what matters, and helps implement the right solution.",
+      "cta": "See what to improve",
+      "credibility": {
+        "stem": "We read signals across",
+        "aria": "We read signals across {brands}"
+      }
+    },
     "urlScan": {
       "label": "Website URL",
       "placeholder": "yourcompany.com",
-      "runScan": "Run scan →"
+      "runScan": "Run scan →",
+      "analyze": "Analyze my business"
     }
   },
   "problem": {
@@ -140,6 +152,9 @@
     "title": "Evidence over claims.",
     "description": "Real client outcomes when we have permission to share them.",
     "stats": [],
+    "metric": "+275% traffic",
+    "metricLabel": "Laba Records",
+    "implementNote": "SailTrue does not only analyze businesses. It implements improvements and measures outcomes.",
     "quote": "SailTru helped us turn our website into a real growth channel. Traffic grew by 275%, with roughly 10× more conversions and paying clients.",
     "attribution": "Laba Records",
     "logos": []
@@ -174,6 +189,8 @@
     "title": "Ready to find where opportunity is hiding?",
     "body": "Book time with the team or email us. Share your website and what you want to improve.",
     "button": "Book a call",
+    "observeCta": "See what to improve",
+    "buildCta": "Build with SailTrue",
     "note": "team@sailtru.com · Calendly available",
     "calendlyUrl": "https://calendly.com/sailtrue",
     "email": "team@sailtru.com"
@@ -514,6 +531,62 @@
         "body": "Tell you what changed, including when the result is inconclusive."
       }
     },
+    "observe": {
+      "index": "01 — Observe",
+      "title": "Start with your business.",
+      "lede": "SailTrue begins by examining the business and its digital environment — site, market, competitors, and how work actually runs — to find what should improve next.",
+      "blurStatement": "Growth breaks when signals stay scattered — and nobody decides what to improve next."
+    },
+    "systemLoop": {
+      "eyebrow": "How SailTrue works",
+      "title": "Intelligence, then execution.",
+      "lede": "Observe. Understand. Prioritize. Recommend. Build. Monitor.",
+      "observe": {
+        "title": "Observe",
+        "body": "Gather evidence about the business, website, market and competitive environment."
+      },
+      "understand": {
+        "title": "Understand",
+        "body": "Turn fragmented signals into a reliable picture of what is happening."
+      },
+      "prioritize": {
+        "title": "Prioritize",
+        "body": "Determine what matters most and what should be improved next."
+      },
+      "recommend": {
+        "title": "Recommend",
+        "body": "Translate the evidence into clear, defensible actions."
+      },
+      "build": {
+        "title": "Build",
+        "body": "Implement the solution — including bespoke AI systems, automations and agent teams where appropriate."
+      },
+      "monitor": {
+        "title": "Monitor",
+        "body": "Measure whether the intervention actually improved the business."
+      }
+    },
+    "execution": {
+      "eyebrow": "Build",
+      "title": "We found the opportunity. Here is how we can implement it.",
+      "lede": "Agents and automations appear after SailTrue knows what should improve — not as a catalog that defines the company.",
+      "note": "SailTrue can build bespoke agent teams designed around the company’s actual workflows.",
+      "items": {
+        "research": "Research agents",
+        "competitive": "Competitive monitoring agents",
+        "leads": "Lead qualification agents",
+        "ops": "Operations agents",
+        "support": "Customer-support agents",
+        "knowledge": "Internal knowledge agents",
+        "automations": "Workflow automations",
+        "teams": "Bespoke multi-agent teams"
+      }
+    },
+    "monitor": {
+      "eyebrow": "Monitor",
+      "title": "We don't stop when something ships.",
+      "lede": "SailTrue monitors what changed, whether the intervention worked, and what should improve next."
+    },
     "howItWorks": {
       "eyebrow": "How SailTru works",
       "headlineA": "Spot the difference.",
@@ -613,10 +686,22 @@
           "running": "Running",
           "progress": "In progress",
           "agents": {
-            "research": { "title": "Research Agent", "body": "Scans the market" },
-            "insight": { "title": "Insight Agent", "body": "Finds the gap" },
-            "strategy": { "title": "Strategy Agent", "body": "Ranks the moves" },
-            "implementation": { "title": "Implementation Agent", "body": "Ships the fix" }
+            "research": {
+              "title": "Research Agent",
+              "body": "Scans the market"
+            },
+            "insight": {
+              "title": "Insight Agent",
+              "body": "Finds the gap"
+            },
+            "strategy": {
+              "title": "Strategy Agent",
+              "body": "Ranks the moves"
+            },
+            "implementation": {
+              "title": "Implementation Agent",
+              "body": "Ships the fix"
+            }
           },
           "tabs": {
             "summary": "Executive Summary",

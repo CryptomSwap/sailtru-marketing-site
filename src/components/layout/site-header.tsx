@@ -21,11 +21,17 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
     setMenuOpen(false);
   }, [pathname, locale]);
 
+  useEffect(() => {
+    document.body.classList.toggle("nav-open", menuOpen);
+    return () => document.body.classList.remove("nav-open");
+  }, [menuOpen]);
+
   const navItems = [
     { label: tNav("home"), href: "/" as const },
     { label: tNav("services"), href: "/services" as const },
     { label: tNav("howItWorks"), href: "/how-we-work" as const },
-    { label: tNav("work"), href: "/work" as const }
+    { label: tNav("work"), href: "/work" as const },
+    { label: tNav("beginDiagnosis"), href: "/contact" as const }
   ];
 
   const alternateLocale = routing.locales.find((l) => l !== locale) ?? routing.defaultLocale;
@@ -60,12 +66,20 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`site-header__link ${isActive ? "site-header__link--active" : ""}`}
+              className={`site-header__link${item.href === "/contact" ? " site-header__link--cta" : ""}${isActive ? " site-header__link--active" : ""}`}
             >
               {item.label}
             </Link>
           );
         })}
+        <Link
+          href={pathname}
+          locale={alternateLocale}
+          className="site-header__link site-header__link--locale"
+          aria-label={tCommon("localeSwitch")}
+        >
+          {alternateLocale === "he" ? tCommon("localeHe") : tCommon("localeEn")}
+        </Link>
       </nav>
 
       <div className="site-header__actions">

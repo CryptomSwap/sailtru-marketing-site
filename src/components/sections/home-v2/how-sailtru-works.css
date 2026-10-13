@@ -276,9 +276,9 @@
   }
 
   .hsw__signal-rows .hsw__signals:first-child li:last-child {
-    grid-column: 1 / -1;
-    width: min(100%, 12rem);
-    justify-self: center;
+    grid-column: auto;
+    width: auto;
+    justify-self: stretch;
   }
 }
 
@@ -1701,6 +1701,33 @@
   margin-top: 0.35rem;
 }
 
+.hsw__diagram--fallback {
+  min-height: 0;
+  margin-top: 1.15rem;
+  padding: 0;
+}
+
+.intel-fallback__chapter {
+  min-width: 0;
+}
+
+.intel-fallback .hsw__signal-rows {
+  width: 100%;
+}
+
+.intel-fallback .hsw-intel {
+  max-width: none;
+  margin: 0;
+}
+
+.intel-fallback .hsw__outcomes {
+  margin: 0;
+}
+
+.intel-fallback .hsw__band {
+  margin-bottom: 0.75rem;
+}
+
 .deliver {
   position: absolute;
   z-index: 3;
@@ -2138,5 +2165,46 @@
 @media (max-width: 979px) {
   .hsw--engine {
     margin-top: 0;
+  }
+
+  .hsw__inner {
+    padding: clamp(2.25rem, 6vh, 3.5rem) max(1rem, env(safe-area-inset-left)) clamp(3rem, 8vh, 4.5rem);
+    gap: 1.75rem;
+  }
+
+  .hsw__title {
+    font-size: clamp(1.7rem, 8vw, 2.35rem);
+    line-height: 1.12;
+  }
+
+  .hsw__lede {
+    font-size: 0.95rem;
+  }
+
+  .hsw__scan-stage--idle .hero-url-scan,
+  .hsw__scan {
+    width: 100%;
+  }
+
+  .intel-fallback {
+    padding: clamp(2.25rem, 6vh, 3.5rem) max(1rem, env(safe-area-inset-left)) clamp(3rem, 7vh, 4.5rem);
+  }
+
+  .intel-fallback li + li {
+    margin-top: 2.25rem;
+  }
+
+  .intel-fallback .hsw__title {
+    font-size: clamp(1.65rem, 7.5vw, 2.2rem);
+  }
+
+  .intel-fallback .signal-stream {
+    height: min(70vw, 18rem);
+  }
+
+  .intel-cta {
+    width: 100%;
+    justify-content: center;
+    min-height: 3.15rem;
   }
 }

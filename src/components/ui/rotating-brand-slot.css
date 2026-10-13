@@ -1,0 +1,75 @@
+/* Profound-style rotating logo/name slot — used in mobile ATF credibility line */
+
+.rotating-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35rem 0.45rem;
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: rgba(214, 226, 255, 0.62);
+  text-align: center;
+}
+
+.rotating-brand__stem {
+  font-weight: 450;
+}
+
+.rotating-brand__slot {
+  position: relative;
+  display: inline-grid;
+  grid-template: 1fr / 1fr;
+  align-items: center;
+  justify-items: start;
+  min-width: 9.5rem;
+  min-height: 1.35em;
+  vertical-align: baseline;
+}
+
+.rotating-brand__item {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  visibility: hidden;
+  opacity: 0;
+  filter: blur(12px);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.6s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.rotating-brand__item[data-active] {
+  visibility: visible;
+  opacity: 1;
+  filter: blur(0);
+}
+
+.rotating-brand__mark {
+  width: 1.05em;
+  height: 1.05em;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.rotating-brand__mark--light {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.25));
+}
+
+.rotating-brand__name {
+  font-weight: 600;
+  color: rgba(244, 248, 255, 0.92);
+  letter-spacing: -0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rotating-brand__item {
+    transition: none;
+    filter: none;
+  }
+}

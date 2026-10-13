@@ -23,10 +23,10 @@ export function Enter({ children, className, delay = 0, as = "div" }: EnterProps
   return (
     <MotionTag
       className={className}
-      initial={{ opacity: 0, y: 64 }}
+      initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.35 }}
-      transition={{ duration: 0.9, delay, ease: EASE }}
+      viewport={{ once: true, amount: 0.18 }}
+      transition={{ duration: 0.7, delay, ease: EASE }}
     >
       {children}
     </MotionTag>

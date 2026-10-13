@@ -1,6 +1,8 @@
 .whatsapp-cta {
   position: fixed;
-  right: 1.25rem;
+  inset-inline-end: 1.25rem;
+  inset-inline-start: auto;
+  right: auto;
   bottom: 1.25rem;
   z-index: 50;
   display: flex;
@@ -40,10 +42,10 @@
 
 @media (max-width: 480px) {
   .whatsapp-cta {
-    right: 1rem;
-    bottom: 1rem;
-    width: 3rem;
-    height: 3rem;
+    inset-inline-end: max(1rem, env(safe-area-inset-right), env(safe-area-inset-left));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    width: 3.15rem;
+    height: 3.15rem;
   }
 
   .whatsapp-cta svg {
