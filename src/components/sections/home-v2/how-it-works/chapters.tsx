@@ -77,7 +77,7 @@ function DiscoverChapter() {
           ]}
         />
         <div className="hsw-ch__core">
-          <Image src="/images/sailtru-lockup.png" alt="" width={148} height={42} className="hsw-ch__lockup" />
+          <Image src="/images/sailtru-lockup.png" alt="" width={148} height={36} className="hsw-ch__lockup" />
           <p className="hsw-ch__core-label">{t("chapters.discover.core")}</p>
         </div>
       </div>

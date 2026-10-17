@@ -3,18 +3,26 @@
 .rotating-brand {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
-  gap: 0.35rem 0.45rem;
+  gap: 0.12rem 0.3rem;
   margin: 0;
   font-size: 0.88rem;
-  line-height: 1.35;
+  line-height: 1;
   color: rgba(214, 226, 255, 0.62);
   text-align: center;
 }
 
+/* Center stem + slot as one lockup (hero credibility lines) */
+.rotating-brand--centered {
+  width: auto;
+  max-width: 100%;
+  justify-content: center;
+}
+
 .rotating-brand__stem {
   font-weight: 450;
+  line-height: 1;
 }
 
 .rotating-brand__slot {
@@ -23,16 +31,16 @@
   grid-template: 1fr / 1fr;
   align-items: center;
   justify-items: start;
-  min-width: 9.5rem;
-  min-height: 1.35em;
-  vertical-align: baseline;
+  width: max-content;
+  min-width: 0;
+  min-height: 1em;
 }
 
 .rotating-brand__item {
   grid-area: 1 / 1;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.28rem;
   visibility: hidden;
   opacity: 0;
   filter: blur(12px);
@@ -51,8 +59,9 @@
 }
 
 .rotating-brand__mark {
-  width: 1.05em;
-  height: 1.05em;
+  display: block;
+  width: 1em;
+  height: 1em;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -63,6 +72,7 @@
 
 .rotating-brand__name {
   font-weight: 600;
+  line-height: 1;
   color: rgba(244, 248, 255, 0.92);
   letter-spacing: -0.01em;
 }

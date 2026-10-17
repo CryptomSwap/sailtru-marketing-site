@@ -204,8 +204,8 @@ export function IntelPanel({ className = "", stagger = false }: { className?: st
           <Image
             src="/images/sailtru-lockup.png"
             alt="SailTru"
-            width={220}
-            height={62}
+            width={757}
+            height={183}
             className="hsw-intel__logo"
             priority={false}
             unoptimized

@@ -53,8 +53,8 @@
 }
 
 .field-hero--ref .site-header__logo {
-  height: clamp(2.15rem, 3.2vw, 2.55rem);
-  max-width: min(11.5rem, 42vw);
+  height: clamp(1.8rem, 2.7vw, 2.15rem);
+  max-width: min(9.5rem, 36vw);
 }
 
 .field-hero--ref .site-header__links {
@@ -347,8 +347,8 @@
   }
 
   .field-hero--ref .site-header__logo {
-    height: 1.85rem;
-    max-width: 7.25rem;
+    height: 1.55rem;
+    max-width: 6.1rem;
   }
 }
 
@@ -381,13 +381,9 @@
     gap: 0.45rem;
   }
 
-  .field-hero--ref .site-header--v2:has(.site-header__links.is-open) {
-    flex-wrap: wrap;
-  }
-
   .field-hero--ref .site-header__logo {
-    height: 2.05rem;
-    max-width: 8.75rem;
+    height: 1.7rem;
+    max-width: 7.25rem;
   }
 
   .field-hero--ref .site-header__cta {

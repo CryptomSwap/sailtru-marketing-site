@@ -4,6 +4,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HeroUrlScan } from "@/components/sections/hero-url-scan";
+import { RotatingBrandSlot } from "@/components/ui/rotating-brand-slot";
+import "@/components/ui/rotating-brand-slot.css";
 import { HeroAnalysisVisual } from "@/components/sections/home-v2/hero-analysis-stage";
 import { IntelPanel, SignalChips } from "@/components/sections/home-v2/how-sailtru-works-section";
 import { useRouter } from "@/i18n/navigation";
@@ -123,8 +125,11 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
             exit={{ opacity: 0 }}
             transition={PHASE_TRANSITION}
           >
-            <div className="field-scan field-scan--ref">
-              <HeroUrlScan onRunScan={runScan} />
+            <div className="hsw__scan-idle">
+              <div className="field-scan field-scan--ref hsw__scan-idle-field">
+                <HeroUrlScan onRunScan={runScan} />
+              </div>
+              <RotatingBrandSlot className="hsw__scan-credibility rotating-brand--centered" />
             </div>
           </motion.div>
         ) : null}
