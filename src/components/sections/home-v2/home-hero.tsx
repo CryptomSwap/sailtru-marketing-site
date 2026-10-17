@@ -146,8 +146,8 @@ export function HomeHero() {
                 ) : (
                   <motion.div
                     className="field-hero-mobile__credibility-wrap"
-                    initial={{ opacity: 0, y: 6, filter: "blur(8px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: typeDelay + 0.18, ease: EASE }}
                   >
                     <RotatingBrandSlot className="field-hero-mobile__credibility rotating-brand--centered" />
