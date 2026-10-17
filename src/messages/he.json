@@ -198,6 +198,13 @@
     "label": "WhatsApp",
     "ariaLabel": "יצירת קשר עם SailTru ב-WhatsApp"
   },
+  "contactFab": {
+    "groupLabel": "יצירת קשר ורשתות חברתיות",
+    "whatsappAria": "יצירת קשר עם SailTru ב-WhatsApp",
+    "telegramAria": "הודעה לטום בטלגרם",
+    "linkedinAria": "SailTru בלינקדאין",
+    "instagramAria": "SailTru באינסטגרם"
+  },
   "servicesPage": {
     "metadata": {
       "title": "שירותים | SailTru",

@@ -1,0 +1,109 @@
+.floating-contact {
+  position: fixed;
+  inset-inline-end: 1.25rem;
+  inset-inline-start: auto;
+  right: auto;
+  bottom: 1.25rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.floating-contact__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(14, 21, 36, 0.42);
+  color: rgba(220, 236, 228, 0.92);
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 22px rgba(8, 16, 40, 0.22);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.floating-contact__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(8, 16, 40, 0.28);
+}
+
+.floating-contact__btn:focus-visible {
+  outline: 2px solid rgba(47, 91, 255, 0.85);
+  outline-offset: 3px;
+}
+
+.floating-contact__btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.floating-contact__btn--whatsapp:hover {
+  background: #1f8f4e;
+  color: #fff;
+  border-color: transparent;
+}
+
+.floating-contact__btn--whatsapp:focus-visible {
+  outline-color: rgba(37, 211, 102, 0.8);
+}
+
+.floating-contact__btn--telegram:hover {
+  background: #229ed9;
+  color: #fff;
+  border-color: transparent;
+}
+
+.floating-contact__btn--telegram:focus-visible {
+  outline-color: rgba(34, 158, 217, 0.85);
+}
+
+.floating-contact__btn--linkedin:hover {
+  background: #0a66c2;
+  color: #fff;
+  border-color: transparent;
+}
+
+.floating-contact__btn--linkedin:focus-visible {
+  outline-color: rgba(10, 102, 194, 0.85);
+}
+
+.floating-contact__btn--instagram:hover {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #fff;
+  border-color: transparent;
+}
+
+.floating-contact__btn--instagram:focus-visible {
+  outline-color: rgba(225, 48, 108, 0.85);
+}
+
+@media (max-width: 480px) {
+  .floating-contact {
+    inset-inline-end: max(1rem, env(safe-area-inset-right), env(safe-area-inset-left));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    gap: 0.55rem;
+  }
+
+  .floating-contact__btn {
+    width: 3.15rem;
+    height: 3.15rem;
+  }
+
+  .floating-contact__btn svg {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+}

@@ -199,6 +199,13 @@
     "label": "WhatsApp",
     "ariaLabel": "Contact SailTru on WhatsApp"
   },
+  "contactFab": {
+    "groupLabel": "Contact and social links",
+    "whatsappAria": "Contact SailTru on WhatsApp",
+    "telegramAria": "Message Tom on Telegram",
+    "linkedinAria": "SailTru on LinkedIn",
+    "instagramAria": "SailTru on Instagram"
+  },
   "servicesPage": {
     "metadata": {
       "title": "What we do | SailTru",

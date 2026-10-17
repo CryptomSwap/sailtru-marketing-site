@@ -129,18 +129,6 @@ export function HomeHero() {
                   </motion.p>
                 )}
 
-                {reduceMotion ? (
-                  <RotatingBrandSlot className="field-hero-mobile__credibility" />
-                ) : (
-                  <motion.div
-                    className="field-hero-mobile__credibility-wrap"
-                    initial={{ opacity: 0, y: 6, filter: "blur(8px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ duration: 0.6, delay: typeDelay + 0.08, ease: EASE }}
-                  >
-                    <RotatingBrandSlot className="field-hero-mobile__credibility" />
-                  </motion.div>
-                )}
               </header>
 
               <motion.div
@@ -153,6 +141,18 @@ export function HomeHero() {
                 <div className="field-hero-mobile__scan">
                   <HeroUrlScan stacked submitLabel={t("urlScan.runScan")} onRunScan={runScan} />
                 </div>
+                {reduceMotion ? (
+                  <RotatingBrandSlot className="field-hero-mobile__credibility rotating-brand--centered" />
+                ) : (
+                  <motion.div
+                    className="field-hero-mobile__credibility-wrap"
+                    initial={{ opacity: 0, y: 6, filter: "blur(8px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.6, delay: typeDelay + 0.18, ease: EASE }}
+                  >
+                    <RotatingBrandSlot className="field-hero-mobile__credibility rotating-brand--centered" />
+                  </motion.div>
+                )}
                 <a
                   href={CALENDLY_URL}
                   className="field-hero-mobile__build"

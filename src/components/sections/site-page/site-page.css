@@ -112,8 +112,8 @@
 
 .sp-hero .site-header__logo {
   width: auto;
-  height: clamp(2.15rem, 3.2vw, 2.55rem);
-  max-width: min(11.5rem, 42vw);
+  height: clamp(1.8rem, 2.7vw, 2.15rem);
+  max-width: min(9.5rem, 36vw);
   object-fit: contain;
   object-position: left center;
   filter: drop-shadow(0 8px 18px rgba(8, 16, 60, 0.28));
@@ -125,10 +125,15 @@
 }
 
 .sp-hero .site-header__links {
-  display: none;
   align-items: center;
   gap: 1.35rem;
   margin-inline-start: auto;
+}
+
+@media (max-width: 899px) {
+  .sp-hero .site-header__links {
+    display: flex;
+  }
 }
 
 .sp-hero .site-header__menu {
@@ -181,8 +186,8 @@
   }
 
   .sp-hero .site-header__logo {
-    height: 1.85rem;
-    max-width: 7.25rem;
+    height: 1.55rem;
+    max-width: 6.1rem;
   }
 
   .sp-hero .site-header__cta {
@@ -191,15 +196,6 @@
     white-space: nowrap;
   }
 
-  .sp-hero .site-header__links.is-open {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    flex: 1 0 100%;
-    order: 5;
-    gap: 0.85rem;
-    margin: 0.35rem 0 0.15rem;
-  }
 }
 
 @media (min-width: 900px) {
@@ -784,13 +780,9 @@
     padding-top: max(0.85rem, env(safe-area-inset-top));
   }
 
-  .sp-hero .site-header--v2:has(.site-header__links.is-open) {
-    flex-wrap: wrap;
-  }
-
   .sp-hero .site-header__logo {
-    height: 2.05rem;
-    max-width: 8.75rem;
+    height: 1.7rem;
+    max-width: 7.25rem;
   }
 
   .sp-hero .site-header__cta {
@@ -807,10 +799,6 @@
   }
 
   .sp-hero .site-header__link--cta {
-    display: none;
-  }
-
-  .sp-hero .site-header__links.is-open .site-header__link--cta {
     display: none;
   }
 

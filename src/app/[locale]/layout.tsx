@@ -9,7 +9,7 @@ import {
   plexMono,
 } from "@/lib/fonts";
 import { CodeWaveBackground } from "@/components/ui/code-wave-background";
-import { WhatsAppCta } from "@/components/ui/whatsapp-cta";
+import { FloatingContactStack } from "@/components/ui/floating-contact-stack";
 import { AnalyticsBeacon } from "@/components/seo/analytics-beacon";
 import { OrganizationJsonLd } from "@/components/seo/organization-json-ld";
 import { routing, type Locale } from "@/i18n/routing";
@@ -91,7 +91,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
           <AnalyticsBeacon />
-          <WhatsAppCta />
+          <FloatingContactStack />
         </NextIntlClientProvider>
       </body>
     </html>

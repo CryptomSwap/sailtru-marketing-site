@@ -14,11 +14,9 @@ type BrandItem = {
 /** Surfaces SailTrue actually reads — credibility via logos, not GEO “win in” copy. */
 const BRANDS: BrandItem[] = [
   { id: "chatgpt", label: "ChatGPT", src: "/images/brands/openai-white.svg", tone: "light" },
+  { id: "claude", label: "Claude", src: "/images/brands/claude-color.svg", tone: "color" },
   { id: "google", label: "Google", src: "/images/brands/google-color.svg", tone: "color" },
-  { id: "perplexity", label: "Perplexity", src: "/images/brands/perplexity-color.svg", tone: "color" },
-  { id: "analytics", label: "Analytics", src: "/images/brands/googleanalytics-color.svg", tone: "color" },
-  { id: "hubspot", label: "HubSpot", src: "/images/brands/hubspot-color.svg", tone: "color" },
-  { id: "n8n", label: "n8n", src: "/images/brands/n8n-color.svg", tone: "color" }
+  { id: "perplexity", label: "Perplexity", src: "/images/brands/perplexity-color.svg", tone: "color" }
 ];
 
 const HOLD_MS = 2200;
@@ -50,15 +48,15 @@ export function RotatingBrandSlot({ className = "" }: RotatingBrandSlotProps) {
 
   return (
     <p className={`rotating-brand ${className}`.trim()} aria-label={aria}>
-      <span className="rotating-brand__stem">{t("stem")}</span>{" "}
+      <span className="rotating-brand__stem">{t("stem")}</span>
       <span className="rotating-brand__slot" aria-hidden>
         {reduceMotion ? (
           <span className="rotating-brand__item" data-active>
             <img
               src={BRANDS[0].src}
               alt=""
-              width={18}
-              height={18}
+              width={16}
+              height={16}
               className={`rotating-brand__mark rotating-brand__mark--${BRANDS[0].tone}`}
               draggable={false}
             />
@@ -74,8 +72,8 @@ export function RotatingBrandSlot({ className = "" }: RotatingBrandSlotProps) {
               <img
                 src={brand.src}
                 alt=""
-                width={18}
-                height={18}
+                width={16}
+                height={16}
                 className={`rotating-brand__mark rotating-brand__mark--${brand.tone}`}
                 draggable={false}
               />

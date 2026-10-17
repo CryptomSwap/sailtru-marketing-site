@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
+import "./site-header-mobile.css";
 
 type SiteHeaderProps = {
   compact?: boolean;
@@ -42,8 +43,8 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
         <Image
           src="/images/sailtru-lockup.png"
           alt="SailTru"
-          width={220}
-          height={62}
+          width={757}
+          height={183}
           className="site-header__logo"
           priority
         />
@@ -53,6 +54,7 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
         id="site-primary-nav"
         aria-label={tCommon("primaryNav")}
         className={`site-header__links${menuOpen ? " is-open" : ""}`}
+        aria-hidden={!menuOpen}
       >
         {navItems.map((item) => {
           const isActive =
