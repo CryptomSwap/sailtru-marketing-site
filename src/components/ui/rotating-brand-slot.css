@@ -1,16 +1,18 @@
 /* Profound-style rotating logo/name slot — used in mobile ATF credibility line */
 
 .rotating-brand {
-  display: flex;
-  flex-wrap: wrap;
+  display: inline-flex;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 0.12rem 0.3rem;
+  gap: 0.14rem 0.36rem;
   margin: 0;
-  font-size: 0.88rem;
+  font-size: clamp(1rem, 2.6vw + 0.72rem, 1.125rem);
+  font-weight: 450;
   line-height: 1;
   color: rgba(214, 226, 255, 0.62);
   text-align: center;
+  white-space: nowrap;
 }
 
 /* Center stem + slot as one lockup (hero credibility lines) */
@@ -23,6 +25,7 @@
 .rotating-brand__stem {
   font-weight: 450;
   line-height: 1;
+  color: #fff;
 }
 
 .rotating-brand__slot {
@@ -33,21 +36,19 @@
   justify-items: start;
   width: max-content;
   min-width: 0;
-  min-height: 1em;
+  height: 1em;
 }
 
 .rotating-brand__item {
   grid-area: 1 / 1;
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
+  gap: 0.32rem;
   visibility: hidden;
   opacity: 0;
-  filter: blur(12px);
   transition:
-    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    visibility 0.6s;
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.55s;
   pointer-events: none;
   white-space: nowrap;
 }
@@ -55,7 +56,9 @@
 .rotating-brand__item[data-active] {
   visibility: visible;
   opacity: 1;
-  filter: blur(0);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0s;
 }
 
 .rotating-brand__mark {
@@ -71,7 +74,7 @@
 }
 
 .rotating-brand__name {
-  font-weight: 600;
+  font-weight: inherit;
   line-height: 1;
   color: rgba(244, 248, 255, 0.92);
   letter-spacing: -0.01em;
@@ -80,6 +83,5 @@
 @media (prefers-reduced-motion: reduce) {
   .rotating-brand__item {
     transition: none;
-    filter: none;
   }
 }

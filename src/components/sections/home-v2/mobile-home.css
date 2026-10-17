@@ -94,7 +94,7 @@
   .field-hero-mobile__credibility {
     display: inline-flex;
     width: auto;
-    max-width: min(100%, 22rem);
+    max-width: min(100%, 26rem);
     justify-content: center;
   }
 
