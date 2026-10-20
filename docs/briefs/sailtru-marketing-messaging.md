@@ -1,7 +1,8 @@
 # SailTru marketing messaging brief
 
-Version: 1.0  
-Date: 2026-10-20  
+Version: 1.1  
+Date: 2026-10-21
+Revision: Copy and story mapping for the sailing-boat scroll narrative.  
 Repository baseline: main at e2f36a992fd23217363857a7dec56130765bbd75  
 Companion: [Design and experience](./sailtru-design.md)  
 Audience: Mike, copywriters, designers, developers, and reviewers.
@@ -11,6 +12,8 @@ Audience: Mike, copywriters, designers, developers, and reviewers.
 This is the proposed copy and messaging specification for the next marketing-site and report-purchase experience. It includes exact English copy, a focused Hebrew interface set, source-of-truth rules, and acceptance criteria.
 
 **User-confirmed business journey:** enter a URL → backend analyzes it → show a limited report based on that analysis → sell the full report.
+
+**User-requested visual direction:** a sailing boat travels through the homepage story as the visitor scrolls, inspired by the bee journey Tom identified on ReddGrow. The boat should explain observation, evidence, recommendation, report, and optional implementation.
 
 **Company identity:** business intelligence and AI solutions, including bespoke implementation. The paid report is an entry product, not the entire company.
 
@@ -239,6 +242,64 @@ Expectation sentence: reuse hero.expectation exactly.
 Secondary action: **Build with SailTru**
 
 FAQ copy appears in section 10.
+
+## 5A. Copy for the sailing-boat scroll story
+
+The detailed motion storyboard is in section 8 of the design brief. The boat is the visual thread through H01–H07; it does not introduce an additional explanation that competes with the page.
+
+**Meaning:** the business needs to choose its next move; SailTru supplies evidence, a clearer course, and implementation help when requested. Navigation is a visual metaphor. The report and business benefit must stay understandable without nautical knowledge.
+
+Use short stage labels beside the illustration; keep the existing H1, form action, H03 finding text, preview/purchase language, and Build distinction. This avoids turning the entire site into sailing puns.
+
+| Motion beat | Short label | Optional single supporting line | Required literal explanation |
+| --- | --- | --- | --- |
+| Hero / starting point | Your next move | A clearer course starts with evidence. | Protected H1, website input, limited/full report expectation |
+| H03 observation | Observe | Start with what we can see. | The actual fictional service-page observation |
+| H03 significance | Understand | See why it may matter. | Evidence versus possible business implication |
+| H03 recommendation | Recommend | Choose a practical next move. | Specific proposed enquiry action |
+| H03 measurement | Check the change | Define how to evaluate it. | Measurement requires appropriate data |
+| H04 report | Your report | The findings, evidence, and next steps—together. | Useful preview, supported paid scope, purchase action |
+| H06 implementation | Build and review | Turn the recommendation into work. | Separately scoped implementation and measurement |
+| H07 close | Choose your next move | Start with your website. | Analyze my business plus quieter Build path |
+
+These supporting lines are optional; do not place every line on the page if it duplicates adjacent copy. The short labels are the default scene-caption set.
+
+### The report moment
+
+When the boat arrives beside the report, show the same finding the visitor just followed:
+- **What we found**
+- **Why we say this**
+- **Recommended next move**
+
+Use **Illustrative example** on this homepage scene. Include a legible preview and scope explanation; do not show fabricated counts or blur real paid findings into the public page.
+
+The boat continues through the homepage whether or not someone submits a URL or purchases. It never visually punishes a visitor for declining an offer.
+
+### Copy guardrails
+
+- Keep the protected hero question. Do not replace it with “Set sail for growth.”
+- Use a light touch: course and next move can connect the brand to the story; the product explanation remains literal.
+- Avoid “guaranteed smooth sailing,” “navigate to guaranteed growth,” “your business is sinking,” and “unlock treasure.”
+- A harbor/waypoint represents a decision or work handoff, not proof of success.
+- Never describe scroll-driven scenes as live analysis, real-time findings, completed implementation, or verified payment.
+- The scene's route may illustrate prioritization, but a real report can claim ranked priorities only when the backend supplies them.
+- Use the same sample business and finding throughout. No new fictional customer metrics or claims are introduced by the animation.
+
+### Hebrew scene captions
+
+| EN | HE |
+| --- | --- |
+| Your next move | הצעד הבא שלך |
+| Observe | בוחנים |
+| Understand | מבינים |
+| Recommend | ממליצים |
+| Check the change | בודקים את השינוי |
+| Your report | הדוח שלך |
+| Build and review | מיישמים ובודקים |
+| Choose your next move | בוחרים את הצעד הבא |
+| A clearer course starts with evidence. | כיוון ברור מתחיל בממצאים. |
+
+The route mirrors for layout, not for literal wordplay. Do not insert awkward sailing vocabulary into the Hebrew purchase controls.
 
 ## 6. Scan, account, and failure copy
 
@@ -562,6 +623,9 @@ Map the semantic IDs in this file into the existing next-intl catalogs rather th
 - [ ] Exact English copy above is used or deliberate edits are recorded.
 - [ ] Full Hebrew copy follows the supplied terminology and is checked beside English.
 - [ ] Illustrative examples and real findings are unmistakably different.
+- [ ] Boat scenes use the same example finding and add no fabricated outcomes.
+- [ ] Nautical captions support literal product copy; the hero/report/purchase actions stay explicit.
+- [ ] Scrolling the boat never produces live-status or payment claims.
 - [ ] Preview, paid access, account, progress, and payment language match actual product behavior.
 - [ ] Offer contents and price are explicit before purchase.
 - [ ] No unsupported timing, free-preview, trial, refund, access, monitoring, or performance promise is published.
