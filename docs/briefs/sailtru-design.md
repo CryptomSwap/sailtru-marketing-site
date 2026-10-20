@@ -1,8 +1,8 @@
 # SailTru design and experience brief
 
-Version: 1.1  
+Version: 1.2  
 Date: 2026-10-21
-Revision: Sailing-boat scroll narrative, following Tom's direction.  
+Revision: Sailing-boat narrative with explicit explanation and comprehension review.  
 Repository baseline: main at e2f36a992fd23217363857a7dec56130765bbd75  
 Companion: [Marketing messaging](./sailtru-marketing-messaging.md)  
 Audience: Mike, designers, frontend developers, backend integrators, and reviewers.
@@ -14,6 +14,7 @@ Build a site that makes SailTru's offer understandable, demonstrates the quality
 **User-confirmed requirements**
 - Preserve SailTru's identity as a business intelligence and AI solutions company.
 - Learn from ReddGrow's explanatory flow and presentation.
+- Explain the offer directly at every step. Tom explicitly prioritizes first-time-visitor understanding over slogans or sailing metaphors.
 - Use a sailing boat as the recurring character in a scroll-driven journey, inspired by the bee journey Tom identified on ReddGrow. This motif is user-requested; the detailed storyboard below is the proposed execution.
 - Connect the frontend to the backend that analyzes the submitted business URL.
 - Show a limited report based on that analysis.
@@ -138,11 +139,11 @@ Navigation target labels: **How it works**, **Example report**, **Work**, **Buil
 
 This placement replaces the old need to scroll through several methodology sections before encountering proof.
 
-### H03 — Worked example: make the report tangible
+### H03 — Worked example: explain observation, consequence, and recommendation
 
 **Question:** What will the analysis tell me?
 
-- Heading and copy from the companion brief.
+- Use the literal explanatory headings and connected paragraphs in the companion brief, sections 5 and 5A. Do not replace them with short nautical captions.
 - Show one fictional business consistently across four short chapters:
   1. **What we observed:** a service page makes the visitor search for the next step.
   2. **Why it deserves attention:** the path from that service to an enquiry is unclear.
@@ -161,10 +162,10 @@ This placement replaces the old need to scroll through several methodology secti
 
 **Question:** What happens after I enter my URL?
 
-Use three plain stages:
-1. Share the URL.
-2. Review a limited personalized report.
-3. Buy the full report for the supported deeper analysis and recommendations.
+Use three plain stages under **Here is what happens after you enter your website.**:
+1. Share the URL: explain what accessible information is examined.
+2. Review a limited personalized report: show an observation, its evidence, and a recommendation when supported.
+3. Buy the full report: show exactly which additional findings/recommendations the real offer includes and the price before payment.
 
 Show the limited/full comparison defined in section 7. Explain what the customer receives before presenting the purchase action. Do not repeat another four-stage process and six-stage process on the homepage.
 
@@ -283,6 +284,8 @@ After purchase, show **Open full report**. Place optional implementation actions
 
 The boat represents the visitor's business moving through decisions. SailTru supplies the observations, chart, and practical help that make the next move clearer. There is no separate crew of animated agents and no new mascot personality that competes with the company.
 
+The literal copy explains every step without relying on the sailing metaphor. Each scene uses the direct headings in the messaging brief; Observe / Understand / Recommend are supporting labels only.
+
 The visitor's scroll drives the boat through one connected journey. The boat notices a marker, reveals its evidence, passes the same finding into a report, and follows a proposed route toward an implementation checkpoint. The visual must communicate cause and effect, rather than merely traveling beside unrelated paragraphs.
 
 The lighthouse/harbor at the end represents a clear next decision and a place to begin work. It is not proof of revenue growth, a purchase confirmation, or a guaranteed business destination.
@@ -330,6 +333,7 @@ At H04, the boat does not become stuck until the visitor buys. The entire homepa
 - Progress mapping is geometric and deterministic: scrolling back reverses the journey; jumping to an anchor resolves directly to that beat; refresh at mid-page resolves to the current position.
 - Tie reveals to text/evidence anchors so the boat arrives while the relevant paragraph is readable. Do not trigger every scene on initial load.
 - Keep all explanatory text in accessible document flow. The boat can guide attention; it must not be the only way to understand the finding.
+- Let sentence length determine the space needed. Increase a scene's reading area or section height instead of shrinking explanatory copy, truncating it, or forcing the boat past before it can be read.
 - Optional tiny bob/sail motion is secondary to scroll. Stop offscreen/when the page is hidden. No autoplay audio.
 - Optional entrance: opacity/translate 180–300ms. Scene accents may settle in 250–450ms. Follow scroll without multi-second lag or a forced stop at every marker.
 - Reserve scene dimensions before artwork loads. The route must not introduce layout shifts or move the form.
@@ -464,7 +468,8 @@ Unresolved offer details appear as **Configuration required** in internal previe
 ## 14. Acceptance checklist
 
 ### Narrative and design
-- [ ] Protected H1 is unchanged; supporting copy explains a tangible output.
+- [ ] Protected H1 is unchanged; supporting copy directly explains analysis, report output, and optional implementation.
+- [ ] First-time-reader questions in the messaging brief can be answered from visible page copy without an explanation from the builder.
 - [ ] H01–H07 appear in the agreed order in both languages and viewport classes.
 - [ ] Laba proof appears immediately after the hero, subject to evidence availability.
 - [ ] One coherent illustrative example explains observation, recommendation, implementation, and measurement.
