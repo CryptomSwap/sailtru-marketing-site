@@ -1,7 +1,8 @@
 # SailTru marketing messaging brief
 
-Version: 1.0  
-Date: 2026-10-20  
+Version: 1.3  
+Date: 2026-10-21
+Revision: Explanatory obstacle-to-solution story for the sailing-boat journey.  
 Repository baseline: main at e2f36a992fd23217363857a7dec56130765bbd75  
 Companion: [Design and experience](./sailtru-design.md)  
 Audience: Mike, copywriters, designers, developers, and reviewers.
@@ -12,9 +13,13 @@ This is the proposed copy and messaging specification for the next marketing-sit
 
 **User-confirmed business journey:** enter a URL → backend analyzes it → show a limited report based on that analysis → sell the full report.
 
+**User-requested visual direction:** a sailing boat travels through obstacles faced by a business owner as the visitor scrolls, inspired by the bee journey Tom identified on ReddGrow. Recognizable problems lead to analysis, evidence, recommendations, the report offer, and optional implementation.
+
 **Company identity:** business intelligence and AI solutions, including bespoke implementation. The paid report is an entry product, not the entire company.
 
-**Status:** the commercial journey and identity above are confirmed. The wording and section choices below are a concrete implementation proposal based on that direction, not a claim that Tom individually approved every sentence. Use this copy for a reviewable implementation; flag deliberate changes.
+**User-confirmed copy direction:** explain the offer as clearly and sequentially as the ReddGrow reference. A first-time visitor must be able to understand what SailTru does, what happens after URL submission, what is free/limited versus paid, and what implementation means. Clarity takes precedence over cleverness or brevity.
+
+**Status:** the commercial journey, explanatory copy direction, and identity above are confirmed. The wording and section choices below are a concrete implementation proposal based on that direction, not a claim that Tom individually approved every sentence. Use this copy for a reviewable implementation; flag deliberate changes.
 
 The broader Marketing Canon, marketing.md dated 2026-10-14, was read in full for this brief. Preserve its question, evidence discipline, solution-neutral priorities, and implementation breadth. Update the old project-unlock narrative for this report-purchase journey. Do not rewrite the original canon as part of this two-file documentation change.
 
@@ -91,7 +96,19 @@ Prefer: find, compare, understand, prioritize, recommend, improve, build, measur
 
 Avoid as core copy: signal landscape, intelligence layer, territories, friction risk, integrated transformation, AI-native growth, actionable insights, holistic ecosystem, seamless, supercharge, revolutionize, AI workforce.
 
-Do not fill every heading with a slogan. Follow each claim with an example, deliverable, or concrete explanation.
+Do not fill headings with slogans. Each heading must state a business situation, what SailTru does, or what the customer receives. Follow it with enough explanation to remove the next obvious question.
+
+### Explanation is the acceptance standard
+
+- Explain the noun: a report is findings, supporting evidence, and recommendations—not an unexplained “intelligence layer.”
+- Explain the sequence: enter a URL, analyze accessible information, read the preview, decide whether to purchase the full report, optionally commission implementation.
+- Explain the mechanism: point to the page/source and the observation before recommending a change.
+- Explain the transaction: what the full report adds and what implementation costs/scopes separately, using actual offer details.
+- Connect sections: end with a question or implication that the next section answers; do not introduce a new company framework at every scroll.
+- Keep necessary explanation visible. FAQs and animation must not carry the only explanation of the basic offer.
+- Keep paragraphs short, but do not shorten them until they stop answering the question.
+- The sailing metaphor supports attention; the literal text must explain the product without the boat.
+- Do not promise universal comprehension. Verify understanding with first-time-reader questions in section 15 and revise unclear passages.
 
 **Public brand string: SailTru**, matching the identity document's public-site naming. Preserve official legal/payment entity naming separately when supplied. Do not alternate SailTru, Sailtru, and SailTrue within customer-facing interface copy. Do not redesign the wordmark for this naming cleanup.
 
@@ -106,20 +123,18 @@ Section IDs match the design brief. These are the default proposed strings; do n
 | ID | Placement | Copy |
 | --- | --- | --- |
 | hero.h1 | H1 | What should your business improve next? |
-| hero.support | Supporting paragraph | SailTru starts with your website, finds opportunities supported by evidence, and helps you decide what deserves attention first. When you're ready to act, we can help build the improvement. |
+| hero.support | Supporting paragraph | SailTru analyzes your website and explains what could be improved, why it matters, and what to change. We can also carry out the work, from website improvements to custom AI systems and automation. |
 | hero.urlLabel | Visible input label | Your business website |
 | hero.urlPlaceholder | Placeholder | yourcompany.com |
 | hero.submit | Primary form action | Analyze my business |
-| hero.expectation | Immediately beneath form | Start with a limited report based on your website. Buy the full report for the additional analysis and recommendations. |
+| hero.expectation | Immediately beneath form | Enter your website to see a limited report based on its analysis. You can then choose whether to buy the full report. |
 | hero.build | Quiet secondary action | Build with SailTru |
 
 Do not prepend the old SEO · GEO · Custom AI solutions rail. Do not call the preview a free trial. The supporting line may be set on multiple lines but must not be expanded into an essay.
 
 Navigation: **How it works**, **Example report**, **Work**, **Build with SailTru**. The primary scan is the hero form. Avoid a second competing Begin diagnosis action.
 
-If real competitor analysis is confirmed in initial scan coverage, the support line may become:
-**SailTru examines your website and competitive environment to find what deserves attention first. Get the evidence, a clearer set of priorities, and a practical next move—with implementation help when you need it.**
-This is a coverage-dependent replacement, not a rotating second version.
+Keep this single hero version. Explain any additional verified competitor/search/AI checks in the visible coverage list, with their actual scope; do not swap the hero for a more abstract slogan.
 
 ### H02 — Proof strip
 
@@ -136,83 +151,112 @@ Use the quoted wording only while permission and supporting case evidence remain
 
 No public sentence about “when we have permission” is needed; that is an editorial rule. If evidence is absent, omit the unsupported claim.
 
-### H03 — Worked example
+### H03 — The obstacles a business owner recognizes
 
 | ID | Placement | Copy |
 | --- | --- | --- |
-| example.eyebrow | Label | Inside the report |
-| example.heading | H2 | See the problem. Understand the next move. |
-| example.intro | Intro | A useful finding connects what we observed to what you can change—and how to check whether it helped. |
-| example.badge | Persistent sample label | Illustrative example |
-| example.business | Fictional sample name | Example Studio |
-| example.cta | Sample disclosure/view | View example report |
+| obstacles.heading | H2 | Customers need to find you, understand you, and choose you. |
+| obstacles.intro | Intro | Each step can create a different problem. Before investing in another change, it helps to understand where customers may be getting stuck. |
 
-**Chapter A — What we observed**
-- Heading: **Your service page leaves the next step unclear.**
-- Body: **In this example, visitors can read about the service, but the enquiry link appears only in the footer.**
-- Evidence label: **Page observation**
-- Evidence: **A service-page excerpt with no nearby enquiry action.**
+**Scene 1 — Fog: being found**
+- Heading: **If customers don't find your business, they can't choose it.**
+- Body: **People look for businesses through search, AI answers, recommendations, and other channels. If you aren't visible where your customers look, they may discover another option first.**
+- Bridge: **But getting someone to your website is only the first step.**
+- Scope rule: this explains a business problem. It does not promise the URL scan measures every discovery channel.
 
-**Chapter B — Why it deserves attention**
-- Heading: **Interest needs somewhere to go.**
-- Body: **A visitor should be able to move from understanding the service to making an enquiry without searching for the next step.**
-- Caveat: **This is an interface observation. It does not establish how many enquiries the business loses.**
+**Scene 2 — Reef: turning a visit into an enquiry**
+- Heading: **They reach your website. Can they see what to do next?**
+- Body: **Visitors need to understand what you offer and how to take the next step. Unclear service information, a difficult form, or a hard-to-find enquiry link can make that journey harder.**
+- Example: **In our Example Studio illustration, the service page has an enquiry link only in its footer. We can observe that layout; measuring its effect requires more evidence.**
+- Bridge: **And your website is rarely the only option a customer considers.**
 
-**Chapter C — What to change**
-- Heading: **Put the next step beside the decision.**
-- Body: **Add a relevant enquiry action after the service details. Explain what happens after someone contacts the business.**
-- Example interface action: **Discuss your project**
+**Scene 3 — Cross-currents: competing for the same customer**
+- Heading: **Your customers are comparing you with other businesses.**
+- Body: **They may see different prices, promises, service details, and reasons to trust each company. Comparing those public differences can help you understand where your own offer needs to be clearer.**
+- Bridge: **So which of these should your business address first?**
+- Scope rule: competitor analysis belongs in a purchased offer only when actually performed/included. This scene is not a fabricated comparison of the visitor's company.
 
-**Chapter D — How to check the result**
-- Heading: **Make the change. Measure what follows.**
-- Body: **Once the right analytics are available, compare service-page enquiries before and after the change and check the quality of those enquiries.**
-- Implementation bridge: **SailTru can help design, build, and evaluate the change as a separate project.**
-
-Every example screenshot/fragment uses the fictional name and sample label. Do not show an invented conversion uplift, industry-average deficit, competitor dataset, confidence score, or elapsed scan.
+Three linked scenes are enough before the diagnostic answer. Do not add an obstacle for every service. Manual work appears after the report explanation in H05, where the scope distinction can be made explicit.
 
 ### H04 — How the report journey works
 
 | ID | Placement | Copy |
 | --- | --- | --- |
 | journey.eyebrow | Label | How it works |
-| journey.heading | H2 | Your URL. A clearer next move. |
-| journey.intro | Intro | Start with the public information about your business. See what the analysis supports before deciding whether to buy the full report. |
+| journey.heading | H2 | Here is what happens after you enter your website. |
+| journey.intro | Intro | Start with your website. SailTru examines the accessible information included in the analysis, explains what it found, and recommends changes it can support. Review a limited preview before deciding whether to buy the full report. |
 | journey.step1.title | Step | Share your website |
-| journey.step1.body | Body | Give SailTru a starting point for examining your business from the outside. |
+| journey.step1.body | Body | Enter your business website. SailTru uses it to examine the public pages and information included in the analysis. |
 | journey.step2.title | Step | Review your preview |
-| journey.step2.body | Body | Read a limited personalized report with evidence behind the findings we can support. |
+| journey.step2.body | Body | See a useful finding about your website, the evidence behind it, and a recommended change when the analysis supports one. Your preview also explains what could not be assessed. |
 | journey.step3.title | Step | Get the full report |
-| journey.step3.body | Body | Purchase the additional analysis and recommendations listed in your offer, then decide what to act on. |
+| journey.step3.body | Body | Review the exact contents and price beside your preview. If you choose to buy, you receive the additional findings, evidence, and recommendations included in that offer. |
 | journey.action | Repeat URL form submit | Analyze my business |
 
 Do not imply that all customers will have the same number or severity of findings.
 
 The limited/full comparison must use the capability rules in section 8. Publish only rows fulfilled by the selected offer.
 
+### H04A — Worked report example (carried forward from the reef scene)
+
+| ID | Placement | Copy |
+| --- | --- | --- |
+| example.eyebrow | Label | Inside the report |
+| example.heading | Report subheading | Here is how a website observation becomes a recommendation. |
+| example.intro | Intro | Imagine a customer reading about one of your services. They understand what you offer, but the enquiry link is difficult to find. The example below shows what SailTru would look at, what it could recommend, and what would still need to be measured. |
+| example.badge | Persistent sample label | Illustrative example |
+| example.business | Fictional sample name | Example Studio |
+| example.cta | Sample disclosure/view | View example report |
+
+**Chapter A — What we observed**
+- Heading: **A customer reads about your service. The enquiry link is only in the footer.**
+- Body: **In this example, visitors can read about the service, but the enquiry link appears only in the footer.**
+- Evidence label: **Page observation**
+- Evidence: **A service-page excerpt with no nearby enquiry action.**
+
+**Chapter B — Why it deserves attention**
+- Heading: **We explain why the location of that link matters.**
+- Body: **Someone ready to enquire has to look elsewhere on the page for a way to contact the business. A relevant enquiry action beside the service details may make that next step easier to find.**
+- Caveat: **We can observe the page layout. We would need analytics or a user study to establish whether it affects enquiries.**
+
+**Chapter C — What to change**
+- Heading: **We recommend adding an enquiry action beside the service details.**
+- Body: **Add a button that lets the visitor enquire about this service. Explain whether the business will reply by email, arrange a call, or take another next step, according to its actual process.**
+- Example interface action: **Discuss your project**
+
+**Chapter D — How to check the result**
+- Heading: **After the change, check whether more visitors make useful enquiries.**
+- Body: **With the right analytics, compare service-page enquiry behavior before and after the change. Check enquiry quality too, and account for other changes that may have affected the result.**
+- Implementation bridge: **SailTru can help design, build, and evaluate the change as a separate project.**
+
+Every example screenshot/fragment uses the fictional name and sample label. Do not show an invented conversion uplift, industry-average deficit, competitor dataset, confidence score, or elapsed scan.
+
 ### H05 — Capabilities
 
 | ID | Placement | Copy |
 | --- | --- | --- |
-| capabilities.heading | H2 | More ways to improve. One place to start. |
-| capabilities.intro | Intro | Start with what we can observe. Go deeper with the context, access, and implementation work your business needs. |
+| capabilities.heading | H2 | What can SailTru help you improve? |
+| capabilities.intro | Intro | The website analysis is a starting point. SailTru also helps businesses improve their websites, investigate visibility and competition, automate manual work, and build custom AI systems. Some of that work needs additional business information and a separately agreed project. |
 
 **Discovery**
-- Heading: **Help the right customers find you.**
+- Heading: **Search and AI visibility**
 - Body: **Investigate search and AI visibility, understand relevant gaps, and improve the content and technical foundations that support discovery.**
 - Scope note: **Visibility checks depend on the analysis coverage.**
 
 **Choice**
-- Heading: **Make it easier to choose you.**
-- Body: **Examine your positioning, website messaging, and customer journey. Identify where the next step could be clearer.**
+- Heading: **Website messaging and competitor positioning**
+- Body: **Examine what your website says, how it guides visitors, and how your public positioning compares with competitors when comparison research is included. Recommend specific changes to the pages and messages.**
 
-**Operations**
-- Heading: **Give your team less work to repeat.**
-- Body: **With the right business context, map manual handoffs and build useful automations around the work.**
+**Operations — the later anchor scene**
+- Scene heading: **And every new enquiry can create more work for your team.**
+- Scene body: **Copying details between tools, assigning tasks, and chasing follow-ups can keep people busy. To find out where automation would help, we need to understand how your process works today.**
+- Heading: **Manual workflows and automation**
+- Body: **Tell us how a process works today—for example, moving a new enquiry into your CRM and assigning follow-up. We can map the handoffs and build automation where it is useful.**
 - Scope note: **Requires workflow discovery; this is not measured by the public website scan.**
 
 **Custom systems**
-- Heading: **Build the system your business needs.**
-- Body: **Custom software, integrations, AI agents, and coordinated agent teams designed around a defined problem.**
+- Heading: **Custom software and AI systems**
+- Body: **We can build an internal tool, connect existing systems, or create AI agents and coordinated agent teams for a defined workflow. The scope starts with the business problem and the information the system needs.**
 
 Operations/custom systems action: **Build with SailTru**.
 Do not make all four rows look like included report features.
@@ -221,24 +265,82 @@ Do not make all four rows look like included report features.
 
 | ID | Placement | Copy |
 | --- | --- | --- |
-| implementation.heading | H2 | When the next move is clear, we can help build it. |
-| implementation.body | Body | Use the report with your own team, or ask SailTru to scope the work. We can help carry out the recommendation and agree how to measure the result. |
-| implementation.scope | Clarifier | Implementation is a separate project. |
+| implementation.heading | H2 | You receive the recommendations. Who makes the changes? |
+| implementation.body | Body | You can use the report with your own team. If you want SailTru to do the work, we agree what will be built, what access is needed, how it will be measured, and the project price before starting. |
+| implementation.scope | Clarifier | Buying the report does not include implementation. That is a separate project. |
 | implementation.action | Action | Build with SailTru |
-| implementation.monitorHeading | Small heading | Did it help? |
-| implementation.monitorBody | Body | For implementation projects, we agree what success should look like and review what changed when the necessary data is available. |
+| implementation.monitorHeading | Small heading | How do we check whether the change helped? |
+| implementation.monitorBody | Body | For an implementation project, we agree what to measure and what data is needed. After the change, we review the evidence against that objective. A completed build does not by itself prove a business improvement. |
 
 Do not imply that report purchase automatically begins implementation or continuous monitoring.
 
 ### H07 — FAQ and close
 
-Closing H2: **Find your next move.**  
-Closing body: **Start with your website. Review the evidence, see what deserves attention, and choose what to do next.**  
+Closing H2: **Enter your website to see what the analysis finds.**  
+Closing body: **Review a limited report about your website, with evidence and a recommended next step when supported. Then decide whether to buy the full report or discuss implementation.**  
 Primary URL submit: **Analyze my business**  
 Expectation sentence: reuse hero.expectation exactly.  
 Secondary action: **Build with SailTru**
 
 FAQ copy appears in section 10.
+
+## 5A. Explanatory narration for the obstacle voyage
+
+The detailed motion storyboard is in section 8 of the design brief. Keep one recognizable boat/business across the whole journey. The copy must explain the business meaning even when the illustration is absent.
+
+| Scene | Main visible explanation | What the boat demonstrates |
+| --- | --- | --- |
+| Hero | What should your business improve next? | Several possible courses; URL entry and the actual report offer remain visible |
+| Fog | If customers don't find your business, they can't choose it. | Discovery is difficult when the business is not visible to the relevant customer |
+| Reef | They reach your website. Can they see what to do next? | The route from service information to enquiry may be unclear |
+| Cross-currents | Your customers are comparing you with other businesses. | Customers see alternatives; comparison may reveal useful differences |
+| Diagnostic report | So which of these should your business address first? | Evidence is organized into findings and supported recommendations |
+| Report journey | Here is what happens after you enter your website. | The limited preview, full report, and purchase are explained concretely |
+| Anchor / operations | And every new enquiry can create more work for your team. | Manual handoffs need workflow context; a separately scoped automation can help |
+| Implementation | You receive the recommendations. Who makes the changes? | Own-team work or separately scoped SailTru implementation, followed by measurement |
+| Close | Enter your website to see what the analysis finds. | The visitor can start with analysis or take the known-need Build path |
+
+Render each main explanation once. A boat caption can be shorter when the full heading is visible nearby.
+
+### The diagnostic/report moment
+
+Connect the earlier Example Studio reef observation to a real-looking, clearly illustrative report entry:
+- **What we found:** the enquiry link is only in the footer.
+- **Why we say this:** the visible page excerpt.
+- **Recommended next move:** add an enquiry action beside the service details.
+- **How to check it:** measure enquiries/quality with appropriate data after the change.
+
+The homepage scene is an **Illustrative example**. The visitor's actual scan produces a separate personalized preview. Show exactly what the full-report purchase adds; do not suggest it measures every illustrated business problem.
+
+The boat keeps moving through the homepage without a purchase. Paid report access is an application entitlement, not a scroll obstacle.
+
+### Narrative and scope rules
+
+- Problem recognition comes first; supported diagnosis follows. Do not assert that every visitor has all the illustrated problems.
+- Let each transition follow the customer's path: being found → understanding the site → comparing choices → deciding what to improve.
+- Introduce internal manual work after explaining the public-URL report, and state that workflow discovery requires more context.
+- A chart is visual shorthand for understanding the evidence. It does not guarantee a correct route, a revenue result, or live report completeness.
+- The boat can cross fog, reefs, currents, and a later anchor. Do not portray failure, bankruptcy, or a sinking business to create an unsupported fear.
+- Keep the literal product controls and protected hero question. Avoid replacing explanations with sailing puns.
+- Do not claim that scrolling confirms analysis, implementation, payment, or paid access.
+
+### Hebrew obstacle headings and bridges
+
+| Scene | Hebrew |
+| --- | --- |
+| Obstacle introduction | כדי שלקוחות יבחרו בך, הם צריכים למצוא אותך ולהבין מה העסק מציע. |
+| Fog | אם לקוחות לא מוצאים את העסק שלך, הם לא יכולים לבחור בו. |
+| Fog-to-reef bridge | אבל הגעה לאתר היא רק הצעד הראשון. |
+| Reef | הם הגיעו לאתר. האם ברור להם מה הצעד הבא? |
+| Reef-to-competition bridge | והאתר שלך הוא בדרך כלל לא האפשרות היחידה שהם בודקים. |
+| Cross-currents | הלקוחות שלך משווים אותך לעסקים אחרים. |
+| Diagnostic question | אז במה כדאי לעסק שלך לטפל קודם? |
+| Report journey | מה קורה אחרי שמזינים את אתר העסק? |
+| Manual-work anchor | וכל פנייה חדשה יכולה להוסיף עוד עבודה לצוות. |
+| Implementation | קיבלת את ההמלצות. מי מיישם את השינויים? |
+| Close | מזינים את האתר ורואים מה הניתוח מוצא. |
+
+Translate the full paragraphs with the same scope distinctions and the established Hebrew terminology. Mirror the visual route where appropriate without mirroring screenshots, words, or controls.
 
 ## 6. Scan, account, and failure copy
 
@@ -328,13 +430,13 @@ Do not render a feature row as available unless the product fulfills it. Do not 
 
 ### Offer-panel copy
 
-- Heading: **Get the full picture.**
-- Body: **Buy the full report to review the additional findings, supporting evidence, and recommendations included in this analysis.**
+- Heading: **See the rest of your report.**
+- Body: **Your preview shows part of the analysis. The full report adds the findings, supporting evidence, and recommendations listed below. Review the contents and price before deciding whether to buy.**
 - Primary action: **Buy the full report**
 - Owned action: **Open full report**
 - Clarifier: **Implementation is available as a separate project.**
 
-Replace the generic body with an exact supported deliverable list once the backend contract is confirmed. Avoid “full picture” if important coverage is absent without a visible limitation.
+Replace the generic body with an exact supported deliverable list once the backend contract is confirmed. Show coverage limitations beside the offer. A heading cannot imply that the report examines parts of the business that were not assessed.
 
 ### Dynamic quantities
 
@@ -428,7 +530,7 @@ Do not add a delivery-time, “no credit card,” data-retention, refund, or no-
 
 ### How we work
 
-Opening: **Find the priority. Build the improvement. Check what changed.**
+Opening: **We analyze the business, recommend changes, and can help implement them.**
 
 Explain the canonical loop once:
 - Observe: gather available evidence.
@@ -473,17 +575,17 @@ Keep the same meaning, section order, access model, and commercial distinctions.
 | ID | Hebrew |
 | --- | --- |
 | hero.h1 | מה הדבר הבא שכדאי לשפר בעסק שלך? |
-| hero.support | SailTru מתחילה באתר שלך, מזהה הזדמנויות על בסיס ממצאים, ועוזרת להבין מה כדאי לשפר קודם. כשמגיע הזמן לפעול, נוכל גם לעזור ביישום. |
+| hero.support | SailTru מנתחת את האתר שלך ומסבירה מה אפשר לשפר, למה זה חשוב ומה כדאי לשנות. נוכל גם לבצע את העבודה, משיפורים באתר ועד מערכות AI ואוטומציה מותאמות לעסק. |
 | hero.urlLabel | אתר העסק שלך |
 | hero.submit | לניתוח העסק שלי |
-| hero.expectation | מתחילים בדוח מצומצם המבוסס על ניתוח האתר. את הדוח המלא, עם הניתוח וההמלצות הנוספים, אפשר לרכוש בנפרד. |
+| hero.expectation | מזינים את אתר העסק ומקבלים דוח מצומצם המבוסס על הניתוח שלו. לאחר מכן אפשר להחליט אם לרכוש את הדוח המלא. |
 | hero.build | בניית פתרון עם SailTru |
 | nav.how | איך זה עובד |
 | nav.example | דוח לדוגמה |
 | nav.work | עבודות ותוצאות |
 | example.badge | דוגמה להמחשה |
-| example.heading | להבין את הבעיה. לראות מה כדאי לעשות. |
-| journey.heading | מתחילים באתר. מבינים מה הצעד הבא. |
+| example.heading | כך בדיקה של עמוד באתר הופכת להמלצה לשינוי. |
+| journey.heading | מה קורה אחרי שמזינים את אתר העסק? |
 | preview.badge | תצוגה מקדימה |
 | report.title | הדוח על העסק שלך |
 | report.fullBadge | הדוח המלא |
@@ -494,7 +596,7 @@ Keep the same meaning, section order, access model, and commercial distinctions.
 | finding.significance | למה זה חשוב |
 | finding.action | הצעד המומלץ |
 | finding.measurement | איך בודקים אם זה עזר |
-| offer.heading | לראות את התמונה המלאה |
+| offer.heading | לראות את יתר הדוח |
 | offer.buy | לרכישת הדוח המלא |
 | offer.owned | פתיחת הדוח המלא |
 | offer.implementation | היישום מוצע כפרויקט נפרד. |
@@ -503,7 +605,7 @@ Keep the same meaning, section order, access model, and commercial distinctions.
 | scan.open | פתיחת התצוגה המקדימה |
 | scan.retry | לנסות שוב |
 | implementation.action | נדבר על יישום ההמלצה |
-| close.heading | להבין מה הצעד הבא שלך. |
+| close.heading | מזינים את האתר ורואים מה הניתוח מוצא. |
 
 Keep URLs in a readable LTR field. Preserve provider/product names when translating. Translate the remaining page copy using these tone and terminology choices; review the full EN/HE experience side by side before release. Do not ship English-only errors, mixed-direction prices, or raw translation keys.
 
@@ -562,9 +664,37 @@ Map the semantic IDs in this file into the existing next-intl catalogs rather th
 - [ ] Exact English copy above is used or deliberate edits are recorded.
 - [ ] Full Hebrew copy follows the supplied terminology and is checked beside English.
 - [ ] Illustrative examples and real findings are unmistakably different.
+- [ ] Boat obstacles describe recognizable possibilities; actual diagnosis is evidence-backed and scope-aware.
+- [ ] The same reef/service-page observation carries into the worked report example with no fabricated outcomes.
+- [ ] Scene headings explain the situation or action directly; nautical captions never replace product explanation.
+- [ ] Scrolling the boat never produces live-status or payment claims.
 - [ ] Preview, paid access, account, progress, and payment language match actual product behavior.
 - [ ] Offer contents and price are explicit before purchase.
 - [ ] No unsupported timing, free-preview, trial, refund, access, monitoring, or performance promise is published.
 - [ ] Evidence supports client and product claims; absent evidence is described honestly.
 - [ ] Copy has no internal team instructions, raw field names, or translation keys in public UI.
 - [ ] A report can be useful without turning every recommendation into an agency upsell.
+
+### First-time-reader comprehension check
+
+Have reviewers unfamiliar with the project answer these questions from the rendered page without a verbal explanation from its builder:
+1. What does SailTru do?
+2. What happens after I enter my website?
+3. What information does the analysis use, and what cannot it know from a URL?
+4. What do I receive before paying?
+5. What does the full-report purchase add, and what does it cost?
+6. Does buying the report include someone making the changes?
+7. Can I ask SailTru to build something without buying a report?
+
+For release, none of these core answers should depend on guessing, boat symbolism, a hidden tooltip, or a salesperson. The price/scope answer requires the real configured offer; an internal preview may mark that as not yet configured. If a reviewer misunderstands a core answer, identify and rewrite the responsible passage before marking the copy complete. This is a practical review standard, not a guarantee that every possible visitor will understand.
+
+### Explanation examples for the team
+
+| Avoid as the only explanation | Use instead |
+| --- | --- |
+| Find your next move. | Enter your website. We analyze it and show a limited report with findings, evidence, and recommendations. |
+| Intelligence that drives impact. | See what we observed on your website, why it may matter, and what we recommend changing. |
+| Unlock the full picture. | Buy the full report to see the additional findings and recommendations listed in the offer. |
+| From insight to execution. | Use the recommendations with your team, or hire SailTru separately to make the changes. |
+
+These replacements illustrate the clarity requirement; the exact page strings remain in section 5.
