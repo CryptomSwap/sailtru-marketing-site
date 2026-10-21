@@ -60,11 +60,10 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     },
     icons: {
       icon: [
-        { url: "/images/sailtrue-favicon.png", sizes: "32x32", type: "image/png" },
-        { url: "/images/sailtrue-favicon-48.png", sizes: "48x48", type: "image/png" },
-        { url: "/images/sailtrue-favicon-192.png", sizes: "192x192", type: "image/png" }
+        { url: "/images/sailtrue-mark.png", sizes: "512x512", type: "image/png" },
+        { url: "/images/sailtrue-mark.svg", type: "image/svg+xml" }
       ],
-      apple: "/images/sailtrue-apple-icon.png"
+      apple: "/images/sailtrue-mark.png"
     }
   };
 }
