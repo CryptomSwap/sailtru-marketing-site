@@ -1,0 +1,503 @@
+.voyage {
+  --voyage-paper: #f3f1eb;
+  --voyage-ink: #06143d;
+  --voyage-muted: #42516a;
+  --voyage-cobalt: #245cff;
+  --voyage-cyan: #7ee7ff;
+  position: relative;
+  isolation: isolate;
+  min-height: 4200px;
+  overflow: clip;
+  color: var(--voyage-ink);
+  background: var(--voyage-paper);
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
+}
+
+.voyage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.85), transparent 28rem),
+    radial-gradient(circle at 78% 72%, rgba(217, 235, 245, 0.8), transparent 34rem),
+    linear-gradient(180deg, #f8f5ed 0%, #efe7d6 55%, #f4f1e8 100%);
+}
+
+.voyage-world {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.voyage-motion .voyage-layer,
+.voyage-motion .voyage-boat,
+.voyage-motion .voyage-route-path,
+.voyage-motion .voyage-copy,
+.voyage-motion .voyage-chart-copy,
+.voyage-motion .voyage-scan-block,
+.voyage-motion .voyage-beyond-copy {
+  will-change: transform, opacity;
+}
+
+.voyage-route-path {
+  opacity: 0.55;
+  filter: drop-shadow(0 5px 9px rgba(36, 92, 255, 0.16));
+}
+
+.voyage-boat {
+  opacity: 0.78;
+  filter: drop-shadow(0 28px 30px rgba(25, 62, 126, 0.25));
+}
+
+.voyage-fog-soft {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1100px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 25% 34%, rgba(255, 255, 255, 0.74), transparent 24rem),
+    radial-gradient(ellipse at 72% 42%, rgba(255, 255, 255, 0.58), transparent 26rem);
+  filter: blur(10px);
+}
+
+.voyage-content {
+  position: relative;
+  z-index: 1;
+  width: min(100% - clamp(2rem, 7vw, 6rem), 1200px);
+  margin-inline: auto;
+}
+
+.voyage-block {
+  position: relative;
+  min-height: 820px;
+  display: grid;
+  align-items: center;
+}
+
+.voyage-block--fog {
+  padding-block-start: 120px;
+}
+
+.voyage-block--reef {
+  min-height: 900px;
+  justify-items: end;
+}
+
+.voyage-block--currents {
+  min-height: 760px;
+  align-items: start;
+  padding-block-start: 190px;
+}
+
+.voyage-copy,
+.voyage-chart-copy,
+.voyage-beyond-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 34rem;
+  text-shadow: 0 2px 22px rgba(255, 255, 255, 0.95);
+}
+
+.voyage-copy::before,
+.voyage-chart-copy::before,
+.voyage-beyond-copy::before {
+  content: "";
+  position: absolute;
+  inset: -1.35rem -1.7rem;
+  z-index: -1;
+  border-radius: 2rem;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 35% 45%, rgba(248, 245, 237, 0.92), rgba(248, 245, 237, 0.62) 58%, transparent 74%);
+  filter: blur(2px);
+}
+
+.voyage-block--reef .voyage-copy {
+  max-width: 36rem;
+  margin-inline-end: clamp(0rem, 7vw, 6rem);
+}
+
+.voyage-block--currents .voyage-copy {
+  margin-inline-start: auto;
+  margin-inline-end: clamp(2rem, 10vw, 9rem);
+}
+
+.voyage-copy p,
+.voyage-finding strong {
+  margin: 0 0 0.9rem;
+  color: var(--voyage-cobalt);
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.voyage-copy h2,
+.voyage-chart-copy h2,
+.voyage-scan-block h2,
+.voyage-beyond-copy h2 {
+  margin: 0;
+  max-width: 11ch;
+  color: var(--voyage-ink);
+  font-family: var(--font-serif), "Instrument Serif", Georgia, serif;
+  font-size: clamp(3.2rem, 7vw, 6.6rem);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.locale-he .voyage-copy h2,
+.locale-he .voyage-chart-copy h2,
+.locale-he .voyage-scan-block h2,
+.locale-he .voyage-beyond-copy h2 {
+  font-family: var(--font-serif-he), var(--font-sans), "Heebo", serif;
+  letter-spacing: -0.025em;
+}
+
+.voyage-copy span,
+.voyage-chart-copy > p,
+.voyage-scan-block p,
+.voyage-beyond-copy p {
+  display: block;
+  margin-block-start: 1.2rem;
+  max-width: 42rem;
+  color: var(--voyage-muted);
+  font-size: clamp(1rem, 1.45vw, 1.18rem);
+  line-height: 1.65;
+}
+
+.voyage-chart {
+  position: relative;
+  min-height: 1050px;
+  display: grid;
+  align-items: center;
+}
+
+.voyage-chart-copy {
+  margin-inline-start: clamp(0rem, 4vw, 4rem);
+}
+
+.voyage-finding {
+  width: min(100%, 40rem);
+  margin-block-start: 2rem;
+  padding: 0;
+}
+
+.voyage-finding dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+  margin: 0;
+}
+
+.voyage-finding div {
+  border-block-start: 1px solid rgba(36, 92, 255, 0.22);
+  padding-block-start: 0.8rem;
+}
+
+.voyage-finding div:nth-child(3) {
+  color: var(--voyage-cobalt);
+}
+
+.voyage-finding dt {
+  color: var(--voyage-ink);
+  font-weight: 850;
+}
+
+.voyage-finding dd {
+  margin: 0.35rem 0 0;
+  color: var(--voyage-muted);
+  line-height: 1.55;
+}
+
+.voyage-scan-block {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(19rem, 0.75fr);
+  gap: clamp(2rem, 7vw, 6rem);
+  align-items: center;
+  min-height: 740px;
+}
+
+.voyage-scan-block > div:first-child {
+  position: relative;
+  z-index: 2;
+}
+
+.voyage-scan-block > div:first-child::before {
+  content: "";
+  position: absolute;
+  inset: -1.35rem -1.7rem;
+  z-index: -1;
+  border-radius: 2rem;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 35% 45%, rgba(248, 245, 237, 0.92), rgba(248, 245, 237, 0.62) 58%, transparent 74%);
+  filter: blur(2px);
+}
+
+.voyage-scan-block h2 {
+  max-width: 9.5ch;
+  font-size: clamp(2.7rem, 5.4vw, 5rem);
+}
+
+.voyage-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: voyage-step;
+}
+
+.voyage-steps li {
+  counter-increment: voyage-step;
+  position: relative;
+  min-height: 4.2rem;
+  padding-inline-start: 2.4rem;
+  color: var(--voyage-ink);
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.voyage-steps li::before {
+  content: counter(voyage-step);
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0;
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 999px;
+  background: var(--voyage-cobalt);
+  color: #fff;
+  font-size: 0.84rem;
+}
+
+.voyage-scan {
+  position: relative;
+  padding: clamp(1.1rem, 3vw, 1.6rem);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.52);
+  box-shadow: 0 28px 70px rgba(24, 44, 80, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.voyage-scan label {
+  display: block;
+  margin-block-end: 0.55rem;
+  color: var(--voyage-ink);
+  font-weight: 850;
+}
+
+.voyage-scan__control {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.voyage-scan input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid rgba(36, 92, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--voyage-ink);
+  padding: 0.95rem 1.05rem;
+  font: inherit;
+}
+
+.voyage-scan button,
+.voyage-beyond-copy a {
+  border: 0;
+  border-radius: 999px;
+  background: var(--voyage-cobalt);
+  color: #fff;
+  padding: 0.95rem 1.1rem;
+  font: inherit;
+  font-weight: 850;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 14px 32px rgba(36, 92, 255, 0.25);
+}
+
+.voyage-scan__status {
+  min-height: 1.5em;
+  margin: 0.65rem 0 0;
+  color: var(--voyage-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.voyage-scan__status--error {
+  color: #992a21;
+  font-weight: 800;
+}
+
+.voyage-scan__status--stub {
+  color: #124c5a;
+}
+
+.voyage-beyond {
+  min-height: 700px;
+  display: grid;
+  align-items: center;
+  justify-items: end;
+  padding-block-end: 160px;
+}
+
+.voyage-beyond-copy {
+  width: min(100%, 39rem);
+  margin-inline-end: clamp(0rem, 6vw, 5rem);
+}
+
+.voyage-beyond-copy h2 {
+  max-width: 12ch;
+  font-size: clamp(2.6rem, 5.4vw, 5rem);
+}
+
+.voyage-beyond-copy h3 {
+  margin: 2rem 0 0;
+  color: var(--voyage-ink);
+  font-size: clamp(1.35rem, 2.1vw, 2rem);
+  line-height: 1.1;
+}
+
+.voyage-beyond-copy a {
+  display: inline-flex;
+  margin-block-start: 1.3rem;
+}
+
+.voyage-reduced .voyage-copy,
+.voyage-reduced .voyage-chart-copy,
+.voyage-reduced .voyage-scan-block,
+.voyage-reduced .voyage-beyond-copy {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voyage *,
+  .voyage *::before,
+  .voyage *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .voyage {
+    min-height: 3750px;
+  }
+
+  .voyage-content {
+    width: min(100% - 2rem, 720px);
+  }
+
+  .voyage-block,
+  .voyage-block--reef,
+  .voyage-block--currents {
+    min-height: 650px;
+    align-items: center;
+    justify-items: start;
+    padding-block: 70px;
+  }
+
+  .voyage-block--reef .voyage-copy,
+  .voyage-block--currents .voyage-copy,
+  .voyage-beyond-copy {
+    margin-inline: 0;
+  }
+
+  .voyage-copy,
+  .voyage-chart-copy,
+  .voyage-beyond-copy {
+    max-width: 32rem;
+  }
+
+  .voyage-copy h2,
+  .voyage-chart-copy h2 {
+    font-size: clamp(2.65rem, 11vw, 4.6rem);
+  }
+
+  .voyage-chart {
+    min-height: 920px;
+    align-items: end;
+    padding-block-end: 90px;
+  }
+
+  .voyage-scan-block {
+    grid-template-columns: 1fr;
+    min-height: 680px;
+  }
+
+  .voyage-finding dl,
+  .voyage-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .voyage {
+    min-height: 3450px;
+  }
+
+  .voyage-world {
+    opacity: 0.92;
+  }
+
+  .voyage-block,
+  .voyage-block--reef,
+  .voyage-block--currents {
+    min-height: 560px;
+    padding-block: 45px;
+  }
+
+  .voyage-copy {
+    padding-block-start: 120px;
+  }
+
+  .voyage-copy h2,
+  .voyage-chart-copy h2,
+  .voyage-scan-block h2,
+  .voyage-beyond-copy h2 {
+    max-width: 11.5ch;
+    font-size: clamp(2.3rem, 13vw, 3.7rem);
+  }
+
+  .voyage-copy span,
+  .voyage-chart-copy > p,
+  .voyage-scan-block p,
+  .voyage-beyond-copy p,
+  .voyage-finding dd {
+    font-size: 0.97rem;
+  }
+
+  .voyage-chart {
+    min-height: 820px;
+  }
+
+  .voyage-scan__control {
+    flex-direction: column;
+  }
+
+  .voyage-scan button {
+    width: 100%;
+  }
+
+  .voyage-beyond {
+    min-height: 560px;
+    padding-block-end: 80px;
+  }
+}
