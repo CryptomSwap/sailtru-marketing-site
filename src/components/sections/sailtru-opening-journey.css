@@ -1,0 +1,266 @@
+.opening-journey {
+  position: relative;
+  min-height: 360vh;
+  isolation: isolate;
+  color: #071743;
+  background: #f5efe2;
+  overflow: clip;
+}
+
+.opening-canvas {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 56% 25%, rgba(255, 218, 161, 0.34), transparent 20rem),
+    linear-gradient(180deg, #f7f1e6 0%, #e8f1f0 48%, #cde7ef 100%);
+}
+
+.opening-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.opening-canvas::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.38;
+  mix-blend-mode: multiply;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(6, 23, 67, 0.035), transparent 0.25rem),
+    radial-gradient(circle at 70% 60%, rgba(6, 23, 67, 0.025), transparent 0.22rem),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12), rgba(6, 23, 67, 0.02));
+  background-size: 11px 11px, 17px 17px, 100% 100%;
+}
+
+.opening-story {
+  position: relative;
+  z-index: 2;
+  width: min(100% - clamp(2rem, 7vw, 6rem), 1180px);
+  margin: -100vh auto 0;
+  min-height: 360vh;
+  pointer-events: none;
+}
+
+.opening-story__block {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: min(42rem, 48vw);
+  text-shadow: 0 2px 26px rgba(250, 246, 237, 0.95);
+}
+
+.opening-story__block:nth-child(2) {
+  margin-inline-start: auto;
+}
+
+.opening-story__block:nth-child(3) {
+  margin-inline-start: clamp(0rem, 8vw, 8rem);
+}
+
+.opening-story__block::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: min(48rem, 58vw);
+  height: 24rem;
+  border-radius: 50%;
+  transform: translate(-12%, -10%);
+  background: radial-gradient(ellipse, rgba(248, 243, 232, 0.88), rgba(248, 243, 232, 0.54) 55%, transparent 72%);
+  filter: blur(3px);
+}
+
+.opening-story__block p {
+  margin: 0 0 0.85rem;
+  color: #245cff;
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.opening-story__block h2 {
+  margin: 0;
+  max-width: 10ch;
+  color: #071743;
+  font-family: var(--font-serif), "Instrument Serif", Georgia, serif;
+  font-size: clamp(3.5rem, 7vw, 6.8rem);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.locale-he .opening-story__block h2 {
+  font-family: var(--font-serif-he), var(--font-sans), "Heebo", serif;
+  letter-spacing: -0.025em;
+}
+
+.opening-story__block span {
+  display: block;
+  max-width: 38rem;
+  margin-block-start: 1.2rem;
+  color: #40516b;
+  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  line-height: 1.65;
+}
+
+.opening-poster {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 56% 28%, rgba(255, 214, 148, 0.56), transparent 17rem),
+    radial-gradient(ellipse at 60% 62%, rgba(32, 128, 164, 0.46), transparent 31rem),
+    linear-gradient(180deg, #f8f2e6 0%, #e4f2f1 54%, #bfe1ea 100%);
+}
+
+.opening-poster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  background-image: radial-gradient(circle, rgba(7, 23, 67, 0.08) 0 1px, transparent 1.5px);
+  background-size: 12px 12px;
+}
+
+.opening-poster__sun {
+  position: absolute;
+  inset-inline-start: 56%;
+  inset-block-start: 20%;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 999px;
+  background: rgba(255, 222, 165, 0.58);
+  filter: blur(12px);
+}
+
+.opening-poster__water {
+  position: absolute;
+  inset-inline: -8%;
+  inset-block-end: -18%;
+  height: 58%;
+  background:
+    radial-gradient(ellipse at 38% 18%, rgba(20, 112, 156, 0.26), transparent 24rem),
+    radial-gradient(ellipse at 74% 40%, rgba(22, 118, 163, 0.32), transparent 27rem),
+    linear-gradient(180deg, rgba(182, 225, 235, 0.24), rgba(17, 112, 156, 0.42));
+  filter: blur(1px);
+}
+
+.opening-poster__lighthouse {
+  position: absolute;
+  inset-inline-start: 14%;
+  inset-block-start: 35%;
+  width: 3rem;
+  height: 12rem;
+  background: linear-gradient(180deg, #f7ebd8 0 62%, #b95a3f 62% 76%, #f7ebd8 76%);
+  clip-path: polygon(37% 0, 63% 0, 86% 100%, 14% 100%);
+  filter: drop-shadow(0 18px 24px rgba(32, 54, 72, 0.22));
+}
+
+.opening-poster__boat {
+  position: absolute;
+  width: 7rem;
+  height: 5rem;
+  filter: drop-shadow(0 20px 26px rgba(32, 54, 72, 0.22));
+}
+
+.opening-poster__boat::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 22%;
+  inset-block-start: 4%;
+  width: 44%;
+  height: 68%;
+  background: #fff8e9;
+  clip-path: polygon(0 100%, 88% 0, 100% 100%);
+}
+
+.opening-poster__boat::after {
+  content: "";
+  position: absolute;
+  inset-inline: 4% 0;
+  inset-block-end: 3%;
+  height: 27%;
+  border-radius: 0 0 999px 999px;
+  background: #0d244b;
+}
+
+.opening-poster__boat--far {
+  inset-inline-start: 66%;
+  inset-block-start: 28%;
+  transform: scale(0.32) rotate(-9deg);
+  opacity: 0.65;
+}
+
+.opening-poster__boat--near {
+  inset-inline-start: 50%;
+  inset-block-start: 58%;
+  transform: scale(1.08) rotate(-6deg);
+}
+
+.opening-poster__chart {
+  position: absolute;
+  inset-inline-start: 55%;
+  inset-block-start: 55%;
+  width: 24rem;
+  height: 15rem;
+  background:
+    linear-gradient(36deg, transparent 48%, rgba(120, 153, 178, 0.38) 49% 51%, transparent 52%),
+    radial-gradient(circle at 25% 42%, transparent 0 2.4rem, rgba(120, 153, 178, 0.28) 2.45rem 2.55rem, transparent 2.6rem),
+    rgba(235, 219, 188, 0.48);
+  transform: rotate(-6deg);
+  opacity: 0.72;
+  filter: blur(0.4px);
+}
+
+.site-home:has(.opening-journey) ~ .floating-contact {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening-story__block {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .opening-journey {
+    min-height: 310vh;
+  }
+
+  .opening-story {
+    width: min(100% - 2rem, 680px);
+    min-height: 310vh;
+  }
+
+  .opening-story__block,
+  .opening-story__block:nth-child(2),
+  .opening-story__block:nth-child(3) {
+    width: min(100%, 34rem);
+    margin-inline: 0;
+    justify-content: end;
+    padding-block-end: 18vh;
+  }
+
+  .opening-story__block h2 {
+    font-size: clamp(2.8rem, 13vw, 4.8rem);
+  }
+
+  .opening-story__block::before {
+    width: min(38rem, 105vw);
+  }
+}
