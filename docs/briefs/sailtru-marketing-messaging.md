@@ -1,8 +1,8 @@
 # SailTru marketing messaging brief
 
-Version: 1.2  
+Version: 1.3  
 Date: 2026-10-21
-Revision: Explanatory copy throughout the sailing-boat journey, following Tom's clarity requirement.  
+Revision: Explanatory obstacle-to-solution story for the sailing-boat journey.  
 Repository baseline: main at e2f36a992fd23217363857a7dec56130765bbd75  
 Companion: [Design and experience](./sailtru-design.md)  
 Audience: Mike, copywriters, designers, developers, and reviewers.
@@ -13,7 +13,7 @@ This is the proposed copy and messaging specification for the next marketing-sit
 
 **User-confirmed business journey:** enter a URL → backend analyzes it → show a limited report based on that analysis → sell the full report.
 
-**User-requested visual direction:** a sailing boat travels through the homepage story as the visitor scrolls, inspired by the bee journey Tom identified on ReddGrow. The boat should explain observation, evidence, recommendation, report, and optional implementation.
+**User-requested visual direction:** a sailing boat travels through obstacles faced by a business owner as the visitor scrolls, inspired by the bee journey Tom identified on ReddGrow. Recognizable problems lead to analysis, evidence, recommendations, the report offer, and optional implementation.
 
 **Company identity:** business intelligence and AI solutions, including bespoke implementation. The paid report is an entry product, not the entire company.
 
@@ -151,12 +151,58 @@ Use the quoted wording only while permission and supporting case evidence remain
 
 No public sentence about “when we have permission” is needed; that is an editorial rule. If evidence is absent, omit the unsupported claim.
 
-### H03 — Worked example
+### H03 — The obstacles a business owner recognizes
+
+| ID | Placement | Copy |
+| --- | --- | --- |
+| obstacles.heading | H2 | Customers need to find you, understand you, and choose you. |
+| obstacles.intro | Intro | Each step can create a different problem. Before investing in another change, it helps to understand where customers may be getting stuck. |
+
+**Scene 1 — Fog: being found**
+- Heading: **If customers don't find your business, they can't choose it.**
+- Body: **People look for businesses through search, AI answers, recommendations, and other channels. If you aren't visible where your customers look, they may discover another option first.**
+- Bridge: **But getting someone to your website is only the first step.**
+- Scope rule: this explains a business problem. It does not promise the URL scan measures every discovery channel.
+
+**Scene 2 — Reef: turning a visit into an enquiry**
+- Heading: **They reach your website. Can they see what to do next?**
+- Body: **Visitors need to understand what you offer and how to take the next step. Unclear service information, a difficult form, or a hard-to-find enquiry link can make that journey harder.**
+- Example: **In our Example Studio illustration, the service page has an enquiry link only in its footer. We can observe that layout; measuring its effect requires more evidence.**
+- Bridge: **And your website is rarely the only option a customer considers.**
+
+**Scene 3 — Cross-currents: competing for the same customer**
+- Heading: **Your customers are comparing you with other businesses.**
+- Body: **They may see different prices, promises, service details, and reasons to trust each company. Comparing those public differences can help you understand where your own offer needs to be clearer.**
+- Bridge: **So which of these should your business address first?**
+- Scope rule: competitor analysis belongs in a purchased offer only when actually performed/included. This scene is not a fabricated comparison of the visitor's company.
+
+Three linked scenes are enough before the diagnostic answer. Do not add an obstacle for every service. Manual work appears after the report explanation in H05, where the scope distinction can be made explicit.
+
+### H04 — How the report journey works
+
+| ID | Placement | Copy |
+| --- | --- | --- |
+| journey.eyebrow | Label | How it works |
+| journey.heading | H2 | Here is what happens after you enter your website. |
+| journey.intro | Intro | Start with your website. SailTru examines the accessible information included in the analysis, explains what it found, and recommends changes it can support. Review a limited preview before deciding whether to buy the full report. |
+| journey.step1.title | Step | Share your website |
+| journey.step1.body | Body | Enter your business website. SailTru uses it to examine the public pages and information included in the analysis. |
+| journey.step2.title | Step | Review your preview |
+| journey.step2.body | Body | See a useful finding about your website, the evidence behind it, and a recommended change when the analysis supports one. Your preview also explains what could not be assessed. |
+| journey.step3.title | Step | Get the full report |
+| journey.step3.body | Body | Review the exact contents and price beside your preview. If you choose to buy, you receive the additional findings, evidence, and recommendations included in that offer. |
+| journey.action | Repeat URL form submit | Analyze my business |
+
+Do not imply that all customers will have the same number or severity of findings.
+
+The limited/full comparison must use the capability rules in section 8. Publish only rows fulfilled by the selected offer.
+
+### H04A — Worked report example (carried forward from the reef scene)
 
 | ID | Placement | Copy |
 | --- | --- | --- |
 | example.eyebrow | Label | Inside the report |
-| example.heading | H2 | Here is how a website observation becomes a recommendation. |
+| example.heading | Report subheading | Here is how a website observation becomes a recommendation. |
 | example.intro | Intro | Imagine a customer reading about one of your services. They understand what you offer, but the enquiry link is difficult to find. The example below shows what SailTru would look at, what it could recommend, and what would still need to be measured. |
 | example.badge | Persistent sample label | Illustrative example |
 | example.business | Fictional sample name | Example Studio |
@@ -185,25 +231,6 @@ No public sentence about “when we have permission” is needed; that is an edi
 
 Every example screenshot/fragment uses the fictional name and sample label. Do not show an invented conversion uplift, industry-average deficit, competitor dataset, confidence score, or elapsed scan.
 
-### H04 — How the report journey works
-
-| ID | Placement | Copy |
-| --- | --- | --- |
-| journey.eyebrow | Label | How it works |
-| journey.heading | H2 | Here is what happens after you enter your website. |
-| journey.intro | Intro | SailTru examines accessible public information, prepares a limited report, and shows you what the full report adds. You review the preview before deciding whether to purchase. |
-| journey.step1.title | Step | Share your website |
-| journey.step1.body | Body | Enter your business website. SailTru uses it to examine the public pages and information included in the analysis. |
-| journey.step2.title | Step | Review your preview |
-| journey.step2.body | Body | See a useful finding about your website, the evidence behind it, and a recommended change when the analysis supports one. Your preview also explains what could not be assessed. |
-| journey.step3.title | Step | Get the full report |
-| journey.step3.body | Body | Review the exact contents and price beside your preview. If you choose to buy, you receive the additional findings, evidence, and recommendations included in that offer. |
-| journey.action | Repeat URL form submit | Analyze my business |
-
-Do not imply that all customers will have the same number or severity of findings.
-
-The limited/full comparison must use the capability rules in section 8. Publish only rows fulfilled by the selected offer.
-
 ### H05 — Capabilities
 
 | ID | Placement | Copy |
@@ -220,7 +247,9 @@ The limited/full comparison must use the capability rules in section 8. Publish 
 - Heading: **Website messaging and competitor positioning**
 - Body: **Examine what your website says, how it guides visitors, and how your public positioning compares with competitors when comparison research is included. Recommend specific changes to the pages and messages.**
 
-**Operations**
+**Operations — the later anchor scene**
+- Scene heading: **And every new enquiry can create more work for your team.**
+- Scene body: **Copying details between tools, assigning tasks, and chasing follow-ups can keep people busy. To find out where automation would help, we need to understand how your process works today.**
 - Heading: **Manual workflows and automation**
 - Body: **Tell us how a process works today—for example, moving a new enquiry into your CRM and assigning follow-up. We can map the handoffs and build automation where it is useful.**
 - Scope note: **Requires workflow discovery; this is not measured by the public website scan.**
@@ -255,67 +284,63 @@ Secondary action: **Build with SailTru**
 
 FAQ copy appears in section 10.
 
-## 5A. Literal narration for the sailing-boat scroll story
+## 5A. Explanatory narration for the obstacle voyage
 
-The detailed motion storyboard is in section 8 of the design brief. The boat connects H01–H07, while the words explain the offer. The boat can disappear and the copy must still make sense.
+The detailed motion storyboard is in section 8 of the design brief. Keep one recognizable boat/business across the whole journey. The copy must explain the business meaning even when the illustration is absent.
 
-Each scene uses a literal headline and a brief explanation. Do not place an abstract “Observe / Understand / Recommend” label in place of the explanation. Those words may remain small supporting labels.
-
-| Scene | Visible explanatory headline | What the boat helps demonstrate |
+| Scene | Main visible explanation | What the boat demonstrates |
 | --- | --- | --- |
-| Hero | What should your business improve next? | Start at the website; keep the actual URL form and offer explanation visible |
-| H03 observation | A customer reads about your service. The enquiry link is only in the footer. | Arrive at the page observation and reveal the supporting excerpt |
-| H03 significance | We explain why the location of that link matters. | Connect the observed layout to a possible obstacle without inventing lost enquiries |
-| H03 recommendation | We recommend adding an enquiry action beside the service details. | Trace the route from the evidence to the proposed change |
-| H03 measurement | After the change, check whether more visitors make useful enquiries. | Mark the need for measurement, not an already achieved uplift |
-| H04 report | Here is what happens after you enter your website. | Gather the finding, evidence, and recommendation into the preview; show the supported full-report offer |
-| H06 implementation | You receive the recommendations. Who makes the changes? | Show the optional handoff to a separately scoped implementation project |
-| H07 close | Enter your website to see what the analysis finds. | Bring the reader back to the scan action |
+| Hero | What should your business improve next? | Several possible courses; URL entry and the actual report offer remain visible |
+| Fog | If customers don't find your business, they can't choose it. | Discovery is difficult when the business is not visible to the relevant customer |
+| Reef | They reach your website. Can they see what to do next? | The route from service information to enquiry may be unclear |
+| Cross-currents | Your customers are comparing you with other businesses. | Customers see alternatives; comparison may reveal useful differences |
+| Diagnostic report | So which of these should your business address first? | Evidence is organized into findings and supported recommendations |
+| Report journey | Here is what happens after you enter your website. | The limited preview, full report, and purchase are explained concretely |
+| Anchor / operations | And every new enquiry can create more work for your team. | Manual handoffs need workflow context; a separately scoped automation can help |
+| Implementation | You receive the recommendations. Who makes the changes? | Own-team work or separately scoped SailTru implementation, followed by measurement |
+| Close | Enter your website to see what the analysis finds. | The visitor can start with analysis or take the known-need Build path |
 
-The literal headline is already part of the section copy in section 5. Do not render it twice as both a scene caption and a separate heading. A scene may use a shorter utility caption if the full heading is visible beside it.
+Render each main explanation once. A boat caption can be shorter when the full heading is visible nearby.
 
-### The report moment: explain what the visitor is buying
+### The diagnostic/report moment
 
-The same observation becomes a finding with:
-- **What we found:** what the page shows.
-- **Why we say this:** the supporting source/excerpt.
-- **Recommended next move:** the specific change.
+Connect the earlier Example Studio reef observation to a real-looking, clearly illustrative report entry:
+- **What we found:** the enquiry link is only in the footer.
+- **Why we say this:** the visible page excerpt.
+- **Recommended next move:** add an enquiry action beside the service details.
+- **How to check it:** measure enquiries/quality with appropriate data after the change.
 
-Label the homepage report scene **Illustrative example**. Then explain the actual offer: the limited preview shows part of a personalized analysis; the full report adds the specifically listed findings and recommendations. The example is visible without purchase. Actual report access is handled in the application.
+The homepage scene is an **Illustrative example**. The visitor's actual scan produces a separate personalized preview. Show exactly what the full-report purchase adds; do not suggest it measures every illustrated business problem.
 
-The boat keeps moving through the homepage even if the visitor does not submit a URL or purchase. It never blocks scrolling at the offer.
+The boat keeps moving through the homepage without a purchase. Paid report access is an application entitlement, not a scroll obstacle.
 
-### Narrative transitions
+### Narrative and scope rules
 
-Use a short transition only when the next paragraph does not already make the connection:
-- After the page observation: **Why might that make it harder to enquire?**
-- Before the recommendation: **What would we change on the page?**
-- Before the report explanation: **That is one finding. Here is how you receive the analysis for your own website.**
-- Before implementation: **Once you have the recommendations, you can make the changes with your own team or ask us to help.**
+- Problem recognition comes first; supported diagnosis follows. Do not assert that every visitor has all the illustrated problems.
+- Let each transition follow the customer's path: being found → understanding the site → comparing choices → deciding what to improve.
+- Introduce internal manual work after explaining the public-URL report, and state that workflow discovery requires more context.
+- A chart is visual shorthand for understanding the evidence. It does not guarantee a correct route, a revenue result, or live report completeness.
+- The boat can cross fog, reefs, currents, and a later anchor. Do not portray failure, bankruptcy, or a sinking business to create an unsupported fear.
+- Keep the literal product controls and protected hero question. Avoid replacing explanations with sailing puns.
+- Do not claim that scrolling confirms analysis, implementation, payment, or paid access.
 
-These transitions are editorial aids, not an instruction to repeat the same idea twice. Keep the visible argument connected and literal.
+### Hebrew obstacle headings and bridges
 
-### Language guardrails
-
-Keep the hero question and direct product actions. Do not replace them with “Set sail for growth,” “Find your north star,” “Unlock treasure,” or “Guaranteed smooth sailing.”
-
-A course/harbor can be visual shorthand for choosing a decision or starting work. It does not establish growth, completed analysis, completed implementation, payment confirmation, or report entitlement.
-
-Use the same fictional business and page finding throughout. Motion introduces no new metric, client, source, or product guarantee.
-
-### Hebrew narration
-
-| Scene | Hebrew heading |
+| Scene | Hebrew |
 | --- | --- |
-| H03 observation | לקוח קורא על השירות. הקישור לפנייה נמצא רק בתחתית העמוד. |
-| H03 significance | אנחנו מסבירים למה מיקום הקישור עשוי להיות חשוב. |
-| H03 recommendation | ההמלצה: להוסיף אפשרות לפנייה לצד פרטי השירות. |
-| H03 measurement | אחרי השינוי, בודקים אם יותר גולשים שולחים פניות רלוונטיות. |
-| H04 report | מה קורה אחרי שמזינים את אתר העסק? |
-| H06 implementation | קיבלת את ההמלצות. מי מיישם את השינויים? |
-| H07 close | מזינים את האתר ורואים מה הניתוח מוצא. |
+| Obstacle introduction | כדי שלקוחות יבחרו בך, הם צריכים למצוא אותך ולהבין מה העסק מציע. |
+| Fog | אם לקוחות לא מוצאים את העסק שלך, הם לא יכולים לבחור בו. |
+| Fog-to-reef bridge | אבל הגעה לאתר היא רק הצעד הראשון. |
+| Reef | הם הגיעו לאתר. האם ברור להם מה הצעד הבא? |
+| Reef-to-competition bridge | והאתר שלך הוא בדרך כלל לא האפשרות היחידה שהם בודקים. |
+| Cross-currents | הלקוחות שלך משווים אותך לעסקים אחרים. |
+| Diagnostic question | אז במה כדאי לעסק שלך לטפל קודם? |
+| Report journey | מה קורה אחרי שמזינים את אתר העסק? |
+| Manual-work anchor | וכל פנייה חדשה יכולה להוסיף עוד עבודה לצוות. |
+| Implementation | קיבלת את ההמלצות. מי מיישם את השינויים? |
+| Close | מזינים את האתר ורואים מה הניתוח מוצא. |
 
-Mirror illustration layout where appropriate; preserve the literal explanation and normal Hebrew purchase controls. Do not substitute sailing wordplay for the offer.
+Translate the full paragraphs with the same scope distinctions and the established Hebrew terminology. Mirror the visual route where appropriate without mirroring screenshots, words, or controls.
 
 ## 6. Scan, account, and failure copy
 
@@ -639,7 +664,8 @@ Map the semantic IDs in this file into the existing next-intl catalogs rather th
 - [ ] Exact English copy above is used or deliberate edits are recorded.
 - [ ] Full Hebrew copy follows the supplied terminology and is checked beside English.
 - [ ] Illustrative examples and real findings are unmistakably different.
-- [ ] Boat scenes use the same example finding and add no fabricated outcomes.
+- [ ] Boat obstacles describe recognizable possibilities; actual diagnosis is evidence-backed and scope-aware.
+- [ ] The same reef/service-page observation carries into the worked report example with no fabricated outcomes.
 - [ ] Scene headings explain the situation or action directly; nautical captions never replace product explanation.
 - [ ] Scrolling the boat never produces live-status or payment claims.
 - [ ] Preview, paid access, account, progress, and payment language match actual product behavior.

@@ -1,8 +1,8 @@
 # SailTru design and experience brief
 
-Version: 1.2  
+Version: 1.3  
 Date: 2026-10-21
-Revision: Sailing-boat narrative with explicit explanation and comprehension review.  
+Revision: Business-obstacle voyage, with diagnosis/report and optional implementation connected explicitly.  
 Repository baseline: main at e2f36a992fd23217363857a7dec56130765bbd75  
 Companion: [Marketing messaging](./sailtru-marketing-messaging.md)  
 Audience: Mike, designers, frontend developers, backend integrators, and reviewers.
@@ -15,7 +15,8 @@ Build a site that makes SailTru's offer understandable, demonstrates the quality
 - Preserve SailTru's identity as a business intelligence and AI solutions company.
 - Learn from ReddGrow's explanatory flow and presentation.
 - Explain the offer directly at every step. Tom explicitly prioritizes first-time-visitor understanding over slogans or sailing metaphors.
-- Use a sailing boat as the recurring character in a scroll-driven journey, inspired by the bee journey Tom identified on ReddGrow. This motif is user-requested; the detailed storyboard below is the proposed execution.
+- Use a sailing boat as the recurring character in a scroll-driven journey, inspired by the bee journey Tom identified on ReddGrow.
+- The boat traverses recognizable obstacles faced by a business owner. The homepage explains the business problem, how it is investigated, and how SailTru can help. This obstacle framing is user-requested; detailed scenes below are proposed execution.
 - Connect the frontend to the backend that analyzes the submitted business URL.
 - Show a limited report based on that analysis.
 - Make purchase of the full report the main conversion for that journey.
@@ -139,24 +140,26 @@ Navigation target labels: **How it works**, **Example report**, **Work**, **Buil
 
 This placement replaces the old need to scroll through several methodology sections before encountering proof.
 
-### H03 — Worked example: explain observation, consequence, and recommendation
+### H03 — Business obstacles: help the visitor recognize the problem
 
-**Question:** What will the analysis tell me?
+**Question:** Which situations might be affecting my business?
 
-- Use the literal explanatory headings and connected paragraphs in the companion brief, sections 5 and 5A. Do not replace them with short nautical captions.
-- Show one fictional business consistently across four short chapters:
-  1. **What we observed:** a service page makes the visitor search for the next step.
-  2. **Why it deserves attention:** the path from that service to an enquiry is unclear.
-  3. **What to change:** add a relevant enquiry action and clarify what happens next.
-  4. **How to check the result:** compare service-page enquiry behavior after implementation, once analytics is available.
-- Label the entire example and each detached preview **Illustrative example**.
-- Use a simple annotated page fragment, an evidence excerpt, a recommendation, and a before/after interface state. No fictional conversion number.
-- The example is about observable public information; it does not diagnose internal lead response.
-- Keep the same fictional business and finding through every chapter.
-- Desktop: two-column text + evidence visual. The sailing boat follows the evidence through the four chapters, with scene behavior defined in section 8; ordinary native scrolling.
-- Mobile: stacked copy with a compact sailing vignette at each chapter. Retain the boat's story with short scroll-linked movements; no pinned scene, canvas, horizontal carousel, or squeezed desktop dashboard.
-- The final example view shows how a report finding can lead to optional implementation.
-- Include a clearly labeled **View example report** disclosure or dedicated sample view, without requiring a lead form to view a fictional example.
+Use one boat and three short connected scenes before the diagnostic/report answer. Each obstacle must map to a real business situation and a readable explanatory paragraph:
+1. **Fog / discovery:** customers cannot choose a business they do not encounter.
+2. **Reef / website journey:** reaching a website does not mean the visitor understands the offer or can easily enquire.
+3. **Cross-currents / competitive choice:** customers compare alternatives; a competing offer may communicate its value more clearly.
+
+The scenes are recognizable possibilities, not diagnoses of the visitor's business. Do not imply everyone has these problems or that every check is included in the scan.
+
+The boat encounters these conditions and markers. At this stage it does not magically clear them. Move naturally into H04 with the question **Which of these should your business address first?**
+
+- Use literal English/HE copy from the messaging brief. The scenery must be understandable through that copy.
+- In the reef scene, use the **Example Studio** service-page excerpt as a concrete illustrative observation, clearly labeled.
+- Desktop: connected illustration lane beside readable text; ordinary native scrolling.
+- Mobile: stacked copy and compact coherent boat vignettes; no pinned sequence.
+- Keep this problem sequence short enough that the report mechanism follows promptly. Do not add an obstacle for every capability.
+- A manual-work anchor appears later in H05, after the report explanation, to introduce separately scoped workflow discovery and implementation.
+- The earlier one-finding storyline becomes the worked report example in H04; it is no longer the entire homepage journey.
 
 ### H04 — Engagement: explain preview and purchase
 
@@ -169,6 +172,10 @@ Use three plain stages under **Here is what happens after you enter your website
 
 Show the limited/full comparison defined in section 7. Explain what the customer receives before presenting the purchase action. Do not repeat another four-stage process and six-stage process on the homepage.
 
+Here the boat receives a chart: a readable report that connects evidence to a recommended route. Bring forward the same Example Studio enquiry-link observation from the reef scene. In one compact report example, show the page evidence, why it may matter, the recommended enquiry action, and how to evaluate it with suitable data. Label it **Illustrative example** and offer **View example report** without requiring a lead form.
+
+The chart clarifies a decision. It does not certify that every illustrated obstacle was measured, that paid ranking exists if unsupported, or that the implementation has already succeeded.
+
 ### H05 — Capabilities: show breadth after comprehension
 
 **Question:** Can this help with my kind of business problem?
@@ -179,7 +186,9 @@ Use four editorial rows rather than a grid of interchangeable AI cards:
 - Operations: workflow automation after the relevant context is gathered.
 - Custom systems: software, integrations, AI agents, and coordinated agent teams.
 
-Each row contains one buyer situation, one concrete output, and a relevant Build or capability link. Distinguish scan coverage from services; operations and bespoke systems are not automatically diagnosed from a URL.
+Each row contains one buyer situation, one concrete output, and a relevant Build or capability link. Pair these service rows with the earlier obstacles: discovery/fog, website/reef, competitive context/currents, and manual work/anchor. The operations row introduces the fourth obstacle: a boat held by an anchor representing repeated manual handoffs. A separate project can map the workflow and add useful automation; the anchor lifts only in that illustrative scoped-work scene.
+
+Distinguish scan coverage from services; operations and bespoke systems are not automatically diagnosed from a URL.
 
 ### H06 — Implementation and measurement
 
@@ -305,22 +314,21 @@ This is the signature visual treatment for the homepage. The token/layout and pr
 
 ### 8.3 Scroll storyboard
 
-The order remains H01–H07. Motion links those sections; it does not add a second mandatory six-screen explainer.
+The order remains H01–H07. The boat crosses business obstacles, receives a diagnostic chart, and can take an optional implementation route. This replaces the narrower four-chapter single-finding voyage from version 1.2; the single finding remains as evidence inside the report example.
 
-| Beat | Placement | Boat/world action | What becomes clearer |
+| Beat | Placement | Boat/world action | Business meaning and visible explanation |
 | --- | --- | --- | --- |
-| 01 — Starting point | H01 hero | Boat sits on a quiet open-water line. The first route segment leads toward the next section. | There are several possible moves; analysis helps choose a direction. |
-| Proof pause | H02 proof strip | Boat glides past in its illustration lane; pause complex action and let proof lead. | A real client result is separate from the fictional voyage. |
-| 02 — Observe | H03 chapter A | Boat approaches a buoy attached to the illustrative service-page observation. A faint wake connects it to the source excerpt. | A finding begins with something inspectable. |
-| 03 — Understand | H03 chapter B | The source and the unclear enquiry path come into view together. Irrelevant chart marks recede while the finding stays legible. | What was observed and why it may matter are different statements. |
-| 04 — Recommend | H03 chapter C | A route is drawn around the finding toward the proposed page change; the boat turns gently onto it. | The evidence leads to a specific recommendation. |
-| Measurement marker | H03 chapter D | A small next-check marker appears beyond the proposed change, with a neutral measurement label. | The change still needs to be evaluated; no uplift is invented. |
-| 05 — Report | H04 preview/full explanation | The same observation, evidence, and action settle into a report panel. The boat pauses beside a useful visible preview; further route detail illustrates the paid scope. | Preview and full report are different levels of the analysis offer. |
-| Capabilities pause | H05 | Boat continues through the margin with no new busy scene; capability rows remain the focus. | The broader company has useful implementation capabilities. |
-| 06 — Act and review | H06 implementation | An optional onward route heads toward a small work harbor, then an observation marker. Label the handoff as a separate project. | Acting on recommendations and measuring the work are separate from buying the report. |
-| Close | H07 final action | Boat rests beside a clear next-waypoint marker, away from the form and FAQ. | Start with the business URL, or take the known-need Build path. |
+| Starting point | H01 | One boat at the start of several possible routes; distant obstacles are hinted at. | There are many possible improvements; choosing where to focus is difficult. Hero explains SailTru and the URL/report offer. |
+| Proof pause | H02 | Boat continues quietly in its safe illustration lane. | Give real client evidence space without treating the fictional voyage as a case study. |
+| Fog | H03 discovery | The boat enters a light fog; a destination is hard to see. Customer/search markers gradually become legible as observations, without showing an invented ranking. | Customers need to find the business before choosing it. Show the literal discovery paragraph. |
+| Reef | H03 website | The boat encounters a broken/narrow route between a service-page marker and an enquiry destination. Highlight the illustrative page excerpt. | A website visitor may struggle to understand the offer or find the next step. |
+| Cross-currents | H03 competition | A few alternative routes/boats come into view. The main boat has to choose a route rather than copy every other boat. | Customers compare options; public competitor context may help explain differences. No fabricated market-share race. |
+| Diagnostic chart | H04 | The boat pauses while a readable chart/report opens. The same reef/page observation connects to evidence and a specific proposed enquiry action. | Analysis helps decide what to investigate or improve first. Explain coverage, preview, full-report scope, and purchase. |
+| Anchor | H05 operations row | The boat is visibly held by a small anchor linked to repetitive task/handoff markers. An illustrative scoped automation organizes the handoff, then releases the anchor. | Manual work can slow a team. This requires workflow discovery and a separate implementation project; a URL scan did not measure it. |
+| Optional implementation route | H06 | A chosen route leads toward a small work harbor, with a later measurement buoy. | DIY/team implementation or SailTru separately scopes and builds the change, then checks the result with suitable data. |
+| Start your analysis | H07 | Boat rests clear of the URL form; route remains open. | Enter the URL for the limited-report journey, or take the known-need Build path. |
 
-The H03 example remains **Example Studio**, the same service-page finding, and the same proposed enquiry-action improvement from section 5 and the messaging brief. No fake storm, sinking business, exploding dashboard, or magical growth island.
+Use stylized, restrained conditions: a little fog, a reef, opposing currents, and an anchor. Do not depict a sinking business or generate frightening revenue-loss numbers. The scenery identifies a situation; copy explains it, evidence supports a diagnosis, and optional implementation addresses a confirmed need.
 
 At H04, the boat does not become stuck until the visitor buys. The entire homepage remains scrollable. The illustration explains an offer; real report access is controlled in the application.
 
@@ -331,7 +339,7 @@ At H04, the boat does not become stuck until the visitor buys. The entire homepa
 - Track one logical boat through the journey. Scene handoffs must preserve position, color, scale, and identity. If separate local SVG scenes are necessary, only one traveling boat is visible at a transition.
 - Proposed desktop boat size: 96–144px wide. Use a slim wake and a limited tangent-following heading. Keep the mast generally upright; never rotate the whole boat upside down to follow a curve.
 - Progress mapping is geometric and deterministic: scrolling back reverses the journey; jumping to an anchor resolves directly to that beat; refresh at mid-page resolves to the current position.
-- Tie reveals to text/evidence anchors so the boat arrives while the relevant paragraph is readable. Do not trigger every scene on initial load.
+- Tie reveals to obstacle, evidence, and report anchors so the boat arrives while the relevant paragraph is readable. Do not trigger every scene on initial load.
 - Keep all explanatory text in accessible document flow. The boat can guide attention; it must not be the only way to understand the finding.
 - Let sentence length determine the space needed. Increase a scene's reading area or section height instead of shrinking explanatory copy, truncating it, or forcing the boat past before it can be read.
 - Optional tiny bob/sail motion is secondary to scroll. Stop offscreen/when the page is hidden. No autoplay audio.
@@ -341,7 +349,7 @@ At H04, the boat does not become stuck until the visitor buys. The entire homepa
 
 ### 8.5 Mobile and RTL behavior
 
-- Keep the same boat, story beats, finding, and report relationship on mobile. Do not drop the motif entirely.
+- Keep the same boat, obstacle sequence, illustrative finding, and report relationship on mobile. Do not drop the motif entirely.
 - Use a compact 88–120px-high scene above or beside each relevant H03 chapter, with a 48–72px boat. The text remains stacked and readable.
 - Short local route segments connect the vignettes visually. A coherent arrival/exit handoff is acceptable when a single page-spanning path would overlap mobile content.
 - No fixed character traveling across paragraphs, no full-screen sticky boat sequence, and no horizontal gesture requirement.
@@ -363,10 +371,10 @@ A future boat-based live-progress treatment may accompany real backend status, b
 
 ### 8.8 Build and review package
 
-Start with one original SVG boat and a still storyboard for the start, observation, recommendation, report, and optional implementation checkpoint. Then implement the scroll prototype using the existing frontend stack.
+Start with one original SVG boat and a still storyboard for the start, fog, reef, cross-currents, diagnostic report, manual-work anchor, and optional implementation checkpoint. Then implement the scroll prototype using the existing frontend stack.
 
 Review should include:
-- Desktop and mobile stills for those five checkpoints.
+- Desktop and mobile stills for the obstacle/report/implementation checkpoints listed above.
 - A short forward/backward scroll recording showing the actual boat travel and scene handoffs.
 - Normal scroll, deep-link/refresh position, route resize, and HE direction checks.
 - Reduced-motion capture and keyboard navigation through the same page.
@@ -424,7 +432,7 @@ Confirm current composition before modifying files. Paths below were inspected a
 | Hero | src/components/sections/home-v2/home-hero.tsx | One promise, URL entry, secondary Build |
 | Scan form | src/components/sections/hero-url-scan.tsx | Validation and real submit state |
 | Timed sequence | src/components/sections/home-v2/hero-scan-sequence.tsx | Real status adapter; no timer-driven completion |
-| Engine story | src/components/sections/home-v2/how-sailtru-works-section.tsx | Concrete worked example |
+| Engine story | src/components/sections/home-v2/how-sailtru-works-section.tsx | Connected obstacle journey leading to the worked report example |
 | Scroll handling | src/components/sections/home-v2/pipeline-scroll.ts | Remove custom wheel interception |
 | Mobile | src/components/sections/home-v2/mobile-home.css | Same narrative and proof order |
 | Theme | home-v2.css, field-hero-ref.css, how-sailtru-works.css | Consolidated tokens and quieter reading surfaces |
@@ -472,10 +480,11 @@ Unresolved offer details appear as **Configuration required** in internal previe
 - [ ] First-time-reader questions in the messaging brief can be answered from visible page copy without an explanation from the builder.
 - [ ] H01–H07 appear in the agreed order in both languages and viewport classes.
 - [ ] Laba proof appears immediately after the hero, subject to evidence availability.
-- [ ] One coherent illustrative example explains observation, recommendation, implementation, and measurement.
+- [ ] Business obstacles are recognizable and lead to the diagnostic/report answer.
+- [ ] One coherent illustrative report example explains observation, recommendation, implementation, and measurement.
 - [ ] SEO/GEO and agent services are capabilities within the company, not the hero identity.
 - [ ] No duplicated methodology chapters or custom wheel lock remain.
-- [ ] One sailing boat carries the journey through observation, evidence, recommendation, report, and optional implementation.
+- [ ] One sailing boat carries the journey through fog, reef, competitive currents, the diagnostic report, and the later scoped-work anchor/implementation scene.
 - [ ] The boat interacts with the report example and uses coherent scene handoffs; it is not a generic floating ornament.
 - [ ] Reverse scroll, anchor entry, resize, HE, mobile, and reduced motion preserve the story and controls.
 - [ ] Scroll position never impersonates analysis completion, purchase confirmation, or report entitlement.
