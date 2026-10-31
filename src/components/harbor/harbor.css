@@ -596,6 +596,8 @@ body:has(.harbor)::before {
 .hs-vignette__live,
 .hs-vignette__still {
   position: absolute;
+  /* Above the SVG still, which RTL mirrors with a transform (its own paint layer). */
+  z-index: 1;
   inset: 0;
   width: 100%;
   height: 100%;
@@ -659,6 +661,7 @@ body:has(.harbor)::before {
 }
 
 .hs-tag--vignette {
+  z-index: 2;
   left: var(--x);
   top: var(--y);
   transform: translate(-50%, -100%);

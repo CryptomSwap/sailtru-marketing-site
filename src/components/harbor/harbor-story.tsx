@@ -621,7 +621,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     let last = 0;
     let t = 0;
     let inView = true;
-    let stills = 0;
+    let stillsStarted = false;
     let timer = 0;
 
     function renderLive() {
@@ -635,13 +635,21 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       return true;
     }
 
-    /** One still per chapter vignette, spread over a few tasks so scrolling stays smooth. */
+    /**
+     * One still per chapter vignette, spread over a few tasks so scrolling stays
+     * smooth; the vignette nearest the viewport is rendered first.
+     */
     function renderStills() {
       const stage = stage3dRef.current;
-      const items = Array.from(root!.querySelectorAll<HTMLElement>(".hs-vignette:not(.hs-vignette--opening)"));
-      const el = items[stills];
+      const mid = window.innerHeight / 2;
+      const items = Array.from(root!.querySelectorAll<HTMLElement>(".hs-vignette:not(.hs-vignette--opening):not([data-still])"));
+      const distance = (e: HTMLElement) => {
+        const r = e.getBoundingClientRect();
+        return Math.abs(r.top + r.height / 2 - mid);
+      };
+      const el = items.sort((a, b) => distance(a) - distance(b))[0];
       if (!stage || !el) return;
-      stills += 1;
+      el.dataset.still = "1";
       const step = Number(el.dataset.step);
       const result = stage.still(step, el.clientWidth, el.clientHeight);
       renderLive();
@@ -673,7 +681,10 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       const ambient = !pausedRef.current;
       if (ambient) t += dt;
       if (!renderLive()) return;
-      if (stills === 0) timer = window.setTimeout(renderStills, 60);
+      if (!stillsStarted) {
+        stillsStarted = true;
+        timer = window.setTimeout(renderStills, 60);
+      }
       if (inView && ambient && document.visibilityState === "visible") raf = requestAnimationFrame(frame);
       else last = 0;
     }
