@@ -46,6 +46,24 @@ body:has(.harbor)::before {
   display: none;
 }
 
+/* On /en and /he the cobalt hero opens the page, outside the harbor theme.
+   Its floating contact stack stays with it on wide screens and leaves once
+   the harbor story starts. */
+.harbor-hero {
+  position: relative;
+  z-index: 2;
+  /* The hero's share of the cobalt field the old homepage painted on <main>. */
+  --font-mono: var(--font-sans);
+  font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
+  background: linear-gradient(180deg, #4f78ff 0%, #3d6cff 45%, #2f5bff 100%);
+}
+
+@media (min-width: 980px) {
+  body:has(.harbor)[data-cobalt-hero] .floating-contact {
+    display: flex !important;
+  }
+}
+
 .harbor a {
   color: inherit;
 }
@@ -97,6 +115,20 @@ body:has(.harbor)::before {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--rule);
+}
+
+/* Parked while the cobalt hero (with its own header) is on screen. */
+.hh.is-parked {
+  transform: translateY(-100%);
+  visibility: hidden;
+}
+
+.hh {
+  transition: transform 0.25s ease, visibility 0s;
+}
+
+.hh.is-parked {
+  transition: transform 0.25s ease, visibility 0s 0.25s;
 }
 
 .hh__bar {
@@ -533,6 +565,11 @@ body:has(.harbor)::before {
   margin-top: 32px;
 }
 
+/* Below the cobalt hero there is no fixed header to clear. */
+.harbor--below-hero .hs-step--opening {
+  padding-top: 72px;
+}
+
 .hs-vignette {
   position: relative;
   aspect-ratio: 600 / 380;
@@ -640,6 +677,10 @@ body:has(.harbor)::before {
 
   .hs-step--opening {
     padding-top: calc(var(--header-h) + 64px);
+  }
+
+  .harbor--below-hero .hs-step--opening {
+    padding-top: 56px;
   }
 
   .hs-step__pin {
@@ -2382,4 +2423,16 @@ summary.hx-report__finding-head::-webkit-details-marker {
 .harbor section[id],
 .harbor .hs-step[id] {
   scroll-margin-top: var(--header-h);
+}
+
+/* The story's sticky step nav stays out of the cobalt hero's viewport. */
+.hs-nav {
+  transition: opacity 0.25s ease, visibility 0s;
+}
+
+body:has(.harbor-hero)[data-cobalt-hero] .hs-nav {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0s 0.25s;
 }

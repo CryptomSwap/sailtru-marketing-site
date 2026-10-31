@@ -37,6 +37,7 @@ import {
   sceneAt,
   sceneForStep,
   storyFromLinear,
+  StoryScroll,
   type Beat,
   type SceneState
 } from "./story-model";
@@ -142,7 +143,7 @@ function slotFor(step: number) {
   return step <= 1 ? 1 : step;
 }
 
-export function HarborStory() {
+export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {}) {
   const t = useTranslations("harbor");
   const locale = useLocale();
   const rtl = locale === "he";
@@ -224,7 +225,7 @@ export function HarborStory() {
         const r = el.getBoundingClientRect();
         return r.top + scrollY + (r.height - vh) / 2;
       });
-      if (anchors.length) anchors[0] = Math.min(anchors[0], 0);
+      if (anchors.length) anchors[0] = StoryScroll.firstAnchor(anchors[0], root!.getBoundingClientRect().top + scrollY);
       measureCards();
     }
 
@@ -578,9 +579,16 @@ export function HarborStory() {
                 <div className="hs-step__copy">
                   {isHero ? (
                     <>
-                      <h1 id="hs-title-opening" className="hs-hero__title">
-                        <span>{t("hero.titleA")}</span> <span className="hs-hero__accent">{t("hero.titleB")}</span>
-                      </h1>
+                      {/* With the cobalt hero above, that hero owns the page h1. */}
+                      {belowHero ? (
+                        <h2 id="hs-title-opening" className="hs-hero__title">
+                          <span>{t("hero.titleA")}</span> <span className="hs-hero__accent">{t("hero.titleB")}</span>
+                        </h2>
+                      ) : (
+                        <h1 id="hs-title-opening" className="hs-hero__title">
+                          <span>{t("hero.titleA")}</span> <span className="hs-hero__accent">{t("hero.titleB")}</span>
+                        </h1>
+                      )}
                       <p className="hs-hero__support">{t("hero.support")}</p>
                       <div className="hs-actions">
                         <a href="#sample-report" className="hs-btn hs-btn--primary">

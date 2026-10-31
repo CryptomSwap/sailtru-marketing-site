@@ -4,12 +4,18 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { HeaderReveal } from "./story-model";
 
-export function HarborHeader() {
+/**
+ * `afterHero` is a selector for a hero above the story. While that hero (which
+ * carries its own header) is on screen this header stays out of the way.
+ */
+export function HarborHeader({ afterHero }: { afterHero?: string }) {
   const t = useTranslations("harbor.header");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [shown, setShown] = useState(!afterHero);
   const alternate = routing.locales.find((l) => l !== locale) ?? routing.defaultLocale;
 
   useEffect(() => {
@@ -25,6 +31,23 @@ export function HarborHeader() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!afterHero) return;
+    const hero = document.querySelector(afterHero);
+    if (!hero) return;
+    const update = () => {
+      const bar = document.querySelector(".hh__bar")?.getBoundingClientRect().height ?? 64;
+      setShown(HeaderReveal.isRevealed(hero.getBoundingClientRect().bottom, bar));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [afterHero]);
+
   const close = () => setOpen(false);
   const links = [
     { href: "#find", label: t("how") },
@@ -34,7 +57,7 @@ export function HarborHeader() {
   ];
 
   return (
-    <header className={`hh${open ? " is-open" : ""}`}>
+    <header className={`hh${open ? " is-open" : ""}${shown ? "" : " is-parked"}`}>
       <div className="hh__bar">
         <Link href="/" className="hh__brand" aria-label={t("home")} onClick={close}>
           {/* eslint-disable-next-line @next/next/no-img-element */}

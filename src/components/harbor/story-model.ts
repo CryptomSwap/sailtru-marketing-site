@@ -236,3 +236,26 @@ export function projectMain(cam: CameraPose, focus: { x: number; y: number }, x:
     y: focus.y + (y - cam.y) * cam.zoom
   };
 }
+
+/**
+ * Where the story sits on a page that has other content above it (the cobalt
+ * hero on /en and /he). All values are document pixels.
+ */
+export class StoryScroll {
+  /**
+   * Scroll position at which the opening scene is fully in view. The story
+   * root is the earliest it can be: with nothing above it this is 0, so the
+   * opening scene holds until the first step transition, as before.
+   */
+  static firstAnchor(openingCentered: number, storyTop: number): number {
+    return Math.min(openingCentered, storyTop);
+  }
+}
+
+/** When the harbor header takes over from the cobalt hero's own header. */
+export class HeaderReveal {
+  /** The harbor header shows once the hero has scrolled up behind it. */
+  static isRevealed(heroBottom: number, headerHeight: number): boolean {
+    return heroBottom <= headerHeight;
+  }
+}
