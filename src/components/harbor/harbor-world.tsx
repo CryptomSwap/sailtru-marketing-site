@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { HarborTheme } from "./harbor-theme";
 import { BOAT_DOCKED, SOURCE_BUOYS, type SceneState } from "./story-model";
 
 /**
@@ -8,8 +9,8 @@ import { BOAT_DOCKED, SOURCE_BUOYS, type SceneState } from "./story-model";
  * sources, cobalt route = the recommended next action, dock = implementation.
  */
 
-export const INK = "#22252b";
-export const COBALT = "#2448e0";
+export const INK = HarborTheme.INK;
+export const COBALT = HarborTheme.ACCENT;
 
 export const LAYER_DEPTHS = {
   sky: 0,

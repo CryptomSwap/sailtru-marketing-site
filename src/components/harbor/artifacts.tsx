@@ -93,7 +93,7 @@ export function ChartArtifact({ sub, inline }: ArtifactProps) {
                 <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="6" fill="url(#hx-unknown)" className="hx-chart__fog" />
                 <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="6" fill="none" stroke="#22252b" strokeDasharray="3 4" strokeOpacity="0.45" />
                 <g className="hx-chart__pin" transform={`translate(${z.x + z.w / 2} ${z.y + z.h / 2})`}>
-                  <circle r="9" fill="#2448e0" stroke="#22252b" strokeWidth="1.5" />
+                  <circle r="9" fill="var(--cobalt)" stroke="var(--ink)" strokeWidth="1.5" />
                   <text y="4" textAnchor="middle" fontSize="10" fontWeight="600" fill="#fff">
                     {i + 1}
                   </text>
