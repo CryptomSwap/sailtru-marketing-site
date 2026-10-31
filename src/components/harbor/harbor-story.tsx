@@ -99,7 +99,7 @@ function Layers({ scene, maskId, refs }: { scene: SceneState; maskId: string; re
 }
 
 /** A static still of the harbor for one step. */
-function Vignette({ step }: { step: number }) {
+function Vignette({ step, live }: { step: number; live?: ReactNode }) {
   const t = useTranslations("harbor.chart");
   const maskId = `hw-route-${useId().replace(/:/g, "")}`;
   const scene = sceneForStep(step);
@@ -107,7 +107,7 @@ function Vignette({ step }: { step: number }) {
   const focus = { x: VIGNETTE.w / 2, y: VIGNETTE.h * 0.58 };
   const sources = t.raw("sources") as { label: string }[];
   return (
-    <div className={`hs-vignette hs-vignette--${STEP_IDS[step]}`} aria-hidden>
+    <div className={`hs-vignette hs-vignette--${STEP_IDS[step]}`} data-step={step} aria-hidden>
       <svg viewBox={`0 0 ${VIGNETTE.w} ${VIGNETTE.h}`} preserveAspectRatio="xMidYMid slice" className="hs-vignette__svg">
         {LAYERS.map((name) => {
           const lt = layerTransform(cam, LAYER_DEPTHS[name], focus, { x: 0, y: 0 });
@@ -122,6 +122,7 @@ function Vignette({ step }: { step: number }) {
           );
         })}
       </svg>
+      {live}
       {step === 1
         ? SOURCE_BUOYS.map((b, i) => {
             // The middle tag sits below its buoy so neighbouring labels never collide.
@@ -181,7 +182,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
   const slotRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   const [beat, setBeat] = useState<Beat>({ step: 0, sub: 0 });
-  const [load3d, setLoad3d] = useState(false);
+  /** Which 3D view is loaded: the sticky stage (desktop) or the phone vignettes. */
+  const [load3d, setLoad3d] = useState<"stage" | "vignette" | null>(null);
   /** data-harbor3d is written straight to the stage: it mirrors an external system (WebGL), not React state. */
   const setHarbor3d = useCallback((state: Harbor3DState) => {
     if (stageRef.current) stageRef.current.dataset.harbor3d = state;
@@ -199,7 +201,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
   const onReady3d = useCallback(() => setHarbor3d("ready"), [setHarbor3d]);
   const onError3d = useCallback(() => {
     stage3dRef.current = null;
-    setLoad3d(false);
+    setLoad3d(null);
     setHarbor3d("error");
     kickLoop();
   }, [kickLoop, setHarbor3d]);
@@ -213,7 +215,9 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     let idle = 0;
     const start = () => {
       const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
-      idle = ric(() => setLoad3d(true), { timeout: 1200 });
+      // The cinematic stage on wide screens; otherwise the stacked layout's vignettes.
+      const mode = stageRef.current && getComputedStyle(stageRef.current).display !== "none" ? "stage" : "vignette";
+      idle = ric(() => setLoad3d(mode), { timeout: 1200 });
     };
     const io = new IntersectionObserver(
       (entries) => {
@@ -585,6 +589,93 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     };
   }, [rtl]);
 
+  // Phones: one live opening view, and 3D stills for the other chapters, from the same WebGL context.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (load3d !== "vignette" || !root) return;
+    const live = root.querySelector<HTMLElement>(".hs-vignette--opening");
+    let raf = 0;
+    let last = 0;
+    let t = 0;
+    let inView = true;
+    let stills = 0;
+    let timer = 0;
+
+    function renderLive() {
+      const stage = stage3dRef.current;
+      const box = live?.querySelector<HTMLElement>(".hs-vignette__live");
+      if (!stage || !box) return false;
+      const w = box.clientWidth;
+      const h = box.clientHeight;
+      stage.frame({ s: 0, u: 0.45, scene: sceneForStep(0), ambient: t, pointer: { x: 0, y: 0 }, focus: { x: w / 2, y: h * 0.56 }, freeWidth: w });
+      live?.classList.add("is-3d");
+      return true;
+    }
+
+    /** One still per chapter vignette, spread over a few tasks so scrolling stays smooth. */
+    function renderStills() {
+      const stage = stage3dRef.current;
+      const items = Array.from(root!.querySelectorAll<HTMLElement>(".hs-vignette:not(.hs-vignette--opening)"));
+      const el = items[stills];
+      if (!stage || !el) return;
+      stills += 1;
+      const step = Number(el.dataset.step);
+      const result = stage.still(step, el.clientWidth, el.clientHeight);
+      renderLive();
+      if (result) {
+        let img = el.querySelector<HTMLImageElement>(".hs-vignette__still");
+        if (!img) {
+          img = document.createElement("img");
+          img.className = "hs-vignette__still";
+          img.alt = "";
+          el.prepend(img);
+        }
+        img.onload = () => el.classList.add("is-3d");
+        img.src = result.url;
+        el.querySelectorAll<HTMLElement>(".hs-tag--vignette").forEach((tag, i) => {
+          const p = result.tags[i];
+          if (!p) return;
+          tag.classList.remove("hs-tag--below");
+          tag.style.setProperty("--x", `${((p.x / el.clientWidth) * 100).toFixed(2)}%`);
+          tag.style.setProperty("--y", `${((p.y / el.clientHeight) * 100).toFixed(2)}%`);
+        });
+      }
+      timer = window.setTimeout(renderStills, 40);
+    }
+
+    function frame(time: number) {
+      raf = 0;
+      const dt = last ? Math.min(0.1, (time - last) / 1000) : 0.016;
+      last = time;
+      const ambient = !pausedRef.current;
+      if (ambient) t += dt;
+      if (!renderLive()) return;
+      if (stills === 0) timer = window.setTimeout(renderStills, 60);
+      if (inView && ambient && document.visibilityState === "visible") raf = requestAnimationFrame(frame);
+      else last = 0;
+    }
+
+    function kick() {
+      if (!raf) raf = requestAnimationFrame(frame);
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      inView = entries.some((e) => e.isIntersecting);
+      if (inView) kick();
+    });
+    if (live) io.observe(live);
+    root.addEventListener("harbor:kick", kick);
+    document.addEventListener("visibilitychange", kick);
+    kick();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+      io.disconnect();
+      root.removeEventListener("harbor:kick", kick);
+      document.removeEventListener("visibilitychange", kick);
+    };
+  }, [load3d]);
+
   const togglePause = () => {
     setPaused((p) => !p);
     // Let the loop restart (or settle) under the new preference.
@@ -630,7 +721,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
         <svg className="hs-world" width="100%" height="100%">
           <Layers scene={initial} maskId={maskId} refs={setLayerRef} />
         </svg>
-        {load3d ? (
+        {load3d === "stage" ? (
           <div className="hs-world3d">
             <HarborScene3D layout="stage" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
           </div>
@@ -752,7 +843,21 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
                 </div>
                 {!isClose ? (
                   <div className="hs-step__demo">
-                    <Vignette step={index} />
+                    <Vignette
+                      step={index}
+                      live={
+                        index === 0 && load3d === "vignette" ? (
+                          <div className="hs-vignette__live">
+                            <HarborScene3D layout="vignette" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
+                          </div>
+                        ) : null
+                      }
+                    />
+                    {index === 0 && load3d === "vignette" ? (
+                      <button type="button" className="hs-live-toggle" aria-pressed={paused} onClick={togglePause}>
+                        {paused ? t("story.play") : t("story.pause")}
+                      </button>
+                    ) : null}
                     {!isHero ? <StepArtifact step={index} sub={9} inline /> : null}
                   </div>
                 ) : null}

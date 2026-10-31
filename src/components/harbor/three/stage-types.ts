@@ -42,4 +42,9 @@ export interface HarborStage {
   frame(input: HarborFrame): void;
   /** Project an anchor to canvas pixels (before RTL mirroring); null when it is behind the camera. */
   project(anchor: HarborAnchor): ScreenPoint | null;
+  /**
+   * Render a still of one story step at a given CSS size (phone vignettes) and
+   * return it as an image URL, with the source-tag positions in that image.
+   */
+  still(step: number, width: number, height: number): { url: string; tags: (ScreenPoint | null)[] } | null;
 }

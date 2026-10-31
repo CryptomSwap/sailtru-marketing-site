@@ -5,7 +5,7 @@ import { useGLTF } from "@react-three/drei/core/Gltf";
 import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
 import { HarborTheme } from "../harbor-theme";
-import { CameraRig3D } from "../story-model";
+import { CameraRig3D, sceneForStep } from "../story-model";
 import { HarborDirector, type HarborModels } from "./harbor-director";
 import type { HarborAnchor, HarborFrame, HarborStage } from "./stage-types";
 import { ToonKit } from "./toon";
@@ -112,6 +112,42 @@ function World({ layout, mirror, onStage, onReady, onError }: HarborSceneProps) 
       project(anchor: HarborAnchor) {
         const s = get();
         return director.project(anchor, s.camera, s.size.width, s.size.height);
+      },
+      still(step: number, width: number, height: number) {
+        const s = get();
+        const { gl, camera } = s;
+        const keep = { w: s.size.width, h: s.size.height, dpr: gl.getPixelRatio() };
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        try {
+          gl.setPixelRatio(dpr);
+          gl.setSize(width, height, false);
+          ToonKit.setResolution(width, height, dpr);
+          director.update(
+            {
+              s: step,
+              u: step + 0.45,
+              scene: sceneForStep(step),
+              ambient: 2.4,
+              pointer: { x: 0, y: 0 },
+              focus: { x: width / 2, y: height * 0.56 },
+              freeWidth: width
+            },
+            camera as THREE.PerspectiveCamera,
+            width,
+            height,
+            CameraRig3D.MOBILE,
+            false
+          );
+          gl.render(s.scene, camera);
+          const url = gl.domElement.toDataURL("image/webp", 0.86);
+          const tags = (["tag0", "tag1", "tag2"] as const).map((a) => director.project(a, camera, width, height));
+          return { url, tags };
+        } catch {
+          return null;
+        } finally {
+          gl.setPixelRatio(keep.dpr);
+          gl.setSize(keep.w, keep.h, false);
+        }
       }
     };
     onStage(stage);

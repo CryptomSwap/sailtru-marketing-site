@@ -400,10 +400,13 @@ export class CameraRig3D {
     { target: [37.6, 2.1, 1.8], distance: 34, yaw: 3, pitch: 12 }
   ];
 
-  /** Portrait/phone vignettes: the subject centred, a little wider so it reads at small sizes. */
+  /**
+   * Phone vignettes: each is a still (or the live opening), so poses are
+   * chosen per composition — the subject centred and large enough to read.
+   */
   static readonly MOBILE: CameraPose3D[] = [
-    { target: [-31, 2.4, 2.4], distance: 25, yaw: -12, pitch: 8 },
-    { target: [-19.4, 1.6, 0.4], distance: 32, yaw: -22, pitch: 10 },
+    { target: [-32.2, 2.7, 3.1], distance: 15.5, yaw: -18, pitch: 7 },
+    { target: [-17.8, 1.6, -0.4], distance: 25, yaw: 30, pitch: 11 },
     { target: [-3.6, 1.6, 1.7], distance: 26, yaw: -5, pitch: 9 },
     { target: [11, 0.8, 0.6], distance: 42, yaw: -20, pitch: 22 },
     { target: [23.6, 3.2, -2.6], distance: 26, yaw: 6, pitch: 10 },
