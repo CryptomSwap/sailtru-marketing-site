@@ -751,6 +751,49 @@ body:has(.harbor)::before {
     display: block;
   }
 
+  /* The 3D harbor fades in over the server-rendered illustration once its first frame is drawn. */
+  .hs-world3d {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+
+  .hs-world3d canvas {
+    display: block;
+  }
+
+  [dir="rtl"] .hs-world3d {
+    transform: scaleX(-1);
+  }
+
+  .hs-stage[data-harbor3d="ready"] .hs-world3d {
+    opacity: 1;
+  }
+
+  .hs-stage[data-harbor3d="ready"] .hs-world {
+    visibility: hidden;
+    transition: visibility 0s linear 0.8s;
+  }
+
+  /* Paper grain and a soft vignette over the 3D harbor. */
+  .hs-grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background:
+      radial-gradient(ellipse 80% 70% at 55% 48%, transparent 62%, rgba(34, 37, 43, 0.07) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0 0.32 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+    transition: opacity 0.8s ease;
+  }
+
+  .hs-stage[data-harbor3d="ready"] .hs-grain {
+    opacity: 0.42;
+  }
+
   /* Protected reading area on the copy side. */
   .hs-stage__veil {
     position: absolute;

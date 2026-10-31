@@ -259,3 +259,205 @@ export class HeaderReveal {
     return heroBottom <= headerHeight;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* 3D harbor: layout and camera, in world metres                      */
+/* (x = story direction, y = up, z = toward the viewer)                */
+/* ------------------------------------------------------------------ */
+
+export type XZ = { x: number; z: number };
+export type BoatPose3D = { x: number; z: number; yaw: number; sailing: number };
+
+/**
+ * Where everything sits in the 3D harbor. The same meanings as the
+ * illustrated harbor: boat = the business, buoys = evidence sources, cobalt
+ * marker = the selected finding, route = the recommended next action,
+ * dock = implementation.
+ */
+export class HarborLayout3D {
+  /** The working dock's origin (dock.glb is authored around it). */
+  static readonly DOCK: XZ = { x: 24, z: -2 };
+  /** Where the boat moors while we build (dock.glb "Berth"). */
+  static readonly BERTH: XZ = { x: 22.4, z: -1.25 };
+
+  /** Boat stations per story step; yaw turns the bow (+x) toward (-) or away from (+) the viewer. */
+  static readonly STATIONS: { x: number; z: number; yaw: number }[] = [
+    { x: -33, z: 3.2, yaw: -0.32 },
+    { x: -23, z: 3.2, yaw: -0.1 },
+    { x: -6.2, z: 2.6, yaw: -0.08 },
+    { x: 3, z: 3.2, yaw: -0.05 },
+    { x: 22.4, z: -1.25, yaw: 0 },
+    { x: 22.4, z: -1.25, yaw: 0 },
+    { x: 33.5, z: 3.6, yaw: -0.12 },
+    { x: 37.5, z: 3.4, yaw: -0.06 }
+  ];
+
+  /** Intermediate points for the passage between step i and i + 1. */
+  static readonly PASSAGES: Record<number, XZ[]> = {
+    0: [{ x: -28, z: 3.0 }],
+    1: [{ x: -15, z: 3.6 }],
+    3: [
+      { x: 9.5, z: 4.1 },
+      { x: 16, z: 2.4 },
+      { x: 19.6, z: -0.7 }
+    ],
+    5: [{ x: 27, z: 1.8 }]
+  };
+
+  /** A short diagonal line receding from the boat's bow, so all three read beside the copy. */
+  static readonly SOURCE_BUOYS: XZ[] = [
+    { x: -18.4, z: 0.9 },
+    { x: -15.6, z: -1.2 },
+    { x: -12.6, z: -3.4 }
+  ];
+
+  /** The selected finding: a cobalt channel marker beside the reef. */
+  static readonly MARKER: XZ = { x: -1.2, z: 0.6 };
+  static readonly REEF: XZ = { x: 1.8, z: -1.6 };
+
+  /** The onward route toward the next decision, and the buoy that ends it. */
+  static readonly NEXT_BUOY: XZ = { x: 45, z: 2.2 };
+
+  /** The recommended route: from the report station to the berth (the boat sails it in step 3 → 4). */
+  static route(): XZ[] {
+    const s = HarborLayout3D.STATIONS;
+    return [{ x: s[3].x + 1.6, z: s[3].z }, ...HarborLayout3D.PASSAGES[3], { x: HarborLayout3D.BERTH.x - 2.2, z: HarborLayout3D.BERTH.z }];
+  }
+
+  static nextRoute(): XZ[] {
+    const s = HarborLayout3D.STATIONS[6];
+    return [{ x: s.x + 2.6, z: s.z }, { x: 39.5, z: 4.4 }, HarborLayout3D.NEXT_BUOY];
+  }
+
+  /** Centripetal-free uniform Catmull-Rom through `points` at t ∈ [0, 1]. */
+  static along(points: XZ[], t: number): XZ {
+    const n = points.length - 1;
+    if (n <= 0) return points[0];
+    const ct = clamp(t) * n;
+    const i = Math.min(Math.floor(ct), n - 1);
+    const f = ct - i;
+    const p0 = points[Math.max(0, i - 1)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(n, i + 2)];
+    const cr = (a: number, b: number, c: number, d: number) =>
+      0.5 * (2 * b + (-a + c) * f + (2 * a - 5 * b + 4 * c - d) * f * f + (-a + 3 * b - 3 * c + d) * f * f * f);
+    return { x: cr(p0.x, p1.x, p2.x, p3.x), z: cr(p0.z, p1.z, p2.z, p3.z) };
+  }
+
+  /** Boat pose from the eased story position: held at stations, sailing the passages between them. */
+  static boatAt(s: number): BoatPose3D {
+    const st = HarborLayout3D.STATIONS;
+    const max = st.length - 1;
+    const cs = clamp(s, 0, max);
+    const i = Math.min(Math.floor(cs), max - 1);
+    const t = cs - i;
+    const a = st[i];
+    const b = st[i + 1];
+    const path = [a, ...(HarborLayout3D.PASSAGES[i] ?? []), b];
+    const p = HarborLayout3D.along(path, t);
+    const moving = Math.hypot(b.x - a.x, b.z - a.z) > 0.01;
+    if (!moving) return { x: p.x, z: p.z, yaw: a.yaw, sailing: 0 };
+    const q = HarborLayout3D.along(path, Math.min(1, t + 0.01));
+    const r = HarborLayout3D.along(path, Math.max(0, t - 0.01));
+    const travel = Math.atan2(-(q.z - r.z), q.x - r.x);
+    const rest = lerp(a.yaw, b.yaw, t);
+    // Bow follows the course mid-passage and settles to the station's heading at each end.
+    const sailing = Math.sin(t * Math.PI);
+    return { x: p.x, z: p.z, yaw: lerp(rest, travel, Math.min(1, sailing * 1.6)), sailing };
+  }
+}
+
+export type CameraPose3D = {
+  /** Look-at point (metres). */
+  target: [number, number, number];
+  /** Distance from the target (metres). */
+  distance: number;
+  /** Degrees; positive swings the camera toward +x. */
+  yaw: number;
+  /** Degrees above the horizon. */
+  pitch: number;
+};
+
+/**
+ * One camera owner for the 3D harbor: a pose per story step, eased between.
+ * Close, medium and wide compositions follow meaning, and every pose moves
+ * forward along +x so the camera never crosses back over itself.
+ */
+export class CameraRig3D {
+  /** Vertical field of view (degrees). */
+  static readonly FOV = 30;
+
+  /** Desktop poses: the subject is framed into the free area between the copy column and the cards. */
+  static readonly DESKTOP: CameraPose3D[] = [
+    { target: [-32.2, 2.5, 3], distance: 22, yaw: -14, pitch: 7 },
+    { target: [-18.8, 1.7, 0.2], distance: 30, yaw: -17, pitch: 10 },
+    { target: [-3.4, 1.7, 1.6], distance: 27, yaw: -6, pitch: 9 },
+    { target: [8.6, 0.6, 0.8], distance: 40, yaw: -24, pitch: 25 },
+    { target: [23.2, 3.1, -2.4], distance: 23, yaw: 7, pitch: 9 },
+    { target: [29.2, 3.2, -4.6], distance: 19, yaw: 11, pitch: 6 },
+    { target: [36.2, 1.9, 2.4], distance: 29, yaw: 5, pitch: 10 },
+    { target: [37.6, 2.1, 1.8], distance: 34, yaw: 3, pitch: 12 }
+  ];
+
+  /** Portrait/phone vignettes: the subject centred, a little wider so it reads at small sizes. */
+  static readonly MOBILE: CameraPose3D[] = [
+    { target: [-31, 2.4, 2.4], distance: 25, yaw: -12, pitch: 8 },
+    { target: [-19.4, 1.6, 0.4], distance: 32, yaw: -22, pitch: 10 },
+    { target: [-3.6, 1.6, 1.7], distance: 26, yaw: -5, pitch: 9 },
+    { target: [11, 0.8, 0.6], distance: 42, yaw: -20, pitch: 22 },
+    { target: [23.6, 3.2, -2.6], distance: 26, yaw: 6, pitch: 10 },
+    { target: [28.4, 3.2, -4.4], distance: 22, yaw: 9, pitch: 8 },
+    { target: [37, 2, 2.4], distance: 32, yaw: 4, pitch: 11 },
+    { target: [38.4, 2.1, 2], distance: 36, yaw: 3, pitch: 12 }
+  ];
+
+  static poseAt(s: number, poses: CameraPose3D[]): CameraPose3D {
+    const max = poses.length - 1;
+    const cs = clamp(s, 0, max);
+    const i = Math.min(Math.floor(cs), max - 1);
+    const t = cs - i;
+    const a = poses[i];
+    const b = poses[i + 1];
+    return {
+      target: [lerp(a.target[0], b.target[0], t), lerp(a.target[1], b.target[1], t), lerp(a.target[2], b.target[2], t)],
+      // Distance interpolates geometrically so close-to-wide changes feel even.
+      distance: Math.exp(lerp(Math.log(a.distance), Math.log(b.distance), t)),
+      yaw: lerp(a.yaw, b.yaw, t),
+      pitch: lerp(a.pitch, b.pitch, t)
+    };
+  }
+
+  /** Camera position for a pose. */
+  static position(pose: CameraPose3D): [number, number, number] {
+    const yaw = (pose.yaw * Math.PI) / 180;
+    const pitch = (pose.pitch * Math.PI) / 180;
+    const d = pose.distance;
+    return [
+      pose.target[0] + Math.sin(yaw) * Math.cos(pitch) * d,
+      pose.target[1] + Math.sin(pitch) * d,
+      pose.target[2] + Math.cos(yaw) * Math.cos(pitch) * d
+    ];
+  }
+
+  /**
+   * How much farther to stand back for a viewport, so the subject keeps its
+   * size relative to the free area beside the copy (short and narrow screens).
+   */
+  static distanceScale(freeWidth: number, height: number): number {
+    const aspect = freeWidth / Math.max(1, height);
+    return clamp(0.62 / Math.max(0.2, aspect), 0.9, 1.45);
+  }
+}
+
+/** Crane phases from the scene's crane value: lift off the quay, slew over the boat, lower onto the deck. */
+export class CraneMotion3D {
+  static phases(crane: number) {
+    const smooth = (t: number) => t * t * (3 - 2 * t);
+    return {
+      lift: smooth(clamp(crane / 0.28)),
+      slew: smooth(clamp((crane - 0.28) / 0.44)),
+      lower: smooth(clamp((crane - 0.72) / 0.28))
+    };
+  }
+}

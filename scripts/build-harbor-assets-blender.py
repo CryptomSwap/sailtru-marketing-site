@@ -122,10 +122,16 @@ def empty(name, location=(0, 0, 0), parent=None):
     return link(obj, parent)
 
 
-def finish(name, bm, mats, parent=None, smooth=False, location=None):
-    """Turn a bmesh into an object. `mats` is a key or a list of keys (face.material_index order)."""
+def finish(name, bm, mats, parent=None, smooth=False, location=None, recalc=True):
+    """Turn a bmesh into an object. `mats` is a key or a list of keys (face.material_index order).
+
+    Normals are recalculated to point outward: the ink outlines are inverted hulls,
+    so an inward-facing part would be painted over by its own outline.
+    """
     keys = [mats] if isinstance(mats, str) else list(mats)
     mesh = bpy.data.meshes.new(f"{name}_mesh")
+    if recalc and bm.faces:
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
     bm.normal_update()
     bm.to_mesh(mesh)
     bm.free()
@@ -302,11 +308,12 @@ def heightfield(name, size, res, bumps, rng, base=-0.4, noise=0.12, edge=0.18, c
                 if zc < 0.35:
                     f.material_index = 0
                 elif steep:
-                    f.material_index = 2
+                    f.material_index = 2 if f.normal.z < 0.55 else 3
                 else:
-                    f.material_index = 1 if (i + j) % 5 else 3
+                    f.material_index = 1
     # Skirt down to the seabed so the hill reads as solid from low angles.
-    obj = finish(name, bm, list(colours), parent=parent)
+    # Smooth shading: toon bands then follow the landform instead of every triangle.
+    obj = finish(name, bm, list(colours), parent=parent, smooth=True, recalc=False)
     return obj, height
 
 
@@ -891,7 +898,7 @@ def build_dock():
     for corner in ((-0.4, -0.4), (0.4, -0.4), (0.4, 0.4), (-0.4, 0.4)):
         bm_beam(bm, (0, 0, -0.2), (corner[0], corner[1], -0.62), 0.015, 0)
     finish("CraneHookBlock", bm, ["ink", "beak"], hook)
-    crate = empty("CraneCrate", (2.6, 3.0, quay_top), root)
+    crate = empty("CraneCrate", (5.2, 2.7, quay_top), root)
     bm = bmesh.new()
     bm_box(bm, (0, 0, 0.32), (0.86, 0.86, 0.64), 0, 0.03)
     # the built change: a cobalt panel on every visible face
@@ -902,8 +909,8 @@ def build_dock():
         bm_box(bm, (k, 0, 0.32), (0.06, 0.9, 0.66), 2)
     finish("CraneCrateBody", bm, ["cream", "cobalt", "woodDark"], crate)
 
-    empty("Berth", (-3.6, -0.75, 0), root)
-    empty("CrateRest", (2.6, 3.0, quay_top), root)
+    empty("Berth", (-1.6, -0.75, 0), root)
+    empty("CrateRest", (5.2, 2.7, quay_top), root)
     export(root, "dock.glb")
     preview("dock.png", (4, 2, 2.6), 30, 0.3, -0.25)
 
@@ -959,7 +966,7 @@ def build_terrain():
         rng,
         noise=0.08,
         edge=0.08,
-        colours=("sand", "sandDark", "rockDark", "sandDark"),
+        colours=("sand", "sand", "sandDark", "sand"),
         parent=root,
     )
 
@@ -1015,7 +1022,7 @@ def metaball_cloud(name, blobs, parent, resolution=0.55):
     # Flatten the underside: painted clouds sit on a level base.
     for v in mesh.vertices:
         if v.co.z < 0:
-            v.co.z *= 0.35
+            v.co.z *= 0.6
     mesh.materials.append(material("cream"))
     for poly in mesh.polygons:
         poly.use_smooth = True

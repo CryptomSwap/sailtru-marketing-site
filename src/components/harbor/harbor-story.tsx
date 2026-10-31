@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
@@ -41,16 +42,38 @@ import {
   type Beat,
   type SceneState
 } from "./story-model";
+import type { Harbor3DState, HarborAnchor, HarborStage, ScreenPoint } from "./three/stage-types";
+import { WebGLSupport } from "./three/webgl-support";
+
+/** The 3D harbor loads on demand, after the page is interactive; the SVG harbor is server-rendered first. */
+const HarborScene3D = dynamic(() => import("./three/harbor-scene"), { ssr: false, loading: () => null });
 
 const LAYERS: LayerName[] = ["sky", "far", "mid", "main", "fore"];
 
-/** World anchors the leader lines point at, per step. */
-const LEADER_ANCHORS: Record<number, { x: number; y: number }[]> = {
-  1: SOURCE_BUOYS.map((b) => ({ x: b.x, y: b.y - 96 })),
-  2: [{ x: 2060, y: 650 }],
-  3: [{ x: 2700, y: 822 }],
-  4: [{ x: 3022, y: 732 }],
-  5: [{ x: 3594, y: 676 }]
+/** Harbor anchors the leader lines point at, per step. */
+const LEADER_ANCHORS: Record<number, HarborAnchor[]> = {
+  1: ["source0", "source1", "source2"],
+  2: ["marker"],
+  3: ["route"],
+  4: ["crate"],
+  5: ["workshop"]
+};
+
+const TAG_ANCHORS: HarborAnchor[] = ["tag0", "tag1", "tag2"];
+
+/** The same anchors in the illustrated (SVG) harbor's world units. */
+const SVG_ANCHORS: Record<HarborAnchor, { x: number; y: number }> = {
+  tag0: { x: SOURCE_BUOYS[0].x, y: SOURCE_BUOYS[0].y - 120 },
+  tag1: { x: SOURCE_BUOYS[1].x, y: SOURCE_BUOYS[1].y - 120 },
+  tag2: { x: SOURCE_BUOYS[2].x, y: SOURCE_BUOYS[2].y - 120 },
+  source0: { x: SOURCE_BUOYS[0].x, y: SOURCE_BUOYS[0].y - 96 },
+  source1: { x: SOURCE_BUOYS[1].x, y: SOURCE_BUOYS[1].y - 96 },
+  source2: { x: SOURCE_BUOYS[2].x, y: SOURCE_BUOYS[2].y - 96 },
+  marker: { x: 2060, y: 650 },
+  route: { x: 2700, y: 822 },
+  crate: { x: 3022, y: 732 },
+  workshop: { x: 3594, y: 676 },
+  boat: { x: 2140, y: 600 }
 };
 
 /** Vignette framing (portrait-friendly stills for mobile and reduced motion). */
@@ -143,7 +166,7 @@ function slotFor(step: number) {
   return step <= 1 ? 1 : step;
 }
 
-export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {}) {
+export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?: boolean; scene3d?: boolean } = {}) {
   const t = useTranslations("harbor");
   const locale = useLocale();
   const rtl = locale === "he";
@@ -158,6 +181,54 @@ export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {})
   const slotRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   const [beat, setBeat] = useState<Beat>({ step: 0, sub: 0 });
+  const [load3d, setLoad3d] = useState(false);
+  /** data-harbor3d is written straight to the stage: it mirrors an external system (WebGL), not React state. */
+  const setHarbor3d = useCallback((state: Harbor3DState) => {
+    if (stageRef.current) stageRef.current.dataset.harbor3d = state;
+  }, []);
+  const stage3dRef = useRef<HarborStage | null>(null);
+
+  const kickLoop = useCallback(() => rootRef.current?.dispatchEvent(new Event("harbor:kick")), []);
+  const onStage3d = useCallback(
+    (stage: HarborStage | null) => {
+      stage3dRef.current = stage;
+      kickLoop();
+    },
+    [kickLoop]
+  );
+  const onReady3d = useCallback(() => setHarbor3d("ready"), [setHarbor3d]);
+  const onError3d = useCallback(() => {
+    stage3dRef.current = null;
+    setLoad3d(false);
+    setHarbor3d("error");
+    kickLoop();
+  }, [kickLoop, setHarbor3d]);
+
+  // Decide whether the 3D harbor may run, then load it once the story is near and the page is idle.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!scene3d || !root) return;
+    if (WebGLSupport.prefersReducedMotion() || !WebGLSupport.available()) return;
+    setHarbor3d("loading");
+    let idle = 0;
+    const start = () => {
+      const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
+      idle = ric(() => setLoad3d(true), { timeout: 1200 });
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        start();
+      },
+      { rootMargin: "100% 0px" }
+    );
+    io.observe(root);
+    return () => {
+      io.disconnect();
+      (window.cancelIdleCallback ?? window.clearTimeout)(idle);
+    };
+  }, [scene3d, setHarbor3d]);
   const [paused, setPaused] = useState(false);
   const pausedRef = useRef(false);
   const beatRef = useRef<Beat>({ step: 0, sub: 0 });
@@ -192,6 +263,8 @@ export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {})
     let cardRects: Record<number, DOMRect | null> = {};
     let rowRects: DOMRect[] = [];
     let measureTimer = 0;
+    let ambientT = 0;
+    let focus3d = { x: -1, y: 0 };
 
     const q = <T extends Element>(sel: string) => stage.querySelector<T>(sel);
     const nodes = {
@@ -272,13 +345,39 @@ export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {})
       return clamp(Math.min(sceneW / 900, size.h / 880), 0.68, 1.3);
     }
 
-    function render(time: number) {
+    /** Where the 3D subject sits: the middle of the free area between the copy column and the active card. */
+    function focusTarget3d() {
+      const card = beatRef.current.step < STEP_IDS.length - 1 ? cardRects[slotFor(beatRef.current.step)] : null;
+      const edge = card ? (rtl ? size.w - card.right : card.left) - 24 : size.w * 0.94;
+      const free = Math.max(160, edge - size.col);
+      return { x: size.col + free * 0.5, y: size.h * 0.57, free };
+    }
+
+    function render(time: number, dt: number) {
       const ambient = !pausedRef.current && !reduceQuery.matches;
       const s = storyFromLinear(uDisp);
+      const scene = sceneAt(s, uDisp);
+      const stage3d = stage3dRef.current;
+      if (stage3d) {
+        const target = focusTarget3d();
+        if (focus3d.x < 0) focus3d = { x: target.x, y: target.y };
+        const k = 1 - Math.exp(-dt * 5);
+        focus3d = { x: focus3d.x + (target.x - focus3d.x) * k, y: focus3d.y + (target.y - focus3d.y) * k };
+        stage3d.frame({
+          s,
+          u: uDisp,
+          scene,
+          ambient: ambientT,
+          pointer,
+          focus: focus3d,
+          freeWidth: target.free
+        });
+        drawLeaders(scene, (a) => stage3d.project(a));
+        return;
+      }
       const baseCam = cameraAt(s, DESKTOP_POSES);
       const cam = { ...baseCam, zoom: baseCam.zoom * zoomScale() };
       const focus = focusPoint();
-      const scene = sceneAt(s, uDisp);
       const tsec = time / 1000;
 
       for (const name of LAYERS) {
@@ -315,14 +414,14 @@ export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {})
       }
       nodes.crate?.setAttribute("transform", `translate(${crane.x.toFixed(1)} ${crane.y.toFixed(1)})`);
 
-      drawLeaders(cam, focus, scene);
+      drawLeaders(scene, (a) => projectMain(cam, focus, SVG_ANCHORS[a].x, SVG_ANCHORS[a].y));
     }
 
     function toScreen(p: { x: number; y: number }) {
       return { x: rtl ? size.w - p.x : p.x, y: p.y };
     }
 
-    function drawLeaders(cam: { x: number; y: number; zoom: number }, focus: { x: number; y: number }, scene: SceneState) {
+    function drawLeaders(scene: SceneState, project: (anchor: HarborAnchor) => ScreenPoint | null) {
       const svg = leaderRef.current;
       if (!svg) return;
       const b = beatRef.current;
@@ -331,10 +430,15 @@ export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {})
       const card = cardRects[slotFor(b.step)];
 
       // Buoy tags follow their buoys in every step where they are on screen.
-      SOURCE_BUOYS.forEach((buoy, i) => {
+      TAG_ANCHORS.forEach((name, i) => {
         const tag = tagRefs.current[i];
         if (!tag) return;
-        const p = toScreen(projectMain(cam, focus, buoy.x, buoy.y - 120));
+        const projected = project(name);
+        if (!projected) {
+          tag.style.opacity = "0";
+          return;
+        }
+        const p = toScreen(projected);
         // Tags never sit over the copy column or under the artifact card.
         const clear = rtl ? p.x < size.w - size.col - 80 : p.x > size.col + 80;
         const underCard = card ? p.x > card.left - 60 && p.x < card.right + 60 && p.y > card.top && p.y < card.bottom + 30 : false;
@@ -346,7 +450,9 @@ export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {})
       if (card && anchors.length) {
         anchors.forEach((a, i) => {
           if (b.step === 1 && i >= b.sub + 1) return;
-          const p = toScreen(projectMain(cam, focus, a.x, a.y));
+          const projected = project(a);
+          if (!projected) return;
+          const p = toScreen(projected);
           let from: { x: number; y: number };
           if (b.step === 1 && rowRects[i]) {
             const row = rowRects[i];
@@ -387,11 +493,12 @@ export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {})
       if (uDisp < 0) uDisp = uTarget;
       uDisp += (uTarget - uDisp) * k;
       if (Math.abs(uTarget - uDisp) < 0.0004) uDisp = uTarget;
+      if (!pausedRef.current && !reduceQuery.matches) ambientT += dt;
       pointer = {
         x: pointer.x + (pointerTarget.x - pointer.x) * k * 0.6,
         y: pointer.y + (pointerTarget.y - pointer.y) * k * 0.6
       };
-      render(time);
+      render(time, dt);
       const settled =
         uDisp === uTarget && Math.abs(pointer.x - pointerTarget.x) < 0.002 && Math.abs(pointer.y - pointerTarget.y) < 0.002;
       const ambient = !pausedRef.current && !reduceQuery.matches;
@@ -519,10 +626,16 @@ export function HarborStory({ belowHero = false }: { belowHero?: boolean } = {})
       <HarborDefs />
       <div className="hs-colmark" aria-hidden />
 
-      <div ref={stageRef} className="hs-stage" aria-hidden>
+      <div ref={stageRef} className="hs-stage" aria-hidden data-harbor3d="fallback">
         <svg className="hs-world" width="100%" height="100%">
           <Layers scene={initial} maskId={maskId} refs={setLayerRef} />
         </svg>
+        {load3d ? (
+          <div className="hs-world3d">
+            <HarborScene3D layout="stage" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
+          </div>
+        ) : null}
+        <div className="hs-grain" />
         <div className="hs-stage__veil" />
         <svg ref={leaderRef} className="hs-leaders" width="100%" height="100%" />
         <div className="hs-tags">

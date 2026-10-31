@@ -20,9 +20,10 @@ const HERO_SELECTOR = "#hero";
  *
  * With `hero` (the cobalt above-the-fold section) the hero comes first, outside
  * the harbor's own theme, and the harbor story follows directly below it.
- * Without it (the /preview/harbor review route) the story opens the page.
+ * Without it the story opens the page. `scene3d` turns on the 3D harbor
+ * (the SVG harbor stays as the reduced-motion / no-WebGL / error fallback).
  */
-export function HarborHome({ skipLabel, hero }: { skipLabel: string; hero?: ReactNode }) {
+export function HarborHome({ skipLabel, hero, scene3d = false }: { skipLabel: string; hero?: ReactNode; scene3d?: boolean }) {
   return (
     <>
       {hero ? (
@@ -43,7 +44,7 @@ export function HarborHome({ skipLabel, hero }: { skipLabel: string; hero?: Reac
         </noscript>
         <HarborHeader afterHero={hero ? HERO_SELECTOR : undefined} />
         <main id="main-content" className="harbor-main">
-          <HarborStory belowHero={Boolean(hero)} />
+          <HarborStory belowHero={Boolean(hero)} scene3d={scene3d} />
           <SampleReportSection />
           <BuildSection />
           <ProofSection />
