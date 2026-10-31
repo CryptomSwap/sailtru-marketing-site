@@ -8,10 +8,8 @@ import {
   heebo,
   plexMono,
 } from "@/lib/fonts";
-import { CodeWaveBackground } from "@/components/ui/code-wave-background";
-import { FloatingContactStack } from "@/components/ui/floating-contact-stack";
+import { SiteAmbient } from "@/components/layout/site-ambient";
 import { AnalyticsBeacon } from "@/components/seo/analytics-beacon";
-import { OrganizationJsonLd } from "@/components/seo/organization-json-ld";
 import { routing, type Locale } from "@/i18n/routing";
 import "../globals.css";
 
@@ -86,11 +84,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       className={`${heebo.variable} ${plexMono.variable} ${fraunces.variable} ${frankRuhlLibre.variable}`}
     >
       <body className={`font-sans antialiased ${isRtl ? "locale-he" : "locale-en"}`}>
-        <CodeWaveBackground />
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
           <AnalyticsBeacon />
-          <FloatingContactStack />
+          <SiteAmbient />
         </NextIntlClientProvider>
       </body>
     </html>

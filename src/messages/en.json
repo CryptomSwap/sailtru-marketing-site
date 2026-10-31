@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "title": "SailTru — What Should Your Business Improve Next?",
-    "description": "Start with your website. SailTru identifies evidence-backed opportunities, helps you choose what to improve, and can help implement the next move."
+    "title": "SailTru — SEO, GEO & Bespoke AI Solutions",
+    "description": "Track your SEO and GEO visibility, compare competitors, and turn opportunities into improvements. Bespoke AI solutions and agent teams help take work off your desk."
   },
   "common": {
     "skipToContent": "Skip to main content",
@@ -21,28 +21,28 @@
     "approach": "Approach",
     "proof": "Work",
     "about": "How we work",
-    "beginDiagnosis": "Begin diagnosis",
+    "beginDiagnosis": "Build with SailTru",
     "work": "Work",
     "contact": "Contact"
   },
   "hero": {
-    "railLabel": "SEO · GEO · Custom AI solutions",
-    "headlineAria": "What should your business improve next?",
-    "headlineLineA": "What should your business",
-    "headlineLineB": "improve next?",
+    "railLabel": "SEO · GEO · Bespoke AI",
+    "headlineAria": "Track your visibility. Build your next move.",
+    "headlineLineA": "Track your visibility.",
+    "headlineLineB": "Build your next move.",
     "headlineLineC": "",
     "headlineLineD": "",
-    "subtitle": "SailTrue studies your business, market, and digital presence, prioritizes what matters, and helps implement the right solution.",
+    "subtitle": "We track your SEO and GEO, compare competitors, and help you make the improvements that matter. Need more capacity? Bespoke AI solutions and agent teams take work off your desk, giving your business room to grow.",
     "methodology": "How we work",
     "mobile": {
-      "headline": "What should your business improve next?",
-      "headlineLead": "What should your business",
-      "headlineLoud": "improve next?",
-      "subtitle": "SailTrue studies your business, market, and digital presence, prioritizes what matters, and helps implement the right solution.",
+      "headline": "Track your visibility. Build your next move.",
+      "headlineLead": "Track your visibility.",
+      "headlineLoud": "Build your next move.",
+      "subtitle": "Track SEO and GEO. Compare competitors. Make the improvements. And when you need it, build an AI team to take work off your desk.",
       "cta": "See what to improve",
       "credibility": {
-        "stem": "We read signals across",
-        "aria": "We read signals across {brands}"
+        "stem": "Discovery happens across",
+        "aria": "Discovery happens across {brands}"
       }
     },
     "urlScan": {

@@ -1,8 +1,10 @@
 /* Home v2 — one cobalt field, bright at the fold and dark at the foot */
 
-/* Non-headers → Heebo (--font-sans); display headers keep Fraunces / Frank Ruhl */
+/* SailTru homepage typography: one Heebo family for display, UI, and body. */
 .site-home {
   --font-mono: var(--font-sans);
+  --font-serif: var(--font-sans);
+  --font-serif-he: var(--font-sans);
   font-family: var(--font-sans), "Heebo", system-ui, sans-serif;
   background: linear-gradient(
     180deg,

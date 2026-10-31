@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "../components/sections/illustrated-journey/illustrated-journey.css";
+@import "../components/sections/illustrated-journey/harbor-journey.css";
+/* Scroll-directed harbor story with an illustrative before/after service page. */
 @config "../../tailwind.config.ts";
 
 :root {

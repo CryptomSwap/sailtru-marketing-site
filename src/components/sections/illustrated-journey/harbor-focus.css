@@ -1,0 +1,120 @@
+/* Reading hierarchy: paper, ink, and one blue accent, shared with harbor-palette.ts. */
+.harbor-journey {
+  --ij-paper: #f7f7f2;
+  --ij-paper-deep: #ecece6;
+  --ij-ink: #242b2e;
+  --ij-muted: #515956;
+  --ij-blue: #315fea;
+  color: var(--ij-ink);
+}
+.harbor-journey::before { opacity: .07; }
+.harbor-journey .ij-transition {
+  background: linear-gradient(#245cff, var(--ij-paper));
+  color: var(--ij-ink);
+}
+.harbor-journey .ij-voyage,
+.harbor-journey .harbor-stage,
+.harbor-journey .ij-report,
+.harbor-journey .ij-final,
+.harbor-journey .ij-proof-wall { background: var(--ij-paper); }
+.harbor-journey .harbor-stage::after { opacity: .035; }
+.harbor-journey .harbor-sun { opacity: .13; }
+.harbor-journey .harbor-birds { opacity: .25; }
+.harbor-journey .harbor-birds span { animation: none; }
+.harbor-journey .harbor-title-accent,
+.harbor-journey .ij-eyebrow { color: var(--ij-blue); }
+.harbor-journey .harbor-evidence,
+.harbor-journey .ij-scene__copy,
+.harbor-journey .ij-report-card__items section {
+  color: var(--ij-ink);
+  background: var(--ij-paper);
+  border-color: var(--ij-ink);
+  border-radius: 12px;
+  box-shadow: 4px 5px 0 var(--ij-ink);
+}
+.harbor-journey .harbor-evidence h3,
+.harbor-journey .harbor-main-card h2 { color: var(--ij-ink); }
+.harbor-journey .harbor-evidence p:not(.ij-eyebrow),
+.harbor-journey .ij-scene__copy > p:not(.ij-eyebrow),
+.harbor-journey .ij-voyage__intro > span { color: var(--ij-muted); }
+.harbor-journey .harbor-evidence .ij-eyebrow { font-size: .6rem; }
+.harbor-journey .harbor-evidence h3 { font-size: 1.25rem; line-height: 1.3; }
+.harbor-journey .harbor-evidence p:not(.ij-eyebrow) { font-size: .9rem; line-height: 1.55; }
+.harbor-journey .ij-offer { background: var(--ij-paper-deep); border-color: #c5c7c1; }
+.harbor-journey .ij-offer article,
+.harbor-journey .ij-offer__implementation { background: var(--ij-paper); }
+.harbor-journey .ij-proof-wall__shell { background: var(--ij-paper); box-shadow: none; }
+.harbor-journey .ij-proof-card--result { background: var(--ij-blue); }
+.harbor-journey .ij-proof-card:not(.ij-proof-card--result) { background: var(--ij-paper); }
+.harbor-chapters { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .harbor-journey .ij-voyage { height: 520svh; }
+  .harbor-journey .harbor-stage__art {
+    width: 72%; right: 0; height: 88%; top: 12%;
+    mask-image: linear-gradient(to right, transparent, #000 18%);
+  }
+  .harbor-journey .harbor-main-card {
+    left: 4%; top: 27%; width: 41%; height: 350px;
+    background: var(--ij-paper);
+    border: 1px solid var(--ij-ink); border-radius: 12px;
+    box-shadow: 5px 6px 0 var(--ij-ink);
+  }
+  .harbor-journey .harbor-main-card .ij-scene__copy,
+  .harbor-journey .harbor-main-card .ij-voyage__intro {
+    padding: clamp(1.5rem, 2.5vw, 2.5rem); background: var(--ij-paper); border-radius: 12px;
+  }
+  .harbor-journey .harbor-main-card h2 {
+    font-size: clamp(2rem, 3.3vw, 3.5rem); line-height: 1.08;
+    letter-spacing: -.04em; max-width: 19ch; text-wrap: pretty;
+  }
+  .harbor-journey .harbor-main-card .harbor-body,
+  .harbor-journey .harbor-main-card .ij-voyage__intro > span {
+    font-size: clamp(.95rem, 1.35vw, 1.15rem); line-height: 1.65;
+    margin-top: 1.25rem; max-width: 43ch;
+  }
+  .harbor-journey .harbor-main-card .ij-scene__bearing,
+  .harbor-journey .harbor-main-card .harbor-scroll-cue { bottom: 1.3rem; }
+  .harbor-journey .harbor-evidence {
+    top: 6%; right: 4%; width: 31%; padding: 1.4rem;
+  }
+  .harbor-chapters {
+    position: absolute; display: flex; gap: 1.5rem;
+    left: 4%; top: calc(27% + 380px); width: 41%;
+    margin: 0; padding: 0; list-style: none;
+    color: var(--ij-muted); font-size: .75rem;
+  }
+  .harbor-chapters li { display: flex; gap: .4rem; padding-bottom: .55rem; border-bottom: 2px solid transparent; }
+  .harbor-chapters li span { font: .65rem/1.5 monospace; }
+  [data-chapter="1"] .harbor-chapters [data-step="1"],
+  [data-chapter="2"] .harbor-chapters [data-step="2"],
+  [data-chapter="3"] .harbor-chapters [data-step="3"] { color: var(--ij-blue); border-color: currentColor; font-weight: 650; }
+  .harbor-journey .harbor-stage__caption { top: auto; bottom: 5%; right: 5%; color: var(--ij-muted); font-size: 9px; }
+  .harbor-journey .harbor-stage__progress { bottom: 3%; right: 5%; }
+}
+
+@media (max-width: 899px) and (prefers-reduced-motion: no-preference) {
+  .harbor-journey .ij-voyage { height: 540svh; }
+  .harbor-journey .harbor-stage { height: 48svh; }
+  .harbor-journey .harbor-stage__art { width: 100%; right: 0; height: 100%; top: 0; mask-image: none; }
+  .harbor-journey .harbor-main-card {
+    left: 5%; top: auto; bottom: 9%; width: 90%; height: 42svh;
+    min-height: 255px; max-height: 350px; box-shadow: 3px 4px 0 var(--ij-ink);
+  }
+  .harbor-journey .harbor-main-card .ij-scene__copy,
+  .harbor-journey .harbor-main-card .ij-voyage__intro { padding: 1.25rem; }
+  .harbor-journey .harbor-main-card h2 { font-size: clamp(1.7rem, 6.5vw, 2.5rem); }
+  .harbor-journey .harbor-main-card .harbor-body,
+  .harbor-journey .harbor-main-card .ij-voyage__intro > span { font-size: .9rem; line-height: 1.55; margin-top: .9rem; }
+  .harbor-chapters { left: 5%; top: auto; bottom: 3%; width: 90%; justify-content: space-between; gap: .5rem; font-size: .7rem; }
+  .harbor-journey .harbor-stage__caption { bottom: 2%; font-size: 7px; }
+  .harbor-journey .harbor-stage__progress { display: none; }
+}
+
+@media (max-height: 600px) and (prefers-reduced-motion: no-preference) {
+  .harbor-journey .harbor-main-card { top: 10%; bottom: auto; height: 78svh; min-height: 0; }
+  .harbor-chapters { top: auto; bottom: 2%; }
+  .harbor-journey .harbor-main-card h2 { font-size: 1.8rem; }
+  .harbor-journey .harbor-main-card .harbor-body,
+  .harbor-journey .harbor-main-card .ij-voyage__intro > span { font-size: .88rem; }
+}

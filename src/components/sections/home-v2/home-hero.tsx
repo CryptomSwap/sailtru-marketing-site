@@ -82,13 +82,13 @@ export function HomeHero() {
             <p className="field-lede field-lede--ref field-hero__desktop-only">{t("subtitle")}</p>
 
             <div className="field-scan field-scan--ref field-hero__desktop-only">
-              <Link href="/how-we-work" className="field-scan__secondary field-scan__secondary--ref">
+              <Link href="/contact" className="field-scan__secondary field-scan__secondary--ref">
                 <span className="field-scan__play" aria-hidden>
                   <svg viewBox="0 0 20 20" width="12" height="12">
                     <path d="M7 5.2v9.6L15 10 7 5.2Z" fill="currentColor" />
                   </svg>
                 </span>
-                {t("methodology")}
+                {tFinal("buildCta")}
               </Link>
             </div>
 

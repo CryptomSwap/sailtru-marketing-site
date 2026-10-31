@@ -1,0 +1,934 @@
+09.639 0 457.614 0 394.027V115.612C0 52.026 52.026 0 115.612 0z"></path><path fill="#fafaf7" fill-rule="nonzero" d="M142.27 316.619l73.655-41.326 1.238-3.589-1.238-1.996-3.589-.001-12.31-.759-42.084-1.138-36.498-1.516-35.361-1.896-8.897-1.895-8.34-10.995.859-5.484 7.482-5.03 10.717.935 23.683 1.617 35.537 2.452 25.782 1.517 38.193 3.968h6.064l.86-2.451-2.073-1.517-1.618-1.517-36.776-24.922-39.81-26.338-20.852-15.166-11.273-7.683-5.687-7.204-2.451-15.721 10.237-11.273 13.75.935 3.513.936 13.928 10.716 29.749 23.027 38.848 28.612 5.687 4.727 2.275-1.617.278-1.138-2.553-4.271-21.13-38.193-22.546-38.848-10.035-16.101-2.654-9.655c-.935-3.968-1.617-7.304-1.617-11.374l11.652-15.823 6.445-2.073 15.545 2.073 6.547 5.687 9.655 22.092 15.646 34.78 24.265 47.291 7.103 14.028 3.791 12.992 1.416 3.968 2.449-.001v-2.275l1.997-26.641 3.69-32.707 3.589-42.084 1.239-11.854 5.863-14.206 11.652-7.683 9.099 4.348 7.482 10.716-1.036 6.926-4.449 28.915-8.72 45.294-5.687 30.331h3.313l3.792-3.791 15.342-20.372 25.782-32.227 11.374-12.789 13.27-14.129 8.517-6.724 16.1-.001 11.854 17.617-5.307 18.199-16.581 21.029-13.75 17.819-19.716 26.54-12.309 21.231 1.138 1.694 2.932-.278 44.536-9.479 24.062-4.347 28.714-4.928 12.992 6.066 1.416 6.167-5.106 12.613-30.71 7.583-36.018 7.204-53.636 12.689-.657.48.758.935 24.164 2.275 10.337.556h25.301l47.114 3.514 12.309 8.139 7.381 9.959-1.238 7.583-18.957 9.655-25.579-6.066-59.702-14.205-20.474-5.106-2.83-.001v1.694l17.061 16.682 31.266 28.233 39.152 36.397 1.997 8.999-5.03 7.102-5.307-.758-34.401-25.883-13.27-11.651-30.053-25.302-1.996-.001v2.654l6.926 10.136 36.574 54.975 1.895 16.859-2.653 5.485-9.479 3.311-10.414-1.895-21.408-30.054-22.092-33.844-17.819-30.331-2.173 1.238-10.515 113.261-4.929 5.788-11.374 4.348-9.478-7.204-5.03-11.652 5.03-23.027 6.066-30.052 4.928-23.886 4.449-29.674 2.654-9.858-.177-.657-2.173.278-22.37 30.71-34.021 45.977-26.919 28.815-6.445 2.553-11.173-5.789 1.037-10.337 6.243-9.2 37.257-47.392 22.47-29.371 14.508-16.961-.101-2.451h-.859l-98.954 64.251-17.618 2.275-7.583-7.103.936-11.652 3.589-3.791 29.749-20.474-.101.102.024.101z"></path></svg>'},gemini:{kind:"glyph",svg:'<svg width="256" height="256" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 65"><mask id="maskme" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="65" height="65"><path d="M32.447 0c.68 0 1.273.465 1.439 1.125a38.904 38.904 0 001.999 5.905c2.152 5 5.105 9.376 8.854 13.125 3.751 3.75 8.126 6.703 13.125 8.855a38.98 38.98 0 005.906 1.999c.66.166 1.124.758 1.124 1.438 0 .68-.464 1.273-1.125 1.439a38.902 38.902 0 00-5.905 1.999c-5 2.152-9.375 5.105-13.125 8.854-3.749 3.751-6.702 8.126-8.854 13.125a38.973 38.973 0 00-2 5.906 1.485 1.485 0 01-1.438 1.124c-.68 0-1.272-.464-1.438-1.125a38.913 38.913 0 00-2-5.905c-2.151-5-5.103-9.375-8.854-13.125-3.75-3.749-8.125-6.702-13.125-8.854a38.973 38.973 0 00-5.905-2A1.485 1.485 0 010 32.448c0-.68.465-1.272 1.125-1.438a38.903 38.903 0 005.905-2c5-2.151 9.376-5.104 13.125-8.854 3.75-3.749 6.703-8.125 8.855-13.125a38.972 38.972 0 001.999-5.905A1.485 1.485 0 0132.447 0z" fill="#000"></path><path d="M32.447 0c.68 0 1.273.465 1.439 1.125a38.904 38.904 0 001.999 5.905c2.152 5 5.105 9.376 8.854 13.125 3.751 3.75 8.126 6.703 13.125 8.855a38.98 38.98 0 005.906 1.999c.66.166 1.124.758 1.124 1.438 0 .68-.464 1.273-1.125 1.439a38.902 38.902 0 00-5.905 1.999c-5 2.152-9.375 5.105-13.125 8.854-3.749 3.751-6.702 8.126-8.854 13.125a38.973 38.973 0 00-2 5.906 1.485 1.485 0 01-1.438 1.124c-.68 0-1.272-.464-1.438-1.125a38.913 38.913 0 00-2-5.905c-2.151-5-5.103-9.375-8.854-13.125-3.75-3.749-8.125-6.702-13.125-8.854a38.973 38.973 0 00-5.905-2A1.485 1.485 0 010 32.448c0-.68.465-1.272 1.125-1.438a38.903 38.903 0 005.905-2c5-2.151 9.376-5.104 13.125-8.854 3.75-3.749 6.703-8.125 8.855-13.125a38.972 38.972 0 001.999-5.905A1.485 1.485 0 0132.447 0z" fill="url(#prefix__paint0_linear_2001_67)"></path></mask><g mask="url(#maskme)"><g filter="url(#prefix__filter0_f_2001_67)"><path d="M-5.859 50.734c7.498 2.663 16.116-2.33 19.249-11.152 3.133-8.821-.406-18.131-7.904-20.794-7.498-2.663-16.116 2.33-19.25 11.151-3.132 8.822.407 18.132 7.905 20.795z" fill="#FFE432"></path></g><g filter="url(#prefix__filter1_f_2001_67)"><path d="M27.433 21.649c10.3 0 18.651-8.535 18.651-19.062 0-10.528-8.35-19.062-18.651-19.062S8.78-7.94 8.78 2.587c0 10.527 8.35 19.062 18.652 19.062z" fill="#FC413D"></path></g><g filter="url(#prefix__filter2_f_2001_67)"><path d="M20.184 82.608c10.753-.525 18.918-12.244 18.237-26.174-.68-13.93-9.95-24.797-20.703-24.271C6.965 32.689-1.2 44.407-.519 58.337c.681 13.93 9.95 24.797 20.703 24.271z" fill="#00B95C"></path></g><g filter="url(#prefix__filter3_f_2001_67)"><path d="M20.184 82.608c10.753-.525 18.918-12.244 18.237-26.174-.68-13.93-9.95-24.797-20.703-24.271C6.965 32.689-1.2 44.407-.519 58.337c.681 13.93 9.95 24.797 20.703 24.271z" fill="#00B95C"></path></g><g filter="url(#prefix__filter4_f_2001_67)"><path d="M30.954 74.181c9.014-5.485 11.427-17.976 5.389-27.9-6.038-9.925-18.241-13.524-27.256-8.04-9.015 5.486-11.428 17.977-5.39 27.902 6.04 9.924 18.242 13.523 27.257 8.038z" fill="#00B95C"></path></g><g filter="url(#prefix__filter5_f_2001_67)"><path d="M67.391 42.993c10.132 0 18.346-7.91 18.346-17.666 0-9.757-8.214-17.667-18.346-17.667s-18.346 7.91-18.346 17.667c0 9.757 8.214 17.666 18.346 17.666z" fill="#3186FF"></path></g><g filter="url(#prefix__filter6_f_2001_67)"><path d="M-13.065 40.944c9.33 7.094 22.959 4.869 30.442-4.972 7.483-9.84 5.987-23.569-3.343-30.663C4.704-1.786-8.924.439-16.408 10.28c-7.483 9.84-5.986 23.57 3.343 30.664z" fill="#FBBC04"></path></g><g filter="url(#prefix__filter7_f_2001_67)"><path d="M34.74 51.43c11.135 7.656 25.896 5.524 32.968-4.764 7.073-10.287 3.779-24.832-7.357-32.488C49.215 6.52 34.455 8.654 27.382 18.94c-7.072 10.288-3.779 24.833 7.357 32.49z" fill="#3186FF"></path></g><g filter="url(#prefix__filter8_f_2001_67)"><path d="M54.984-2.336c2.833 3.852-.808 11.34-8.131 16.727-7.324 5.387-15.557 6.631-18.39 2.78-2.833-3.853.807-11.342 8.13-16.728 7.324-5.387 15.558-6.631 18.39-2.78z" fill="#749BFF"></path></g><g filter="url(#prefix__filter9_f_2001_67)"><path d="M31.727 16.104C43.053 5.598 46.94-8.626 40.41-15.666c-6.53-7.04-21.006-4.232-32.332 6.274s-15.214 24.73-8.683 31.77c6.53 7.04 21.006 4.232 32.332-6.274z" fill="#FC413D"></path></g><g filter="url(#prefix__filter10_f_2001_67)"><path d="M8.51 53.838c6.732 4.818 14.46 5.55 17.262 1.636 2.802-3.915-.384-10.994-7.116-15.812-6.731-4.818-14.46-5.55-17.261-1.636-2.802 3.915.383 10.994 7.115 15.812z" fill="#FFEE48"></path></g></g><defs><filter id="prefix__filter0_f_2001_67" x="-19.824" y="13.152" width="39.274" height="43.217" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="2.46" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter1_f_2001_67" x="-15.001" y="-40.257" width="84.868" height="85.688" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="11.891" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter2_f_2001_67" x="-20.776" y="11.927" width="79.454" height="90.916" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="10.109" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter3_f_2001_67" x="-20.776" y="11.927" width="79.454" height="90.916" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="10.109" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter4_f_2001_67" x="-19.845" y="15.459" width="79.731" height="81.505" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="10.109" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter5_f_2001_67" x="29.832" y="-11.552" width="75.117" height="73.758" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="9.606" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter6_f_2001_67" x="-38.583" y="-16.253" width="78.135" height="78.758" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="8.706" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter7_f_2001_67" x="8.107" y="-5.966" width="78.877" height="77.539" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="7.775" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter8_f_2001_67" x="13.587" y="-18.488" width="56.272" height="51.81" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="6.957" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter9_f_2001_67" x="-15.526" y="-31.297" width="70.856" height="69.306" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="5.876" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><filter id="prefix__filter10_f_2001_67" x="-14.168" y="20.964" width="55.501" height="51.571" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="7.273" result="effect1_foregroundBlur_2001_67"></feGaussianBlur></filter><linearGradient id="prefix__paint0_linear_2001_67" x1="18.447" y1="43.42" x2="52.153" y2="15.004" gradientUnits="userSpaceOnUse"><stop stop-color="#4893FC"></stop><stop offset=".27" stop-color="#4893FC"></stop><stop offset=".777" stop-color="#969DFF"></stop><stop offset="1" stop-color="#BD99FE"></stop></linearGradient></defs></svg>'},perplexity:{kind:"app",svg:'<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 509.64"><path fill="#3b3b37" d="M115.613 0h280.774C459.974 0 512 52.025 512 115.612v278.415c0 63.587-52.026 115.613-115.613 115.613H115.613C52.026 509.64 0 457.614 0 394.027V115.612C0 52.025 52.026 0 115.613 0z"></path><path fill="#fafaf7" fill-rule="nonzero" d="M348.851 128.063l-68.946 58.302h68.946v-58.302zm-83.908 48.709l100.931-85.349v94.942h32.244v143.421h-38.731v90.004l-94.442-86.662v83.946h-17.023v-83.906l-96.596 86.246v-89.628h-37.445V186.365h38.732V90.768l95.309 84.958v-83.16h17.023l-.002 84.206zm-29.209 26.616c-34.955.02-69.893 0-104.83 0v109.375h20.415v-27.121l84.415-82.254zm41.445 0l82.208 82.324v27.051h21.708V203.388c-34.617 0-69.274.02-103.916 0zm-42.874-17.023l-64.669-57.646v57.646h64.669zm13.617 124.076v-95.2l-79.573 77.516v88.731l79.573-71.047zm17.252-95.022v94.863l77.19 70.83c0-29.485-.012-58.943-.012-88.425l-77.178-77.268z"></path></svg>'},google:{kind:"glyph",svg:`<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+`},reddit:{kind:"line",svg:'<svg width="256" height="256" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#3b3b37" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.2" cy="11.8" r="2" fill="#fafaf7"/><circle cx="19.8" cy="11.8" r="2" fill="#fafaf7"/><ellipse cx="12" cy="14.4" rx="7.6" ry="5.6" fill="#fafaf7"/><path d="M12 8.8L13.5 3.8L17.4 4.8"/><circle cx="18.4" cy="5" r="1.5" fill="#fafaf7"/><circle cx="9" cy="13.8" r="1.2" fill="#3b3b37" stroke="none"/><circle cx="15" cy="13.8" r="1.2" fill="#3b3b37" stroke="none"/><path d="M9.1 16.9Q12 18.7 14.9 16.9"/></svg>'}},_0=r=>"data:image/svg+xml;
+charset=utf-8,"+encodeURIComponent(r),Fy=r=>new Promise((e,t)=>{const n=new Image;
+n.onload=()=>e(n),n.onerror=t,n.src=r}),ff=(r,e)=>{const t=document.createElement("canvas");
+return t.width=r,t.height=e,t};
+async function Oy(r){const e=g0[r],t=256,n=ff(t,t),i=n.getContext("2d"),s=await Fy(_0(e.svg));
+if(i.fillStyle="#fafaf7",i.beginPath(),i.arc(t/2,t/2,t/2,0,Math.PI*2),i.fill(),i.fillStyle="#3b3b37",i.beginPath(),i.arc(t/2,t/2,t/2-12,0,Math.PI*2),i.fill(),e.kind==="app")i.save(),i.beginPath(),i.arc(t/2,t/2,t/2-12,0,Math.PI*2),i.clip(),i.drawImage(s,12,12,t-24,t-24),i.restore();
+else{const a=ff(t,t),o=a.getContext("2d"),l=t*.5;
+o.drawImage(s,(t-l)/2,(t-l)/2,l,l),o.globalCompositeOperation="source-in",o.fillStyle="#fafaf7",o.fillRect(0,0,t,t),i.drawImage(a,0,0)}return n}function By(){const r=ff(160,160),e=r.getContext("2d");
+e.lineJoin="round",e.lineCap="round",e.beginPath(),e.moveTo(40,26),e.arcTo(136,26,136,96,26),e.arcTo(136,96,24,96,26),e.lineTo(62,96),e.lineTo(38,130),e.lineTo(42,96),e.arcTo(24,96,24,26,26),e.arcTo(24,26,136,26,26),e.closePath(),e.fillStyle="#fafaf7",e.fill(),e.strokeStyle="#3b3b37",e.lineWidth=7,e.stroke(),e.fillStyle="#3b3b37";
+for(const t of[56,80,104])e.beginPath(),e.arc(t,61,7.5,0,Math.PI*2),e.fill();
+return r}const nh=`
+  uniform float uTime, uOutlinePx, uPx, uSwayAmt;
+
+  uniform vec2 uRes;
+
+  vec3 swayOff(vec2 b, float amp, float t01) {
+    float ph  = uTime * 1.15 + b.x * 0.31 + b.y * 0.23;
+
+    float ph2 = uTime * 0.70 + b.x * 0.11 - b.y * 0.19;
+
+    vec2 d = vec2(sin(ph) + 0.5 * sin(ph2 * 2.3), cos(ph * 0.87) + 0.5 * cos(ph2 * 1.9));
+
+    return vec3(d.x, 0.0, d.y) * amp * t01 * t01;
+
+  }
+  vec4 outlineClip(vec4 wp, vec3 nW) {
+    vec4 mv = viewMatrix * wp;
+
+    vec4 clip = projectionMatrix * mv;
+
+    vec3 nv = normalize(mat3(viewMatrix) * nW);
+
+    vec2 nd = (projectionMatrix * vec4(nv, 0.0)).xy;
+
+    nd = nd / max(length(nd), 1e-4);
+
+    float far = smoothstep(12.0, 110.0, -mv.z);
+
+    float px = uOutlinePx * mix(1.0, 0.4, far);
+
+    clip.xy += nd * (px * uPx * 2.0 / uRes) * clip.w;
+
+    return clip;
+
+  }
+`,Hr=`
+  uniform float uTime, uPx, uHatch, uSoft, uFogNear, uFogFar;
+
+  uniform vec3 uPaper, uPaperShade, uInk, uInk2, uAmber, uLight;
+
+
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+ }
+  float vnoise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+
+    f = f * f * (3.0 - 2.0 * f);
+
+    return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+
+  }
+  float lineMask(float x, float w) {
+    float f = abs(fract(x + 0.5) - 0.5);
+
+    float aa = fwidth(x) * 0.5;
+
+    return 1.0 - smoothstep(w * 0.5 - aa, w * 0.5 + aa, f);
+
+  }
+  float hatchCoverage(float shade) {
+    vec2 p = gl_FragCoord.xy / uPx;
+
+    float period = 7.0;
+
+    float l1 = lineMask((p.x + p.y) / period, 0.2);
+
+    float l2 = lineMask((p.x - p.y) / period, 0.17);
+
+    float c1 = 1.0 - smoothstep(0.50, 0.62, shade);
+
+    float c2 = 1.0 - smoothstep(0.26, 0.40, shade);
+
+    return clamp(l1 * c1 + l2 * c2, 0.0, 1.0) * 0.55 * uHatch;
+
+  }
+  float toonBand(float lit) { return mix(floor(lit * 3.0 + 0.5) / 3.0, lit, uSoft);
+ }
+  vec3 fogMix(vec3 c, float dist) { return mix(c, uPaper, smoothstep(uFogNear, uFogFar, dist));
+ }
+`,zy=`
+  varying vec3 vW;
+ varying vec3 vN;
+
+  void main() { vW = position;
+ vN = normal;
+ gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
+ }
+`,ky=`
+  ${Hr}
+  varying vec3 vW;
+ varying vec3 vN;
+
+  void main() {
+    vec3 N = normalize(vN);
+
+    float lit = dot(N, normalize(uLight)) * 0.5 + 0.5;
+
+    float n = vnoise(vW.xz * 0.05) * 0.62 + vnoise(vW.xz * 0.14 + 7.0) * 0.38;
+
+    lit -= smoothstep(0.50, 0.68, n) * 0.6;
+
+    float band = toonBand(lit);
+
+    vec3 c = mix(uPaperShade, uPaper, band);
+
+    c = mix(c, uInk, hatchCoverage(band));
+
+    gl_FragColor = vec4(fogMix(c, distance(vW, cameraPosition)), 1.0);
+
+  }
+`,Gy=`
+  ${nh}
+  attribute float aH;
+ attribute float aW;
+ attribute float aSeed;
+
+  varying float vY;
+ varying float vSeed;
+ varying vec3 vW;
+
+  void main() {
+    vec3 p = position;
+
+    p.x *= aW;
+
+    p.y *= aH;
+
+    p.z += position.y * position.y * aH * 0.32 * (0.4 + aSeed);
+
+    vec4 wp = modelMatrix * instanceMatrix * vec4(p, 1.0);
+
+    wp.xyz += swayOff(instanceMatrix[3].xz, aH * 0.3, position.y);
+
+    vY = position.y;
+ vSeed = aSeed;
+ vW = wp.xyz;
+
+    gl_Position = projectionMatrix * viewMatrix * wp;
+
+  }
+`,Hy=`
+  ${Hr}
+  uniform vec2 uRes;
+ uniform float uPortrait, uClearMode;
+
+  varying float vY;
+ varying float vSeed;
+ varying vec3 vW;
+
+  void main() {
+    vec2 sp = gl_FragCoord.xy / uRes;
+
+    float clearing = uPortrait > 0.5 ? mix(smoothstep(0.34, 0.86, sp.y), smoothstep(0.50, 0.08, sp.y), uClearMode) : smoothstep(0.62, 0.08, sp.x);
+
+    if (vSeed < clearing * 0.94) discard;
+
+    vec3 c = mix(uInk, uInk2, vSeed * 0.45 + vY * 0.5);
+
+    c = mix(c, uPaperShade * 0.72, uSoft * 0.6);
+
+    gl_FragColor = vec4(fogMix(c, distance(vW, cameraPosition)), 1.0);
+
+  }
+`,or=`
+  ${nh}
+  attribute float aH;
+ attribute float aCited;
+ attribute float aSeed;
+ attribute float aPart;
+
+  varying vec3 vN;
+ varying vec3 vW;
+ varying vec3 vObj;
+ varying vec2 vUv;
+
+  varying float vCited;
+ varying float vSeed;
+ varying float vPart;
+
+  void main() {
+    vec3 base = instanceMatrix[3].xyz;
+
+    vec3 p = position;
+
+    #ifdef STEM
+      p.y *= aH;
+
+      vec4 wp = modelMatrix * instanceMatrix * vec4(p, 1.0);
+
+      wp.xyz += swayOff(base.xz, aH * uSwayAmt, position.y);
+
+    #else
+      vec4 wp = modelMatrix * instanceMatrix * vec4(p, 1.0);
+
+      wp.xyz += swayOff(base.xz, aH * uSwayAmt, 1.0);
+
+    #endif
+    vec3 nW = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);
+
+    vW = wp.xyz;
+ vN = nW;
+ vObj = position;
+ vUv = uv;
+
+    vCited = aCited;
+ vSeed = aSeed;
+ vPart = aPart;
+
+    #ifdef OUTLINE
+      gl_Position = outlineClip(wp, nW);
+
+    #else
+      gl_Position = projectionMatrix * viewMatrix * wp;
+
+    #endif
+  }
+`,Js=`
+  ${nh}
+  varying vec3 vN;
+ varying vec3 vW;
+ varying vec3 vObj;
+ varying vec2 vUv;
+
+  varying float vCited;
+ varying float vSeed;
+ varying float vPart;
+
+  void main() {
+    vec4 wp = modelMatrix * vec4(position, 1.0);
+
+    vec3 nW = normalize(mat3(modelMatrix) * normal);
+
+    vW = wp.xyz;
+ vN = nW;
+ vObj = position;
+ vUv = uv;
+
+    vCited = 0.0;
+ vSeed = 0.0;
+ vPart = 0.0;
+
+    #ifdef OUTLINE
+      gl_Position = outlineClip(wp, nW);
+
+    #else
+      gl_Position = projectionMatrix * viewMatrix * wp;
+
+    #endif
+  }
+`,v0=`
+  ${Hr}
+  varying vec3 vW;
+
+  void main() { gl_FragColor = vec4(fogMix(uInk, distance(vW, cameraPosition)), 1.0);
+ }
+`,hf=`
+  ${Hr}
+  varying vec3 vW;
+
+  void main() { vec3 c = mix(mix(uInk, uInk2, 0.25), uPaperShade * 0.7, uSoft * 0.6);
+ gl_FragColor = vec4(fogMix(c, distance(vW, cameraPosition)), 1.0);
+ }
+`,oa=`
+  ${Hr}
+  varying vec3 vN;
+ varying vec3 vW;
+ varying vec3 vObj;
+ varying vec2 vUv;
+
+  varying float vCited;
+ varying float vSeed;
+ varying float vPart;
+
+  void main() {
+    vec3 N = normalize(vN);
+
+    if (!gl_FrontFacing) N = -N;
+
+    float lit = dot(N, normalize(uLight)) * 0.5 + 0.5;
+
+    vec3 baseC = uPaper;
+
+    vec3 shadeC = uPaperShade;
+
+    #if KIND == 0
+      baseC = mix(uPaper, mix(uInk, uAmber, vCited), vPart);
+
+      shadeC = mix(uPaperShade, mix(uInk, uAmber * 0.7, vCited), vPart);
+
+    #elif KIND == 1
+      baseC = uAmber;
+ shadeC = uAmber * 0.62;
+
+    #endif
+    float band = toonBand(lit);
+
+    vec3 c = mix(shadeC, baseC, band);
+
+    #if KIND == 3
+      c = mix(uPaper, uPaperShade, (1.0 - lit) * 0.3);
+
+      c = mix(c, uInk, smoothstep(0.84, 0.94, length(vUv - 0.5) * 2.0));
+
+    #else
+      c = mix(c, uInk, hatchCoverage(band));
+
+    #endif
+    #if KIND == 1
+      float stripe = smoothstep(0.05, 0.22, sin(vObj.z * 21.0 + 0.5)) * step(-0.43, vObj.z) * step(vObj.z, 0.29);
+
+      float head = smoothstep(0.30, 0.34, vObj.z);
+
+      float tail = smoothstep(-0.42, -0.46, vObj.z);
+
+      c = mix(c, uInk, max(max(stripe, head), tail));
+
+    #elif KIND == 2
+      float ang = atan(vObj.x, vObj.z) / 6.2831853;
+
+      float coil = lineMask(vObj.y * 6.5 + ang * 0.7, 0.07);
+
+      c = mix(c, uInk, coil * 0.7 * (1.0 - uSoft * 0.5));
+
+      vec2 q = vObj.xy;
+
+      float e = (q.x * q.x) / 0.0676 + (q.y * q.y) / 0.16;
+
+      float door = (1.0 - smoothstep(0.92, 1.0, e)) * step(-0.02, q.y) * step(0.3, vObj.z);
+
+      c = mix(c, uInk, door);
+
+    #elif KIND == 4
+      c = mix(c, uInk2, 1.0 - smoothstep(0.10, 0.2, vObj.y));
+
+    #endif
+    gl_FragColor = vec4(fogMix(c, distance(vW, cameraPosition)), 1.0);
+
+  }
+`,ep=`
+  uniform float uPointScale;
+
+  attribute float aA;
+ attribute float aS;
+
+  varying float vA;
+
+  void main() {
+    vA = aA;
+
+    vec4 mv = viewMatrix * vec4(position, 1.0);
+
+    gl_Position = projectionMatrix * mv;
+
+    gl_PointSize = max(1.5, aS * uPointScale / -mv.z);
+
+  }
+`,Vy=`
+  uniform vec3 uAmber;
+
+  varying float vA;
+
+  void main() {
+    float d = length(gl_PointCoord - 0.5);
+
+    float a = smoothstep(0.5, 0.36, d) * vA;
+
+    if (a < 0.01) discard;
+
+    gl_FragColor = vec4(uAmber, a);
+
+  }
+`,$c=`
+  varying vec3 vObj;
+ varying vec3 vW;
+
+  void main() {
+    vObj = position;
+ vec4 wp = modelMatrix * vec4(position, 1.0);
+ vW = wp.xyz;
+
+    gl_Position = projectionMatrix * viewMatrix * wp;
+
+  }
+`,tp=`
+  ${Hr}
+  varying vec3 vObj;
+ varying vec3 vW;
+
+  void main() {
+    float ang = atan(vObj.z, vObj.x) / 6.2831853;
+
+    float dash = fract(ang * 14.0 + uTime * 0.04);
+
+    if (dash > 0.58) discard;
+
+    gl_FragColor = vec4(fogMix(uAmber, distance(vW, cameraPosition)), 1.0);
+
+  }
+`,Wy=`
+  varying vec3 vObj;
+ varying vec3 vW;
+
+  void main() { vObj = position;
+ vec4 wp = modelMatrix * vec4(position, 1.0);
+ vW = wp.xyz;
+ gl_Position = projectionMatrix * viewMatrix * wp;
+ }
+`,Xy=`
+  ${Hr}
+  uniform float uPlot, uPrep, uCited;
+
+  varying vec3 vObj;
+ varying vec3 vW;
+
+  const vec3 LOGO = vec3(0.847, 0.251, 0.125);
+
+  void main() {
+    float r = length(vObj.xz) / 2.15;
+
+    if (r > 1.0) discard;
+
+    float ang = atan(vObj.z, vObj.x) / 6.2831853;
+
+    float ring = smoothstep(0.945, 0.96, r);
+
+    float dash = step(fract(ang * 16.0 + uTime * 0.03), 0.62);
+
+    vec3 c = mix(uPaperShade, uPaper, 0.25 * (1.0 - r));
+
+    c = mix(c, uInk, hatchCoverage(0.56));
+
+    float f = lineMask(vObj.z * 1.7, 0.15) * step(vObj.x, mix(-2.1, 2.1, uPrep)) * step(-2.1, vObj.x) * step(r, 0.84);
+
+    c = mix(c, uInk, f * 0.8);
+
+    float rc = ring * dash;
+
+    c = mix(c, mix(LOGO, uAmber, uCited), rc);
+
+    gl_FragColor = vec4(fogMix(c, distance(vW, cameraPosition)), uPlot * (ring > 0.5 ? dash : 1.0));
+
+  }
+`,Yy=`
+  ${Hr}
+  uniform float uScanA;
+
+  varying vec3 vObj;
+ varying vec3 vW;
+
+  void main() {
+    float ang = atan(vObj.z, vObj.x) / 6.2831853;
+
+    if (fract(ang * 110.0) > 0.55) discard;
+
+    gl_FragColor = vec4(uInk, uScanA);
+
+  }
+`,qy=`
+  uniform vec3 uInk;
+
+  varying float vA;
+
+  void main() {
+    float d = length(gl_PointCoord - 0.5);
+
+    float a = smoothstep(0.5, 0.36, d) * vA;
+
+    if (a < 0.01) discard;
+
+    gl_FragColor = vec4(uInk, a);
+
+  }
+`;
+async function $y(r,e){const{scene:t,camera:n,U:i,small:s,still:a,mat:o,hullOf:l,hulls:c,instanced:u,withHull:d,dummy:f,rng:h,hAt:g,HX:_,HZ:m,cited:p,Fs:S,P:b,hive:x,stemGeo:y,daisyGeo:E}=r;
+let w=0;
+const v=new H,T=new H,A=(K,ie,he)=>new H(K,ie,he),U=(K,ie)=>K.clone().add(A(0,ie,0)),I=(K,ie,he)=>U(K.clone().lerp(ie,.5),he),G=4.6,F={},X={};
+let L=null;
+try{for(const K of m0){const ie=await Oy(K),he=new Md(ie);
+he.colorSpace=Kn,he.anisotropy=4,F[K]=he,X[K]=ie.toDataURL()}L=new Md(By()),L.colorSpace=Kn}catch(K){console.warn("logo textures unavailable",K)}const D=x.localToWorld(A(0,.5,1.5));
+D.clone();
+const V=x.localToWorld(A(0,1.8,0)),W=A(_,g(_,m)+3.4,m),R=A(b.x,b.y,b.z),Q=K=>A(K.x,K.y+K.H+.9,K.z),Se=(K,ie)=>Math.hypot(K.x-ie.x,K.z-ie.z),Re=[];
+if(L){for(let K=0;
+K<8;
+K++){const ie=new fd(new af({map:L,transparent:!0,depthWrite:!1,opacity:0}));
+t.add(ie),Re.push({sp:ie,t0:-99})}for(let K=0;
+K<3;
+K++)Re[K].t0=14-.7-K*1.5}let Ue=3;
+const Me=()=>{Re.length&&e.crowd>.6&&(Re[Ue++%Re.length].t0=w)},Ve=p.filter(K=>K!==S).sort((K,ie)=>Se(K,W)-Se(ie,W)).slice(0,3),J=(()=>{let K=null;
+for(const ie of[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]){const he=ie.map(Ne=>Ve[Ne]),Ae=Se(D,he[0])+Se(he[0],he[1])+Se(he[1],he[2])+Se(he[2],D);
+(!K||Ae<K.L)&&(K={L:Ae,o:he})}return K.o})(),[ae,Ee,Ye]=J.map(Q),xe=[];
+{const K=h(29),ie=p.filter(Ae=>Ae!==S&&!J.includes(Ae)).map(Ae=>{const Ne=K()*6.283,be=1.9+K()*.7,Qe=Ae.x+Math.cos(Ne)*be,Et=Ae.z+Math.sin(Ne)*be;
+return{x:Qe,z:Et,y:g(Qe,Et),H:2.6+K()*1.8,tilt:.35+K()*.5,yaw:K()*6.283}});
+let he={x:D.x,z:D.z};
+for(;
+xe.length<6&&ie.length;
+){ie.sort((Ne,be)=>Se(Ne,he)-Se(be,he));
+const Ae=ie.shift();
+xe.push(Ae),he=Ae}}const Be=K=>new Ed(K,!1,"catmullrom",.5),We=U(R,3.6),Fe=A(b.x,b.y+G+.9,b.z),$e=Be([A(-9,7,23),A(-3.5,8.6,11),A(2.5,9.8,-1),D.clone().add(A(-2.5,.9,7)),D.clone().add(A(-.9,.35,3)),D.clone()]),ot=Be([D.clone(),I(D,ae,3.4),ae,I(ae,Ee,2.4),Ee,I(Ee,Ye,2.4),Ye,I(Ye,D,3.4),D.clone()]),q=Be([D.clone(),I(D,We,4.5),We.clone().add(A(2.4,.3,-1.6)),We.clone().add(A(.4,.2,2.4)),We.clone().add(A(-2.2,.8,.4)),R.clone().add(A(6,9,-5))]),it=Be([R.clone().add(A(5,22,-7)),R.clone().add(A(2.5,12,-2)),R.clone().add(A(.9,6.4,1)),R.clone().add(A(0,3.4,0))]),Lt=Be([R.clone().add(A(0,3.4,0)),R.clone().add(A(-3,5.5,-2)),R.clone().add(A(-9,11,-6))]),Ot=Be([R.clone().add(A(-10,6,13)),R.clone().add(A(-4.5,7.4,6)),Fe.clone(),I(Fe,D,4),D.clone()]),Ke=[D.clone()];
+xe.forEach((K,ie)=>{const he=A(K.x,K.y+3,K.z);
+Ke.push(I(ie?A(xe[ie-1].x,xe[ie-1].y+3,xe[ie-1].z):D,he,3.2),he)});
+const bt=xe[xe.length-1];
+Ke.push(A(bt.x+8,bt.y+9,bt.z-4));
+const z=Be(Ke),Nt=xe.map((K,ie)=>(2+2*ie)/(Ke.length-1)),Xe=[["f1",$e],["f2",ot],["f3",q],["f4",it],["f4x",Lt],["f5",Ot],["f6",z]];
+let P=0,M=0;
+const O=A(-9,7,23),Y=A(1,0,-1),ne=A(-9,7,23);
+function ve(){let K=0;
+for(let ie=0;
+ie<Xe.length;
+ie++)e[Xe[ie][0]]>1e-4&&(K=ie);
+M=hn(e[Xe[K][0]]),P=K,Xe[K][1].getPoint(M,O),Xe[K][1].getTangent(M,Y)}const _e={uPlot:{value:0},uPrep:{value:0},uCited:{value:0}},oe=(()=>{const K=new xa(4.6,4.6,26,26);
+K.rotateX(-Math.PI/2);
+const ie=K.attributes.position;
+for(let Ae=0;
+Ae<ie.count;
+Ae++)ie.setY(Ae,g(b.x+ie.getX(Ae),b.z+ie.getZ(Ae))-b.y+.07);
+const he=new Jt(K,o(Wy,Xy,{transparent:!0,depthWrite:!1,side:Yn,uniforms:_e}));
+return he.material.polygonOffset=!0,he.material.polygonOffsetFactor=-2,he.material.polygonOffsetUnits=-2,he.position.set(b.x,b.y,b.z),he.frustumCulled=!1,he.renderOrder=1,he.visible=!1,t.add(he),he})();
+function le(K){const ie={uSwayAmt:{value:.07}},he=()=>new Float32Array(K),Ae=u(y.clone(),o(or,hf,{defines:{STEM:1},uniforms:ie}),K,{aH:he(),aCited:he(),aSeed:he(),aPart:he()}),Ne=u(E.clone(),o(or,oa,{defines:{KIND:0},uniforms:{...ie}}),K,{aH:he(),aCited:he(),aSeed:Float32Array.from({length:K},(st,Tt)=>Tt*.37%1)});
+t.add(Ae),d(Ne,or,{KIND:0},{...ie});
+const be=c[c.length-1],Qe=Ae.geometry.attributes.aH,Et=Ne.geometry.attributes.aH,yt=Ne.geometry.attributes.aCited;
+return{set(st,Tt,De,on,dt,yn,tt,gi,Fi){const te=Math.max(.001,dt*yn);
+Qe.array[st]=te,Et.array[st]=te,yt.array[st]=tt,f.position.set(Tt,De-.05,on),f.rotation.set(0,0,0),f.scale.set(1,1,1),f.updateMatrix(),Ae.setMatrixAt(st,f.matrix);
+const at=Math.max(1e-4,(.24+.05*dt)*1.4*yn);
+f.position.set(Tt,De-.05+te,on),f.rotation.set(gi,Fi,0,"YXZ"),f.scale.setScalar(at),f.updateMatrix(),Ne.setMatrixAt(st,f.matrix)},flush(){Ae.instanceMatrix.needsUpdate=!0,Ne.instanceMatrix.needsUpdate=!0,Qe.needsUpdate=!0,Et.needsUpdate=!0,yt.needsUpdate=!0},show(st){Ae.visible=st,Ne.visible=st,be.visible=st}}}const k=le(1);
+k.show(!1);
+const se={x:b.x,y:b.y,z:b.z,H:.1},ee=(()=>{const K=new fs(.19,12,9);
+K.scale(.85,1.35,.85);
+const ie=new Jt(K,o(Js,v0));
+return ie.visible=!1,t.add(ie),ie})(),fe=le(xe.length);
+fe.show(!1);
+const ue=xe.map(K=>{const ie=new Jt(new ro(.86,1,56).rotateX(-Math.PI/2),o($c,tp,{side:Yn}));
+return ie.position.set(K.x,K.y+.06,K.z),ie.scale.setScalar(.001),ie.frustumCulled=!1,ie.visible=!1,t.add(ie),ie}),Ce=new fs(.5,22,16);
+Ce.scale(.72,.68,1);
+const Pe=new Zf(.5,24);
+Pe.rotateX(-Math.PI/2),Pe.scale(1,1,.55),Pe.translate(.5,0,0),Pe.scale(.85,1,.85);
+const N=Pe.clone();
+N.scale(-1,1,1);
+const me=o(Js,oa,{defines:{KIND:1}}),re=o(Js,oa,{defines:{KIND:3},side:Yn}),ye=l(Js,{});
+function Te(K,ie,he,Ae){const Ne=new Ks,be=new Jt(Ce,me),Qe=new Jt(Ce,ye);
+c.push(Qe);
+const Et=new Jt(N,re),yt=new Jt(Pe,re);
+Et.position.set(-.1,.27,.05),yt.position.set(.1,.27,.05),Ne.add(be,Qe,Et,yt),Ne.scale.setScalar(K),t.add(Ne);
+let st=null;
+const Tt=F[ie];
+return Tt&&(st=new fd(new af({map:Tt,transparent:!0,depthWrite:!1})),st.scale.setScalar(he),t.add(st)),{grp:Ne,wl:Et,wr:yt,badge:st,bs:he,sc:K,lift:Ae,engine:ie}}const ce=Te(2.3,"chatgpt",2.1,2.3);
+ce.grp.visible=!1,ce.badge&&(ce.badge.visible=!1);
+const ge=[],de=["chatgpt","claude","gemini","perplexity","google","chatgpt"],ze=new Map;
+{const K=p.length;
+for(let ie=0;
+ie<6;
+ie++){const he=[ie%K,(ie+3)%K,(ie+6)%K];
+he.forEach(Tt=>{const De=ze.get(p[Tt])||new Set;
+De.add(de[ie]),ze.set(p[Tt],De)});
+const[Ae,Ne,be]=he.map(Tt=>Q(p[Tt])),Qe=Tt=>{const De=[U(D,.3*ie),U(D.clone().lerp(Tt,.5),3.2),Tt,U(Tt.clone().lerp(Ne,.5),2.2+ie%3),Ne,U(Ne.clone().lerp(be,.5),2.2+(ie+1)%3),be];
+return ie===0?De.push(A(6.5,5.8,12.5),A(10,7,0)):De.push(U(be.clone().lerp(D,.5),3)),new Ed(De,!0,"catmullrom",.5)},Et=Qe(Ae),yt=ie<3?Qe(Fe):null,st=Te(ie===0?2.1:1.6,de[ie],ie===0?1.8:1.3,ie===0?1.95:1.45);
+ge.push({...st,curve:Et,curveB:yt,len:Et.getLength(),u:(ie/6+.05)%1,speed:3.6+ie*.5,phase:ie*1.7,load:0,visit:{},dropCool:0})}}const pe=[];
+{const K=new ro(.86,1,72);
+K.rotateX(-Math.PI/2);
+const ie=o($c,tp,{side:Yn});
+for(const he of p){const Ae=new Jt(K,ie);
+Ae.position.set(he.x,he.y+.06,he.z),Ae.scale.setScalar(1.9),Ae.frustumCulled=!1,t.add(Ae),pe.push(Ae)}}const He={uScanA:{value:0}},Le=new Jt(new ro(.992,1,220).rotateX(-Math.PI/2),o($c,Yy,{side:Yn,transparent:!0,depthWrite:!1,depthTest:!1,uniforms:He}));
+Le.position.set(_,g(_,m)+.3,m),Le.frustumCulled=!1,Le.renderOrder=2,Le.visible=!1,t.add(Le);
+const Je=44,Ut=7,Ze=3,ht=72,qt=34,Ct=ge.length*(Je+Ze)+p.length*Ut+ht+qt+Ze,et=new Float32Array(Ct*3),rt=new Float32Array(Ct),Ht=new Float32Array(Ct),ke=new an;
+ke.setAttribute("position",new xn(et,3).setUsage(Oo)),ke.setAttribute("aA",new xn(rt,1).setUsage(Oo)),ke.setAttribute("aS",new xn(Ht,1).setUsage(Oo));
+const mt=new xd(ke,o(ep,Vy,{transparent:!0,depthWrite:!1}));
+mt.frustumCulled=!1,t.add(mt);
+const qe={x:new Float32Array(ht),y:new Float32Array(ht),z:new Float32Array(ht),vx:new Float32Array(ht),vy:new Float32Array(ht),vz:new Float32Array(ht),life:new Float32Array(ht)};
+let Rt=0;
+function Pt(K,ie,he){for(let Ae=0;
+Ae<14;
+Ae++){const Ne=Rt++%ht,be=Math.random()*6.283,Qe=.8+Math.random()*1.6;
+qe.x[Ne]=K,qe.y[Ne]=ie,qe.z[Ne]=he,qe.vx[Ne]=Math.cos(be)*Qe,qe.vz[Ne]=Math.sin(be)*Qe,qe.vy[Ne]=.8+Math.random()*1.6,qe.life[Ne]=.7+Math.random()*.5}}const ft=120,en=new Float32Array(ge.length*ft*3),ni=new Float32Array(ge.length*ft),Kt=new Float32Array(ge.length*ft).fill(.17);
+ge.forEach((K,ie)=>{for(let he=0;
+he<ft;
+he++){K.curve.getPoint(he/ft,v);
+const Ae=(ie*ft+he)*3;
+en[Ae]=v.x,en[Ae+1]=v.y-.3,en[Ae+2]=v.z}});
+const Vt=new an;
+Vt.setAttribute("position",new xn(en,3)),Vt.setAttribute("aA",new xn(ni,1).setUsage(Oo)),Vt.setAttribute("aS",new xn(Kt,1));
+const Mn=new xd(Vt,o(ep,qy,{transparent:!0,depthWrite:!1}));
+Mn.frustumCulled=!1,Mn.visible=!1,t.add(Mn);
+let Qi=-1;
+const C=()=>2.3*e.sprout+(G-2.3)*e.grow;
+let B=0,j=0;
+const Z=[0,0,0],$=new H;
+function we(K,ie,he){w=he,i.uTime.value=w;
+const Ae=e.season/3;
+i.uLight.value.set(ar(-.55,.55,Ae),.78-.24*Math.sin(Math.PI*Ae),.42).normalize(),i.uClearMode.value=hn(e.cam*2),ve(),O.y+=Math.sin(w*5)*.1,ne.lerp(O,ie?1:1-Math.exp(-K*4.5));
+const Ne=e.lead,be=Ne>.02;
+if(ce.grp.visible=be,ce.badge&&(ce.badge.visible=be),be){ce.grp.position.copy(O),ce.grp.scale.setScalar(ce.sc*(s?.75:1)*Gn(0,1,Ne)),ce.grp.lookAt(O.x+Y.x,O.y+Y.y*.35,O.z+Y.z);
+const te=.2+.65*Math.abs(Math.sin(w*26));
+ce.wr.rotation.z=te,ce.wl.rotation.z=-te,ce.badge&&(ce.badge.position.set(O.x,O.y+ce.lift*Ne,O.z),ce.badge.scale.setScalar(ce.bs*(s?.8:1)*Ne*Math.min(1,Math.max(.6,n.position.distanceTo(O)/30))))}let Qe=0;
+P===1&&(Qe=(M>=.25?1:0)+(M>=.5?1:0)+(M>=.75?1:0)),P===5&&(Qe=M>=.5?1:0);
+const Et=(P===1||P===5)&&M>.985;
+Et&&(Qe=0),!a&&be&&Qe>B&&P===j&&Pt(O.x,O.y-.6,O.z),!a&&be&&Et&&B>0&&Pt(D.x,D.y+.3,D.z),B=Qe,j=P,_e.uPlot.value=e.plot,_e.uPrep.value=e.prep,_e.uCited.value=e.bloom,oe.visible=e.plot>.01;
+const yt=P===3&&be&&e.seed<.01;
+ee.visible=(yt||e.seed>.01)&&e.sprout<.02,yt?ee.position.set(O.x,O.y-.95,O.z):ee.visible&&ee.position.set(b.x+.05,b.y+.16+(1-Gn(0,1,e.seed))*2.45,b.z);
+const st=C();
+k.show(e.sprout>.01),e.sprout>.01&&(k.set(0,b.x,b.y,b.z,st,1,e.bloom,.3,.6),k.flush()),se.H=st;
+const Tt=e.f6>.001;
+fe.show(Tt),Tt?(xe.forEach((te,at)=>{const nt=Gn(Nt[at],Nt[at]+.05,e.f6);
+fe.set(at,te.x,te.y,te.z,te.H,nt,1,te.tilt,te.yaw),ue[at].visible=nt>.01,ue[at].scale.setScalar(Math.max(.001,2*nt))}),fe.flush()):ue.forEach(te=>{te.visible=!1});
+const De=e.map>.01;
+if(Mn.visible=De,De&&Math.abs(Qi-e.trace)>.002){Qi=e.trace;
+for(let te=0;
+te<ge.length;
+te++){const at=hn(e.trace-Math.min(te,4));
+for(let nt=0;
+nt<ft;
+nt++)ni[te*ft+nt]=hn((at-nt/ft)*14)*.85}Vt.attributes.aA.needsUpdate=!0}const on=2+e.trace/5*52;
+Le.visible=De&&e.trace>.02&&e.trace<4.98,Le.scale.setScalar(on),He.uScanA.value=.55*(1-Gn(4.2,4.98,e.trace));
+const dt=Gn(0,1,e.rings);
+pe.forEach((te,at)=>{te.visible=dt>.01,te.scale.setScalar((1.9+e.map*.28*Math.sin(w*2.2+at))*dt)}),J.forEach((te,at)=>{const nt=Math.hypot(O.x-te.x,O.y-(te.y+te.H+.9),O.z-te.z),gt=P===1&&be?Gn(8,3.2,nt):0;
+Z[at]=gt;
+const vt=pe[p.indexOf(te)];
+gt>.02&&(vt.visible=!0,vt.scale.setScalar(Math.max(vt.scale.x,1.9*Gn(0,.8,gt))))});
+const yn=Math.ceil(hn(e.crowd)*ge.length-1e-6);
+let tt=0;
+ge.forEach((te,at)=>{const nt=at<yn;
+if(te.grp.visible=nt,te.badge&&(te.badge.visible=nt),!nt){for(let vt=0;
+vt<Je+Ze;
+vt++,tt++)rt[tt]=0;
+return}if(te.u=(te.u+K*te.speed/te.len)%1,te.curve.getPoint(te.u,v),te.curve.getTangent(te.u,T),te.curveB&&e.route>.001){const vt=new H;
+te.curveB.getPoint(te.u,vt),v.lerp(vt,e.route),te.curveB.getTangent(te.u,vt),T.lerp(vt,e.route)}te.grp.position.copy(v),te.grp.position.y+=Math.sin(w*6+te.phase)*.09,te.badge&&(te.badge.position.set(v.x,te.grp.position.y+te.lift*(1+e.map*.5),v.z),te.badge.scale.setScalar(te.bs*(1+e.map*.9)*Math.min(1,Math.max(.7,n.position.distanceTo(te.grp.position)/34)))),te.grp.lookAt(v.x+T.x,te.grp.position.y+T.y,v.z+T.z);
+const gt=.2+.65*Math.abs(Math.sin(w*26+te.phase));
+te.wr.rotation.z=gt,te.wl.rotation.z=-gt;
+for(let vt=0;
+vt<Je;
+vt++,tt++){const Fn=(te.u-(vt+1)*.32/te.len+1)%1;
+te.curve.getPoint(Fn,v),et[tt*3]=v.x,et[tt*3+1]=v.y,et[tt*3+2]=v.z;
+const _r=vt/Je;
+rt[tt]=(1-_r)*.98*(1-e.map*.6),Ht[tt]=.27*(1-.6*_r)}for(let vt=0;
+vt<Ze;
+vt++,tt++){const Fn=te.grp.position;
+et[tt*3]=Fn.x+(vt-1)*.2*te.sc,et[tt*3+1]=Fn.y-.42*te.sc+Math.sin(w*9+vt)*.03,et[tt*3+2]=Fn.z+(vt%2-.5)*.18*te.sc,rt[tt]=te.load>vt?1:0,Ht[tt]=.2}}),p.forEach((te,at)=>{for(let nt=0;
+nt<Ut;
+nt++,tt++){const gt=w*.6+nt*.9+at*1.3,vt=.5+.35*Math.sin(w*.9+nt*2.1);
+et[tt*3]=te.x+Math.cos(gt)*vt,et[tt*3+1]=te.y+te.H+.55+Math.sin(w*1.1+nt)*.35+nt*.06,et[tt*3+2]=te.z+Math.sin(gt)*vt,rt[tt]=.95*dt,Ht[tt]=.15}});
+for(let te=0;
+te<ht;
+te++,tt++){qe.life[te]>0&&(qe.life[te]-=K*1.1,qe.x[te]+=qe.vx[te]*K,qe.y[te]+=qe.vy[te]*K,qe.z[te]+=qe.vz[te]*K,qe.vy[te]-=1.6*K);
+const at=Math.max(0,qe.life[te]);
+et[tt*3]=qe.x[te],et[tt*3+1]=qe.y[te],et[tt*3+2]=qe.z[te],rt[tt]=at,Ht[tt]=.06+.12*at}const gi=Xe[P][1];
+for(let te=0;
+te<qt;
+te++,tt++){const at=Math.max(0,M-(te+1)*.011);
+gi.getPoint(at,$),et[tt*3]=$.x,et[tt*3+1]=$.y,et[tt*3+2]=$.z;
+const nt=te/qt;
+rt[tt]=be?(1-nt)*.95*Gn(0,1,Ne)*(1-e.map):0,Ht[tt]=.3*(1-.6*nt)}for(let te=0;
+te<Ze;
+te++,tt++)et[tt*3]=O.x+(te-1)*.3,et[tt*3+1]=O.y-.95+Math.sin(w*9+te)*.04,et[tt*3+2]=O.z+(te%2-.5)*.26,rt[tt]=be&&Qe>te?1:0,Ht[tt]=.24;
+ke.attributes.position.needsUpdate=!0,ke.attributes.aA.needsUpdate=!0,ke.attributes.aS.needsUpdate=!0;
+const Fi=Gn(.5,1,e.crowd);
+Re.forEach((te,at)=>{const nt=(w-te.t0)/6.5;
+if(nt<0||nt>1){te.sp.material.opacity=0;
+return}te.sp.position.set(V.x+Math.sin(nt*5+at*1.7)*.7+nt*1.8,V.y+.5+nt*4.6,V.z+Math.cos(at*2.1)*.5+nt*.8),te.sp.scale.setScalar(.9+1*Math.min(1,nt*3.5)),te.sp.material.opacity=Gn(0,.1,nt)*(1-Gn(.62,1,nt))*.92*Fi}),a||ge.forEach((te,at)=>{if(!te.grp.visible)return;
+const nt=te.grp.position,gt=(Ai,yo)=>{if(w<(te.visit[yo]||0))return!1;
+const ih=nt.x-Ai.x,rh=nt.y-(Ai.y+Ai.H+.9),sh=nt.z-Ai.z;
+return ih*ih+rh*rh+sh*sh>2.2?!1:(te.visit[yo]=w+6,te.load=Math.min(Ze,te.load+1),Pt(Ai.x,Ai.y+Ai.H+.7,Ai.z),!0)};
+p.forEach((Ai,yo)=>{gt(Ai,yo)&&Oe.onCollect?.(Ai,te.engine,w)}),te.curveB&&e.route>.6&&gt(se,99)&&Oe.onYoursCollect?.(te.engine,w);
+const vt=nt.x-D.x,Fn=nt.y-D.y,_r=nt.z-D.z;
+te.load>0&&w>te.dropCool&&vt*vt+Fn*Fn+_r*_r<7&&(te.load=0,te.dropCool=w+4,Me())})}const Oe={};
+return{badgeUrl:X,hooks:Oe,visitAmt:Z,curves:Xe.map(K=>K[1]),data:{bees:ge,lead:ce,TT:J,patches:xe,engOf:ze,rings:pe,hiveTop:V,HE:D,hiveC:W,Pv:R,yf:se},lead:()=>({k:P,u:M,pos:O,tan:Y,sm:ne}),update:we}}function Ky(r,e,t,n){const{camera:i,small:s,still:a,cited:o,Fs:l,P:c}=r,{engOf:u,TT:d,hiveTop:f,yf:h,lead:g}=e.data,{badgeUrl:_,visitAmt:m}=e,p=n;
+let S=1,b=1;
+const x=72,y=document.getElementById("sun"),E=document.getElementById("tags"),w=_0(g0.reddit.svg.replace(/#3b3b37/g,"#ffffff").replace(/#fafaf7/g,"none")),v="/images/reddgrow-logo.png",T=k=>{const se=document.createElement("div");
+se.className="tag",se.innerHTML=`<div class="tag-in"><div class="tag-sub"><span class="tag-badge"><img class="tag-ico" alt="" src="${w}"></span><span class="tag-r"></span><span class="tag-up"><svg viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M5 9V2M2 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><i></i></span><span class="tag-eng"></span></div><div class="tag-title"><span class="tt"></span><span class="caret"></span></div><div class="tag-cite"><span class="cl"></span><span class="ce"></span><span class="dot"></span></div><div class="tag-reply"><div class="rh"><img alt="" src="${v}"><span>Your comment</span><em>Draft</em></div><div class="rt"></div></div></div>`,k.appendChild(se);
+const ee=fe=>se.querySelector(fe);
+return{el:se,inner:ee(".tag-in"),ico:ee(".tag-ico"),r:ee(".tag-r"),up:ee(".tag-up"),n:ee(".tag-up i"),eng:ee(".tag-eng"),tt:ee(".tt"),caret:ee(".caret"),cite:ee(".tag-cite"),cl:ee(".cl"),ce:ee(".ce"),reply:ee(".tag-reply"),rt:ee(".rt"),pill:ee(".rh em"),idx:0,count:0,typing:0,openUntil:0,open:!1,sx:0,sy:0}},A=Array.from({length:s?4:8},(k,se)=>{const ee=T(E);
+return ee.idx=se,ee});
+let U=0;
+const I=k=>[...k||[]].filter(se=>m0.indexOf(se)<U).map(se=>`<img alt="" src="${_[se]||""}">`).join(""),G=k=>k.map(se=>`<img alt="" src="${_[se]||""}">`).join("");
+function F(k,se,ee){const[fe,ue,Ce]=Zr[se%Zr.length];
+if(k.idx=se,k.r.textContent=fe,k.count=Ce,k.n.textContent=Ce,clearInterval(k.typing),!ee){k.tt.textContent=ue,k.caret.style.display="none";
+return}k.tt.textContent="",k.caret.style.display="";
+let Pe=0;
+k.typing=setInterval(()=>{k.tt.textContent=ue.slice(0,++Pe),Pe>=ue.length&&clearInterval(k.typing)},28)}const X=k=>{const se=new Set(A.filter(ee=>ee!==k).map(ee=>ee.idx%Zr.length));
+for(let ee=1;
+ee<=Zr.length;
+ee++){const fe=(k.idx+ee)%Zr.length;
+if(!se.has(fe))return fe}return k.idx},L=k=>{k.up.classList.remove("bump"),k.up.offsetWidth,k.up.classList.add("bump")},D=(k,se,ee)=>{k.cl.textContent=se,k.ce.innerHTML=G(ee)+(ee.length===1?`<b>${Uy[ee[0]]}</b>`:"")};
+function V(k,se){k.open||F(k,k.idx,!a),k.open=!0,k.el.classList.add("open"),D(k,"Collected by",[se]),requestAnimationFrame(()=>k.cite.classList.add("on")),k.count+=9+Math.floor(Math.random()*6),k.n.textContent=k.count,L(k)}function W(k){k.open=!1,k.el.classList.remove("open"),k.cite.classList.remove("on")}A.forEach((k,se)=>{F(k,se,!1),!a&&(setInterval(()=>{k.open||(k.count+=1+Math.floor(Math.random()*3),k.n.textContent=k.count,L(k))},2300+se*430),setInterval(()=>{k.open||(k.inner.classList.toggle("alt"),F(k,X(k),!1))},11e3+se*1700))}),a&&V(A[0],"chatgpt");
+const R=s?1.12:1.3,Q=k=>{const se=T(k);
+return se.el._k=R,se.el.style.setProperty("--k",R),se.el.classList.add("story"),se.open=!0,se.el.classList.add("open"),se.caret.style.display="none",se.el.style.opacity=0,se.el.style.visibility="hidden",se},Se=[0,5,9],Re=d.map((k,se)=>{const ee=Q(p),[fe,ue,Ce]=Zr[Se[se]];
+return ee.r.textContent=fe,ee.n.textContent=Ce,ee.full=ue,D(ee,"Collected by",["chatgpt"]),ee}),Ue=Q(p);
+{const[k,se,ee]=Zr[0];
+Ue.r.textContent=k,Ue.n.textContent=ee,Ue.full=se}D(Ue,"Cited by",[...u.get(l)||[]]),Ue.cite.classList.add("on");
+const Me=Q(p);
+Me.el.classList.add("mine"),Me.ico.src=v,Me.ico.classList.add("mark"),Me.r.textContent="Your brand",Me.up.style.display="none";
+let Ve=0;
+const J=new H,ae=(k,se,ee)=>(J.set(k.x,k.y+k.H+.2,k.z).project(i),{x:(J.x*.5+.5)*se,y:(-J.y*.5+.5)*ee,ok:J.z<1});
+function Ee(k,se,ee,fe,ue){J.copy(k).project(i);
+const Ce=(J.x*.5+.5)*fe,Pe=(-J.y*.5+.5)*ue;
+return{x0:Ce-se,x1:Ce+se,y0:Pe-ee,y1:Pe+ee}}const Ye=()=>{const k=t.cam<.5;
+return s?k?{x0:80,x1:S-80,y0:470,y1:b-90}:{x0:70,x1:S-70,y0:x+78,y1:b*.52}:k?{x0:Math.max(S*.47+40,48+Math.min(740,S*.56)*.75+110),x1:S-100,y0:240,y1:b-100}:{x0:48+Math.min(600,S*.44)+150,x1:S-80,y0:x+78,y1:b-90}},xe=()=>{const k=Math.round(t.cam);
+return k===0||k===5?s?k===0?2:4:8:0};
+let Be=[];
+function We(){const k=Ye(),se=Math.min(A.length,xe()),ee=[],fe=Ee(f,s?48:100,0,S,b);
+ee.push({x0:fe.x0,x1:fe.x1,y0:fe.y0-50,y1:fe.y0+(s?90:230)});
+const ue=N=>{const me={x0:N.x-100,x1:N.x+100,y0:N.y-64,y1:N.y+4};
+return ee.every(re=>me.x0>=re.x1||me.x1<=re.x0||me.y0>=re.y1||me.y1<=re.y0)},Ce=o.map(N=>({f:N,s:ae(N,S,b)})).filter(({s:N})=>N.ok&&N.x>k.x0&&N.x<k.x1&&N.y>k.y0&&N.y<k.y1&&ue(N)).sort((N,me)=>me.s.y-N.s.y),Pe=[];
+for(const N of Ce)if(Pe.every(me=>Math.abs(me.s.x-N.s.x)>200||Math.abs(me.s.y-N.s.y)>60)&&Pe.push(N),Pe.length>=se)break;
+Be=Pe.map(N=>N.f),A.forEach((N,me)=>{const re=me<Be.length;
+N.el.style.display=re?"":"none",re&&(N.eng.innerHTML=I(u.get(Be[me])))})}let Fe=!0,$e=0,ot=-1;
+const q={x:0,y:0},it=document.getElementById("chat"),Lt=it.querySelector(".q"),Ot=document.getElementById("qchip");
+it.querySelector("#qt").textContent=Ny;
+const Ke=[...it.querySelectorAll(".cell")],bt=document.getElementById("think"),z=[...document.querySelectorAll("[data-p]")];
+z.forEach(k=>{k._lines=[...k.querySelectorAll(".line")],k._chips=[...k.querySelectorAll(".chips li")],k._links=[...k.querySelectorAll("a")];
+const se=k.querySelector("h2");
+if(se){const ee=[];
+se.childNodes.forEach(fe=>{const ue=fe.nodeType===1?fe.className:"";
+fe.textContent.trim().split(/\s+/).filter(Boolean).forEach(Ce=>ee.push([Ce,ue]))}),se.setAttribute("aria-label",ee.map(fe=>fe[0]).join(" ")),se.innerHTML=ee.map(([fe,ue])=>`<span class="w${ue?" "+ue:""}" aria-hidden="true">${fe}</span>`).join(" "),k._w=[...se.querySelectorAll(".w")]}});
+const Nt=document.getElementById("logos"),Xe=[...document.querySelectorAll('[data-p="4"] .steps li')],P=document.getElementById("veil"),M=(k,se)=>{k.style.opacity=se.toFixed(3),k.style.visibility=se>.01?"visible":"hidden"},O=new H,Y=(k,se,ee)=>(O.set(k,se,ee).project(i),{x:(O.x*.5+.5)*S,y:(-O.y*.5+.5)*b,ok:O.z<1}),ne=(k,se,ee)=>{k.style.transform=`translate3d(${se.toFixed(1)}px, ${ee.toFixed(1)}px, 0)`};
+let ve=null;
+const _e=(k,se,ee,fe)=>{const ue=k.firstElementChild,Ce=k._k||1,Pe=ue.offsetWidth*Ce/2+8;
+let N=Pe,me=S-Pe,re=fe?Math.max(ee,ue.offsetHeight*Ce+x+44):ee;
+ve&&k._k&&(s?re=Math.min(re,ve.t-14):ve.l<S/2?N=Math.max(N,ve.r+18+Pe):me=Math.min(me,ve.l-18-Pe)),ne(k,N>me?(N+me)/2:Math.min(me,Math.max(N,se)),re)};
+function oe(k){const{k:se,pos:ee}=e.lead(),fe=t.season/3;
+n.classList.toggle("later",t.cam>.5);
+const ue=y.offsetWidth||120,Ce=s?S*.94-ue:S*.9-ue,Pe=s?b*.6-ue:b*.08;
+y.style.transform=`translate3d(${ar(Ce,S*.34,fe).toFixed(1)}px, ${(Pe-Math.sin(Math.PI*fe)*b*.05+fe*b*.05).toFixed(1)}px, 0)`;
+const N=Ye();
+ve=null,z.forEach(ke=>{if(+ke.dataset.p>0&&t["p"+ke.dataset.p]>.5){const mt=ke.getBoundingClientRect();
+ve={l:mt.left,r:mt.right,t:mt.top}}}),E.style.opacity=t.chips.toFixed(3),E.classList.toggle("eng-mode",t.map>.5);
+const me=Math.floor(hn(t.trace/5)*5+1e-6);
+me!==U&&(U=me,Be.forEach((ke,mt)=>{A[mt].eng.innerHTML=I(u.get(ke))})),Be.forEach((ke,mt)=>{const qe=ae(ke,S,b);
+A[mt].sx=qe.x,A[mt].sy=qe.y,_e(A[mt].el,qe.x,qe.y,!1);
+const Rt=qe.ok&&qe.x>N.x0-30&&qe.x<N.x1+30&&qe.y>N.y0-30&&qe.y<N.y1+50;
+A[mt].el.style.opacity=Rt?"":"0"});
+const re=g.grp.visible&&(se===0&&t.f1<.955||se===5&&t.f5<.9),ye=Y(ee.x,ee.y+g.lift+1.1,ee.z),Te=Ot.firstElementChild.offsetWidth/2+12,ce=Math.min(S-Te,Math.max(Te,ye.x)),ge=Math.max(ye.y,x+88);
+ne(Ot,ce,ge),M(Ot,re&&ye.ok?hn(t.lead*1.6)*hn((.5-t.p0)*3):0),d.forEach((ke,mt)=>{const qe=Re[mt],Rt=m[mt]<.12?0:m[mt],Pt=Y(ke.x,ke.y+ke.H+.2,ke.z);
+_e(qe.el,Pt.x,Pt.y,!0),M(qe.el,Pt.ok?Rt:0);
+const ft=Math.floor(qe.full.length*hn((Rt-.25)/.6));
+qe.tt.dataset.n!==String(ft)&&(qe.tt.dataset.n=String(ft),qe.tt.textContent=qe.full.slice(0,ft)),qe.cite.classList.toggle("on",Rt>.85)});
+const de=Y(f.x,f.y+.9,f.z),ze=it.firstElementChild.offsetWidth/2+8;
+let pe=ze,He=S-ze,Le=Math.min(b-60,Math.max(it.firstElementChild.offsetHeight+x+48,de.y));
+ve&&(s?Le=Math.min(Le,ve.t-14):ve.l<S/2?pe=Math.max(pe,ve.r+18+ze):He=Math.min(He,ve.l-18-ze)),q.x=pe>He?(pe+He)/2:Math.min(He,Math.max(pe,de.x)),q.y=Le,ne(it,q.x,q.y);
+const Je=Math.max(m[0],m[1],m[2]);
+M(it,de.ok?Gn(0,1,t.chat)*(1-hn(t.park*2))*(s?1-hn((Je-.1)*3):1):0),Lt.style.opacity=t.q.toFixed(2),bt.style.display=t.ans<.4&&t.q>.5?"":"none";
+for(let ke=0;
+ke<3;
+ke++)Ke[ke].classList.toggle("on",t.ans>ke+.4);
+const Ut=Ke[3],Ze=t.cellYou>.5;
+Ut.classList.toggle("you",Ze),Ut.classList.toggle("ghost",!Ze),Ut.classList.toggle("on",Ze||t.ghost>.5),Ut.style.display=Ze||t.ghost>.5?"":"none",Ut.dataset.you!==String(Ze)&&(Ut.dataset.you=String(Ze),Ut.innerHTML=Ze?`<span><img alt="" src="${v}">Your brand</span>`:"<span>Your brand?</span>");
+const ht=Y(l.x,l.y+l.H+.2,l.z),qt=Gn(0,1,t.match);
+_e(Ue.el,ht.x,ht.y,!0),M(Ue.el,ht.ok?qt:0);
+const Ct=Math.floor(Ue.full.length*hn(t.match*1.7));
+Ue.tt.dataset.n!==String(Ct)&&(Ue.tt.dataset.n=String(Ct),Ue.tt.textContent=Ue.full.slice(0,Ct)),Ue.reply.classList.toggle("on",t.draft>.02);
+const et=Math.floor(jd.length*hn(t.draft));
+Ue.rt.dataset.n!==String(et)&&(Ue.rt.dataset.n=String(et),Ue.rt.textContent=jd.slice(0,et));
+const rt=Y(c.x,c.y+(t.sprout>.02?.5+h.H:.6),c.z);
+_e(Me.el,rt.x,rt.y,!0);
+const Ht=t.season>.9?"Cited by AI engines":"No thread mentions you";
+if(Me.tt.dataset.t!==Ht&&(Me.tt.dataset.t=Ht,Me.tt.textContent=Ht),M(Me.el,rt.ok?Gn(0,1,t.mine)*(s&&t.season>.05?1-hn(t.chat*1.5):1):0),z.forEach(ke=>{const mt=+ke.dataset.p,qe=hn(t["p"+mt]),Rt=mt===6?qe*(1-hn(t.park*1.7)):qe;
+ke.style.opacity=Rt.toFixed(3),ke._links.forEach(ft=>{ft.tabIndex=Rt>.5?0:-1}),ke.style.pointerEvents=Rt>.6?"auto":"none";
+const Pt=((1-Rt)*22).toFixed(1);
+if(ke.style.transform=s?`translateY(${Pt}px)`:`translateY(calc(${mt===0?"-53%":"-50%"} + ${Pt}px))`,ke._w){const ft=ke._w.length;
+ke._w.forEach((en,ni)=>{const Kt=hn(qe*(ft+2)-ni-.5);
+en.style.opacity=Kt.toFixed(2),en.style.transform=`translateY(${((1-Kt)*.3).toFixed(2)}em)`})}if(ke._lines.length){const ft=Math.round(t["l"+mt]);
+ke._lines.forEach((en,ni)=>en.classList.toggle("on",ni===ft))}ke._chips.forEach((ft,en)=>ft.classList.toggle("on",t.trace>en+.15))}),M(Nt,hn(t.p0)),Nt.style.pointerEvents=t.p0>.6?"auto":"none",Xe.length){const ke=t.draft>.35;
+Xe[1].className=ke?"done":"on",Xe[2].className=ke?"on":"",Xe[0].className="done"}P.style.opacity=(t.park*.5).toFixed(3)}function le(k){a||(A.forEach(se=>{se.open&&k>se.openUntil&&W(se)}),k>Ve&&Me.cite.classList.remove("on")),Math.abs(t.cam-ot)>6e-4?$e=0:$e++,Math.round(t.cam)!==Math.round(ot<0?0:ot)&&(Fe=!0),ot=t.cam,Fe&&$e>8&&(Fe=!1,We())}return e.hooks.onCollect=(k,se,ee)=>{const fe=Be.indexOf(k);
+if(fe<0||t.chips<=.5)return;
+const ue=A[fe],Ce=A.some(N=>N!==ue&&N.open&&Math.abs(N.sx-ue.sx)<250&&Math.abs(N.sy-ue.sy)<130),Pe=s&&ue.sy<500&&t.cam<.5;
+(ue.open||!Ce&&!Pe)&&(V(ue,se),ue.openUntil=ee+3.8)},e.hooks.onYoursCollect=(k,se)=>{D(Me,"Collected by",[k]),Me.cite.classList.add("on"),Ve=se+3.6},{resize(k,se){S=k,b=se,Fe=!0,$e=0},update:oe,tick:le,requestPick(){Fe=!0,$e=99},pickNow(){Fe=!1,We()}}}function Zy(r,e=!1){const t=r[0].index!==null,n=new Set(Object.keys(r[0].attributes)),i=new Set(Object.keys(r[0].morphAttributes)),s={},a={},o=r[0].morphTargetsRelative,l=new an;
+let c=0;
+for(let u=0;
+u<r.length;
+++u){const d=r[u];
+let f=0;
+if(t!==(d.index!==null))return console.error("THREE.BufferGeometryUtils: .mergeGeometries() failed with geometry at index "+u+". All geometries must have compatible attributes;
+ make sure index attribute exists among all geometries, or in none of them."),null;
+for(const h in d.attributes){if(!n.has(h))return console.error("THREE.BufferGeometryUtils: .mergeGeometries() failed with geometry at index "+u+'. All geometries must have compatible attributes;
+ make sure "'+h+'" attribute exists among all geometries, or in none of them.'),null;
+s[h]===void 0&&(s[h]=[]),s[h].push(d.attributes[h]),f++}if(f!==n.size)return console.error("THREE.BufferGeometryUtils: .mergeGeometries() failed with geometry at index "+u+". Make sure all geometries have the same number of attributes."),null;
+if(o!==d.morphTargetsRelative)return console.error("THREE.BufferGeometryUtils: .mergeGeometries() failed with geometry at index "+u+". .morphTargetsRelative must be consistent throughout all geometries."),null;
+for(const h in d.morphAttributes){if(!i.has(h))return console.error("THREE.BufferGeometryUtils: .mergeGeometries() failed with geometry at index "+u+".  .morphAttributes must be consistent throughout all geometries."),null;
+a[h]===void 0&&(a[h]=[]),a[h].push(d.morphAttributes[h])}if(e){let h;
+if(t)h=d.index.count;
+else if(d.attributes.position!==void 0)h=d.attributes.position.count;
+else return console.error("THREE.BufferGeometryUtils: .mergeGeometries() failed with geometry at index "+u+". The geometry must have either an index or a position attribute"),null;
+l.addGroup(c,h,u),c+=h}}if(t){let u=0;
+const d=[];
+for(let f=0;
+f<r.length;
+++f){const h=r[f].index;
+for(let g=0;
+g<h.count;
+++g)d.push(h.getX(g)+u);
+u+=r[f].attributes.position.count}l.setIndex(d)}for(const u in s){const d=np(s[u]);
+if(!d)return console.error("THREE.BufferGeometryUtils: .mergeGeometries() failed while trying to merge the "+u+" attribute."),null;
+l.setAttribute(u,d)}for(const u in a){const d=a[u][0].length;
+if(d!==0){l.morphAttributes=l.morphAttributes||{},l.morphAttributes[u]=[];
+for(let f=0;
+f<d;
+++f){const h=[];
+for(let _=0;
+_<a[u].length;
+++_)h.push(a[u][_][f]);
+const g=np(h);
+if(!g)return console.error("THREE.BufferGeometryUtils: .mergeGeometries() failed while trying to merge the "+u+" morphAttribute."),null;
+l.morphAttributes[u].push(g)}}}return l}function np(r){let e,t,n,i=-1,s=0;
+for(let c=0;
+c<r.length;
+++c){const u=r[c];
+if(e===void 0&&(e=u.array.constructor),e!==u.array.constructor)return console.error("THREE.BufferGeometryUtils: .mergeAttributes() failed. BufferAttribute.array must be of consistent array types across matching attributes."),null;
+if(t===void 0&&(t=u.itemSize),t!==u.itemSize)return console.error("THREE.BufferGeometryUtils: .mergeAttributes() failed. BufferAttribute.itemSize must be consistent across matching attributes."),null;
+if(n===void 0&&(n=u.normalized),n!==u.normalized)return console.error("THREE.BufferGeometryUtils: .mergeAttributes() failed. BufferAttribute.normalized must be consistent across matching attributes."),null;
+if(i===-1&&(i=u.gpuType),i!==u.gpuType)return console.error("THREE.BufferGeometryUtils: .mergeAttributes() failed. BufferAttribute.gpuType must be consistent across matching attributes."),null;
+s+=u.count*t}const a=new e(s),o=new xn(a,t,n);
+let l=0;
+for(let c=0;
+c<r.length;
+++c){const u=r[c];
+if(u.isInterleavedBufferAttribute){const d=l/t;
+for(let f=0,h=u.count;
+f<h;
+f++)for(let g=0;
+g<t;
+g++){const _=u.getComponent(f,g);
+o.setComponent(f+d,g,_)}}else a.set(u.array,l);
+l+=u.count*t}return i!==void 0&&(o.gpuType=i),o}async function Jy(r){const e=matchMedia("(max-width: 760px)").matches,t=matchMedia("(prefers-reduced-motion: reduce)").matches,n=e?.5:1,i=new Py({canvas:r,antialias:!0,alpha:!0,powerPreference:"high-performance"});
+i.setClearColor(0,0);
+const s=Math.min(window.devicePixelRatio||1,e?1.5:2);
+i.setPixelRatio(s);
+const a=new uv,o=new Mi(40,1,.5,500),l=L=>new H((L>>16&255)/255,(L>>8&255)/255,(L&255)/255),c={uTime:{value:0},uRes:{value:new je(1,1)},uPx:{value:s},uHatch:{value:1},uSoft:{value:0},uOutline:{value:1},uOutlinePx:{value:1.25},uFogNear:{value:40},uFogFar:{value:150},uPaper:{value:l(16448247)},uPaperShade:{value:l(14736849)},uInk:{value:l(3881783)},uInk2:{value:l(8816255)},uAmber:{value:l(14722342)},uLight:{value:new H(-.55,.78,.42).normalize()},uPointScale:{value:1},uPortrait:{value:0},uClearMode:{value:0}},u=(L,D,V={})=>new Ni({uniforms:{...c,...V.uniforms||{}},vertexShader:L,fragmentShader:D,defines:V.defines||{},side:V.side??kr,transparent:!!V.transparent,depthWrite:V.depthWrite??!0}),d=(L,D,V)=>u(L,v0,{defines:{...D,OUTLINE:1},side:qn,uniforms:V}),f=[],h=12,g=-20,_=(L,D)=>Math.sin(L*.045+1.2)*Math.cos(D*.038+.4)*1.6+Math.sin(L*.09-D*.07)*.6+4.2*Math.exp(-((L-h)**2+(D-g)**2)/140)+Math.max(0,-D-40)*.06;
+{const L=new xa(420,420,240,240);
+L.rotateX(-Math.PI/2),L.translate(0,0,-70);
+const D=L.attributes.position;
+for(let W=0;
+W<D.count;
+W++)D.setY(W,_(D.getX(W),D.getZ(W)));
+L.computeVertexNormals();
+const V=new Jt(L,u(zy,ky));
+V.frustumCulled=!1,a.add(V)}const m=L=>()=>{L|=0,L=L+1831565813|0;
+let D=Math.imul(L^L>>>15,1|L);
+return D=D+Math.imul(D^D>>>7,61|D)^D,((D^D>>>14)>>>0)/4294967296},p=m(11),S=new Nn,b=[];
+{const L=Math.round(230*n);
+let D=0;
+for(;
+b.length<L&&D++<L*6;
+){const V=15+78*Math.pow(p(),1.25),W=(p()*2-1)*(.72*V+4),R=28-V;
+if(Math.hypot(W-h,R-g)<6)continue;
+const Q=1.1+4.6*Math.pow(p(),2.2);
+b.push({x:W,z:R,y:_(W,R),H:Q,d:V,bud:p()<.3,yaw:p()*6.283,tilt:.35+p()*.6,seed:p(),cited:0})}}const x=[];
+{const L=b.filter(D=>D.H>2.6&&D.d>14&&D.d<62&&D.x>.03*D.d&&D.x<.6*D.d);
+for(let D=L.length-1;
+D>0;
+D--){const V=Math.floor(p()*(D+1));
+[L[D],L[V]]=[L[V],L[D]]}for(const D of L){if(x.length>=11)break;
+x.every(V=>Math.hypot(V.x-D.x,V.z-D.z)>5.5)&&(D.cited=1,x.push(D))}for(const D of b.filter(V=>V.x>0&&!V.cited).sort((V,W)=>W.H-V.H)){if(x.length>=4)break;
+D.cited=1,x.push(D)}}const y=x.slice(0,Math.min(x.length,9)),E=y.filter(L=>L.x>3&&L.d>15).sort((L,D)=>L.d-D.d)[0]||y[0],w={x:E.x-2.7,z:E.z+1.3};
+w.y=_(w.x,w.z);
+for(let L=b.length-1;
+L>=0;
+L--)!b[L].cited&&Math.hypot(b[L].x-w.x,b[L].z-w.z)<3&&b.splice(L,1);
+const v=new Jf(.03,.045,1,5,1,!0);
+v.translate(0,.5,0);
+const T=(L,D)=>L.setAttribute("aPart",new kt(new Float32Array(L.attributes.position.count).fill(D),1)),A=(()=>{const L=[];
+for(let W=0;
+W<9;
+W++){const R=new fs(1,10,6);
+R.scale(.62,.09,.2),R.translate(.62,0,0),R.rotateZ(.2),R.rotateY(W/9*Math.PI*2),T(R,0),L.push(R)}const V=new fs(.3,12,8);
+return V.scale(1,.55,1),V.translate(0,.06,0),T(V,1),L.push(V),Zy(L)})(),U=(()=>{const L=new fs(.5,14,10);
+return L.scale(.8,1.15,.8),L.translate(0,.5,0),T(L,0),L})(),I=(()=>{const L=new eh(1,2);
+return L.scale(1,.88,1),T(L,0),L})();
+function G(L,D,V,W){for(const[Q,Se]of Object.entries(W))L.setAttribute(Q,new of(Se,1));
+const R=new _d(L,D,V);
+return R.frustumCulled=!1,R}function F(L,D,V,W){const R=new _d(L.geometry,d(D,V,W),L.count);
+R.instanceMatrix=L.instanceMatrix,R.frustumCulled=!1,f.push(R),a.add(L,R)}{const L=b,D={uSwayAmt:{value:.07}},V=G(v.clone(),u(or,hf,{defines:{STEM:1},uniforms:D}),L.length,{aH:Float32Array.from(L.map(R=>R.H)),aCited:new Float32Array(L.length),aSeed:new Float32Array(L.length),aPart:new Float32Array(L.length)});
+L.forEach((R,Q)=>{S.position.set(R.x,R.y-.05,R.z),S.rotation.set(0,0,0),S.scale.set(1,1,1),S.updateMatrix(),V.setMatrixAt(Q,S.matrix)}),a.add(V);
+const W=(R,Q,Se)=>{const Re=R.length,Ue=G(Q.clone(),u(or,oa,{defines:{KIND:Se},uniforms:{...D}}),Re,{aH:Float32Array.from(R.map(Me=>Me.H)),aCited:Float32Array.from(R.map(Me=>Me.cited)),aSeed:Float32Array.from(R.map(Me=>Me.seed))});
+R.forEach((Me,Ve)=>{const J=(.24+.05*Me.H)*(Me.cited?1.4:1);
+S.position.set(Me.x,Me.y-.05+Me.H,Me.z),S.rotation.set(Me.tilt,Me.yaw,0,"YXZ"),S.scale.setScalar(Se===4?J*1.15:J),S.updateMatrix(),Ue.setMatrixAt(Ve,S.matrix)}),F(Ue,or,{KIND:Se},{...D})};
+W(b.filter(R=>!R.bud),A,0),W(b.filter(R=>R.bud),U,4)}{const L=[];
+for(let R=0;
+R<Math.round(14*n);
+R++){const Q=-52-p()*45,Se=(p()*2-1)*(.7*(28-Q)+4);
+L.push({x:Se,z:Q,y:_(Se,Q),H:4+p()*3,r:3+p()*2.2})}const D={uSwayAmt:{value:0}},V=G(v.clone(),u(or,hf,{defines:{STEM:1},uniforms:D}),L.length,{aH:Float32Array.from(L.map(R=>R.H)),aCited:new Float32Array(L.length),aSeed:new Float32Array(L.length),aPart:new Float32Array(L.length)});
+L.forEach((R,Q)=>{S.position.set(R.x,R.y-.3,R.z),S.rotation.set(0,0,0),S.scale.set(4.5,1,4.5),S.updateMatrix(),V.setMatrixAt(Q,S.matrix)}),a.add(V);
+const W=G(I.clone(),u(or,oa,{defines:{KIND:5},uniforms:{...D}}),L.length,{aH:new Float32Array(L.length),aCited:new Float32Array(L.length),aSeed:new Float32Array(L.length)});
+L.forEach((R,Q)=>{S.position.set(R.x,R.y+R.H+R.r*.45,R.z),S.rotation.set(0,0,0),S.scale.setScalar(R.r),S.updateMatrix(),W.setMatrixAt(Q,S.matrix)}),F(W,or,{KIND:5},{...D})}{const L=Math.round(13500*n),D=new an;
+D.setAttribute("position",new kt([-.5,0,0,.5,0,0,-.32,.55,0,.32,.55,0,0,1,0],3)),D.setIndex([0,1,3,0,3,2,2,3,4]);
+const V=new Float32Array(L),W=new Float32Array(L),R=new Float32Array(L),Q=G(D,u(Gy,Hy,{side:Yn,uniforms:{}}),L,{aH:V,aW:W,aSeed:R});
+let Se=0,Re=0;
+for(;
+Se<L&&Re++<L*4;
+){const Ue=13+110*Math.pow(p(),2),Me=(p()*2-1)*(.78*Ue+6),Ve=28-Ue;
+if(Math.hypot(Me-h,Ve-g)<4.6||x.some(ae=>Math.hypot(ae.x-Me,ae.z-Ve)<2.6)||Math.hypot(w.x-Me,w.z-Ve)<2.9)continue;
+const J=.5+.5*Math.sin(Me*.21+Math.sin(Ve*.17)*2)*Math.sin(Ve*.19+Math.sin(Me*.13)*1.7);
+p()>.25+J*.9||(S.position.set(Me,_(Me,Ve)-.03,Ve),S.rotation.set(0,p()*6.283,0),S.scale.set(1,1,1),S.updateMatrix(),Q.setMatrixAt(Se,S.matrix),V[Se]=.55+p()*.75,W[Se]=.055+p()*.045,R[Se]=p(),Se++)}Q.count=Se,a.add(Q)}const X=(()=>{const L=[[1.02,0],[1.12,.18],[1.16,.42],[1.1,.72],[.96,1.02],[.76,1.3],[.5,1.52],[.24,1.66],[.06,1.72],[0,1.73]].map(([R,Q])=>new je(R,Q)),D=new th(L,44),V=new Ks;
+V.add(new Jt(D,u(Js,oa,{defines:{KIND:2}})));
+const W=new Jt(D,d(Js,{}));
+return f.push(W),V.add(W),V.scale.setScalar(3.4),V.position.set(h,_(h,g)-.05,g),V.rotation.y=-.45,a.add(V),V.updateMatrixWorld(!0),V})();
+return{renderer:i,scene:a,camera:o,U:c,small:e,still:t,dpr:s,mat:u,hullOf:d,hulls:f,instanced:G,withHull:F,dummy:S,rng:m,hAt:_,HX:h,HZ:g,flowers:b,cited:x,Fs:E,P:w,hive:X,stemGeo:v,daisyGeo:A}}const x0=1095,Qy=[0,292,415,588,756,995,x0],jy=()=>({cam:0,lead:0,f1:0,f2:0,f3:0,f4:0,f4x:0,f5:0,f6:0,crowd:1,rings:1,chips:1,chat:0,q:0,ans:0,ghost:0,cellYou:0,mine:0,map:0,trace:0,match:0,plot:0,prep:0,seed:0,sprout:0,draft:0,season:0,grow:0,bloom:0,route:0,park:0,p0:1,p1:0,p2:0,p3:0,p4:0,p5:0,p6:0,l1:0,l2:0,l3:0,l4:0,l5:0,l6:0});
+function eb(r,e){const t=r.timeline({paused:!0,defaults:{ease:"none"}}),n=(i,s,a,o,l)=>t.fromTo(e,{[i]:s},{[i]:a,duration:l-o,immediateRender:!1},o);
+return[[0,60],[100,150],[232,258],[305,385],[430,500],[600,665],[765,815],[985,1045]].forEach(([i,s],a)=>n("cam",a,a+1,i,s)),n("lead",0,1,6,16),n("lead",1,0,392,410),n("lead",0,1,598,610),n("lead",1,0,738,750),n("lead",0,1,845,857),n("f1",0,1,10,112),n("f2",0,1,122,232),n("f3",0,1,306,392),n("f4",0,1,604,690),n("f4x",0,1,712,742),n("f5",0,1,852,932),n("f6",0,1,1e3,1090),n("crowd",1,0,0,60),n("crowd",0,1,440,475),n("crowd",1,0,596,616),n("crowd",0,.5,776,800),n("crowd",.5,1,1e3,1040),n("rings",1,0,0,40),n("rings",0,1,500,560),n("chips",1,0,0,28),n("chips",0,1,476,500),n("chips",1,0,594,612),n("chat",0,1,114,126),n("chat",1,0,432,444),n("chat",0,1,930,940),n("q",0,1,112,114),n("q",1,0,850,850.01),n("q",0,1,930,932),n("ans",0,3,246,284),n("ans",3,0,850,850.01),n("ans",0,3,940,960),n("ghost",0,1,306,318),n("ghost",1,0,432,444),n("cellYou",0,1,962,972),n("plot",0,1,340,354),n("mine",0,1,352,366),n("mine",1,0,426,440),n("mine",0,1,812,824),n("mine",1,0,1030,1050),n("map",0,1,470,500),n("map",1,0,612,632),n("trace",0,5,490,585),n("match",0,1,664,678),n("match",1,0,772,790),n("prep",0,1,672,690),n("seed",0,1,690,706),n("sprout",0,1,706,726),n("draft",0,1,726,756),n("season",0,3,775,880),n("grow",0,1,780,830),n("bloom",0,1,830,845),n("route",0,1,840,870),n("p0",1,0,12,42),[[1,46,76,296,320],[2,328,356,420,446],[3,452,482,592,616],[4,622,650,758,782],[5,790,820,998,1022]].forEach(([i,s,a,o,l])=>{n(`p${i}`,0,1,s,a),n(`p${i}`,1,0,o,l)}),n("p6",0,1,1052,1078),n("l1",0,1,121,124),n("l1",1,2,236,239),n("l2",0,1,364,367),n("l2",1,2,398,401),n("l3",0,1,548,551),n("l3",1,2,580,583),n("l4",0,1,700,703),n("l5",0,1,851,854),n("l5",1,2,962,965),t.set({},{},x0),t}async function tb(){const r=document.documentElement,e=document.getElementById("stage"),t=document.getElementById("gl"),n=navigator.connection?.saveData;
+if(!e||!t||n){r.classList.add("no-gl");
+return}Oa.registerPlugin(ut);
+let i;
+try{i=await Jy(t)}catch{r.classList.add("no-gl");
+return}t.addEventListener("webglcontextlost",v=>{v.preventDefault(),r.classList.add("no-gl")});
+const{renderer:s,scene:a,camera:o,U:l,still:c}=i,u=jy(),d=await $y(i,u),f=Ky(i,d,u,e),h=eb(Oa,u),g={hive:d.data.hiveC.toArray(),P:d.data.Pv.toArray()};
+let _=!1,m=1,p=1;
+const S=()=>{const v=e.clientWidth||innerWidth,T=e.clientHeight||innerHeight;
+m=v,p=T,s.setSize(v,T,!1),l.uRes.value.copy(s.getDrawingBufferSize(new je)),o.aspect=v/T,_=v/T<.85,l.uPortrait.value=_?1:0,f.resize(v,T),y(0,!0)},b={x:0,y:0,tx:0,ty:0};
+addEventListener("pointermove",v=>{b.tx=v.clientX/innerWidth*2-1,b.ty=v.clientY/innerHeight*2-1});
+let x=14;
+function y(v,T=!1){x+=v,d.update(v,T,x);
+const A=d.lead().sm,U=Iy(u.cam,_,g,[A.x,A.y,A.z]);
+b.x+=(b.tx-b.x)*.04,b.y+=(b.ty-b.y)*.04;
+const I=U.s;
+o.fov=U.f,o.position.set(U.p[0]+(Math.sin(x*.11)*.7+b.x*1.6)*I,U.p[1]+(Math.sin(x*.08)*.25-b.y*.5)*I,U.p[2]),o.lookAt(U.t[0]+b.x*2*I,U.t[1],U.t[2]),U.o?o.setViewOffset(m,p,0,U.o*p,m,p):o.clearViewOffset(),o.updateProjectionMatrix(),o.updateMatrixWorld(),l.uPointScale.value=l.uRes.value.y/(2*Math.tan(o.fov*Math.PI/360)),f.update(x),f.tick(x),s.render(a,o)}new ResizeObserver(S).observe(e),S();
+const E=v=>v.id==="top"?0:v.getBoundingClientRect().top+scrollY-(v.closest("#story")?0:70);
+if(ut.create({trigger:"#below",start:"top 95%",end:"top 25%",scrub:!0,onUpdate:v=>{u.park=v.progress,r.classList.toggle("parked",v.progress>0),c&&y(0,!0)}}),Oa.ticker.lagSmoothing(0),c)r.classList.add("still"),document.querySelectorAll("#story section").forEach((v,T)=>{ut.create({trigger:v,start:"top 60%",end:"bottom 60%",onToggle:A=>{A.isActive&&(h.time(Qy[T]),f.requestPick(),y(0,!0),f.pickNow(),y(0,!0),setTimeout(()=>y(0,!0),500))}})}),f.pickNow(),y(0,!0);
+else{const v=new h_({lerp:.12,smoothWheel:!0});
+v.on("scroll",ut.update),document.querySelectorAll('a[href^="#"]').forEach(A=>A.addEventListener("click",U=>{const I=document.querySelector(A.getAttribute("href"));
+I&&(U.preventDefault(),v.scrollTo(E(I),{duration:1.6}))})),ut.create({trigger:"#story",start:"top top",end:"bottom bottom",scrub:1,animation:h,invalidateOnRefresh:!0});
+let T=0;
+Oa.ticker.add((A,U)=>{v.raf(A*1e3),!(u.park>.99&&A-T<1/15)&&(T=A,y(Math.min(.05,U/1e3)))})}ut.refresh(),t.classList.add("ready");
+const w=location.hash.length>1?document.getElementById(decodeURIComponent(location.hash.slice(1))):null;
+w&&(scrollTo(0,E(w)),ut.update(),y(0,!0)),setInterval(()=>{const v=document.getElementById("silktide-banner");
+r.style.setProperty("--cookie-h",v?.getClientRects().length?v.offsetHeight+16+"px":"0px")},500)}export{tb as boot};
+
