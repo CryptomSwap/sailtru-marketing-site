@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.1",
     "framer-motion": "^12.42.2",
     "gsap": "^3.15.0",

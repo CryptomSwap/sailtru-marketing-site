@@ -330,6 +330,13 @@ def export(root, filename):
         export_materials="EXPORT",
         export_cameras=False,
         export_lights=False,
+        # Draco keeps the set small; the decoder is self-hosted under public/draco/.
+        export_draco_mesh_compression_enable=True,
+        export_draco_mesh_compression_level=7,
+        export_draco_position_quantization=14,
+        export_draco_normal_quantization=10,
+        export_draco_color_quantization=10,
+        export_draco_generic_quantization=12,
     )
     try:
         bpy.ops.export_scene.gltf(export_texcoords=False, **kwargs)
@@ -378,9 +385,8 @@ def preview(filename, target=(0, 0, 1), distance=14, elevation=0.28, azimuth=-0.
 # ------------------------------------------------------------------ #
 
 
-def build_sailboat():
-    reset_scene()
-    root = empty("Sailboat")
+def sloop(root, prefix="", hull_key="cobalt", stripe_key="cream", pennant_key="cobalt", sail_key="sail"):
+    """A sloop into `root`. The SailTru boat uses no prefix; harbour boats prefix their node names."""
     # Length along X (bow +X), beam along Y, waterline at z = 0.
     # (x, half beam, sheer height, keel depth)
     profile = [
@@ -414,7 +420,7 @@ def build_sailboat():
     deck = [sec[0] for sec in sections] + [sec[ring] for sec in reversed(sections)]
     bm.faces.new(deck)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    hull = finish("Hull", bm, "cobalt", root, smooth=True)
+    finish(f"{prefix}Hull", bm, hull_key, root, smooth=True)
 
     # Sheer stripe (cream) and boot stripe just above the waterline.
     bm = bmesh.new()
@@ -429,7 +435,7 @@ def build_sailboat():
                 ]
                 vs = [bm.verts.new(v) for v in p]
                 bm.faces.new(vs if side > 0 else vs[::-1])
-    finish("SheerStripe", bm, "cream", root)
+    finish(f"{prefix}SheerStripe", bm, stripe_key, root)
 
     # Deck house, cockpit, mast, boom, keel, rudder.
     bm = bmesh.new()
@@ -439,7 +445,7 @@ def build_sailboat():
         bm_box(bm, (-0.25 + i * 0.4, -0.465, 0.8), (0.22, 0.02, 0.12), 1)
         bm_box(bm, (-0.25 + i * 0.4, 0.465, 0.8), (0.22, 0.02, 0.12), 1)
     bm_box(bm, (-1.3, 0, 0.6), (1.0, 0.95, 0.08), 2)  # cockpit sole (teak)
-    finish("Cabin", bm, ["cream", "ink", "wood"], root)
+    finish(f"{prefix}Cabin", bm, ["cream", "ink", "wood"], root)
 
     mast_x = 0.55
     bm = bmesh.new()
@@ -459,7 +465,7 @@ def build_sailboat():
             w = 0.82 if abs(x) < 1.2 else 0.62
             bm_beam(bm, (x, side * w, 0.64), (x, side * w, 0.98), 0.025, 1)
         bm_beam(bm, (-1.6, side * 0.66, 0.98), (1.5, side * 0.66, 1.0), 0.016, 1)
-    finish("Rig", bm, ["cream", "ink"], root)
+    finish(f"{prefix}Rig", bm, ["cream", "ink"], root)
 
     # Sails: a slightly billowed mainsail and jib, solidified for clean outlines.
     def main(u, v):
@@ -471,7 +477,7 @@ def build_sailboat():
 
     bm = bmesh.new()
     bm_grid_surface(bm, main, 8, 6)
-    sail = finish("Mainsail", bm, "sail", root, smooth=True)
+    sail = finish(f"{prefix}Mainsail", bm, sail_key, root, smooth=True)
     solidify(sail, 0.04)
 
     def jib(u, v):
@@ -486,7 +492,7 @@ def build_sailboat():
 
     bm = bmesh.new()
     bm_grid_surface(bm, jib, 8, 5)
-    j = finish("Jib", bm, "sail", root, smooth=True)
+    j = finish(f"{prefix}Jib", bm, sail_key, root, smooth=True)
     solidify(j, 0.04)
 
     # Sail seams (thin ink battens) on the main.
@@ -497,20 +503,114 @@ def build_sailboat():
         mid = Vector(main(0.5, v))
         bm_beam(bm, a + Vector((0, 0.03, 0)), mid + Vector((0, 0.03, 0)), 0.02, 0)
         bm_beam(bm, mid + Vector((0, 0.03, 0)), b + Vector((0, 0.03, 0)), 0.02, 0)
-    finish("Battens", bm, "ink", root)
+    finish(f"{prefix}Battens", bm, "ink", root)
 
     # Pennant at the masthead: its own node so code can flutter it.
-    pennant_root = empty("Pennant", (mast_x, 0, 5.95), root)
+    pennant_root = empty(f"{prefix}Pennant", (mast_x, 0, 5.95), root)
     bm = bmesh.new()
     vs = [bm.verts.new(p) for p in ((0, 0, 0.12), (-0.62, 0, 0.02), (0, 0, -0.12))]
     bm.faces.new(vs)
-    pen = finish("PennantFlag", bm, "cobalt", pennant_root)
+    pen = finish(f"{prefix}PennantFlag", bm, pennant_key, pennant_root)
     solidify(pen, 0.03)
 
+    return mast_x
+
+
+def build_sailboat():
+    reset_scene()
+    root = empty("Sailboat")
+    mast_x = sloop(root)
     empty("CrateSocket", (-1.3, 0, 0.64), root)
     empty("BoatTop", (mast_x, 0, 6.1), root)
     export(root, "sailboat.glb")
     preview("sailboat.png", (0, 0, 2.6), 13, 0.2, -0.5)
+
+
+def hull_loft(name, profile, key, parent, ring=10, deck_key=None):
+    """A closed lofted hull from (x, half beam, sheer, keel) stations; optional deck material."""
+    bm = bmesh.new()
+    sections = []
+    for x, w, top, bottom in profile:
+        pts = []
+        for k in range(ring + 1):
+            a = math.pi * k / ring
+            dz = math.sin(a) ** 0.85
+            pts.append(bm.verts.new((x, math.cos(a) * w * (1 - 0.18 * dz * dz), top - (top - bottom) * dz)))
+        sections.append(pts)
+    for i in range(len(sections) - 1):
+        a, b = sections[i], sections[i + 1]
+        for k in range(ring):
+            bm.faces.new((a[k], b[k], b[k + 1], a[k + 1]))
+    bm.faces.new(list(reversed(sections[0])))
+    bm.faces.new(sections[-1])
+    deck = bm.faces.new([sec[0] for sec in sections] + [sec[ring] for sec in reversed(sections)])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    keys = [key]
+    if deck_key:
+        deck.material_index = 1
+        keys.append(deck_key)
+    return finish(name, bm, keys, parent, smooth=True)
+
+
+def build_boats():
+    """Harbour neighbours: a small grey sloop, a fishing boat and a rowing dinghy (never cobalt)."""
+    reset_scene()
+    root = empty("Boats")
+
+    small = empty("SmallSloop", (0, 0, 0), root)
+    sloop(small, "Small", hull_key="paper", stripe_key="ink", pennant_key="sandDark", sail_key="cream")
+    small.scale = (0.72, 0.72, 0.72)
+
+    fishing = empty("FishingBoat", (0, 0, 0), root)
+    hull_loft(
+        "FishingHull",
+        [(-1.9, 0.72, 0.7, 0.0), (-1.5, 0.86, 0.68, -0.3), (-0.5, 0.95, 0.7, -0.45), (0.6, 0.9, 0.78, -0.42), (1.5, 0.6, 0.92, -0.28), (2.05, 0.12, 1.08, 0.05), (2.2, 0.02, 1.12, 0.3)],
+        "paper",
+        fishing,
+        deck_key="wood",
+    )
+    bm = bmesh.new()
+    # wheelhouse, roof, windows
+    bm_box(bm, (0.35, 0, 1.25), (1.0, 1.0, 1.0), 0, 0.04)
+    bm_box(bm, (0.35, 0, 1.8), (1.2, 1.15, 0.1), 1, 0.02)
+    for side in (-1, 1):
+        bm_box(bm, (0.45, side * 0.505, 1.4), (0.6, 0.02, 0.3), 2)
+    bm_box(bm, (0.86, 0, 1.4), (0.02, 0.7, 0.3), 2)
+    # gunwale stripe, mast, boom, net drum, crates
+    for side in (-1, 1):
+        bm_beam(bm, (-1.85, side * 0.74, 0.62), (0.6, side * 0.92, 0.7), 0.1, 2)
+        bm_beam(bm, (0.6, side * 0.92, 0.7), (1.95, side * 0.18, 1.0), 0.1, 2)
+    bm_cyl(bm, (-0.5, 0, 0.7), 0.05, 0.04, 2.6, 6, 2)
+    bm_beam(bm, (-0.5, 0, 2.9), (-1.8, 0, 1.0), 0.03, 2)
+    bm_beam(bm, (-0.5, 0, 1.6), (-1.5, 0, 1.55), 0.06, 2)
+    bm_cyl(bm, (-1.2, -0.45, 0.85), 0.24, 0.24, 0.9, 10, 3, "Y")
+    bm_box(bm, (-1.45, 0.35, 0.9), (0.45, 0.4, 0.35), 4, 0.03)
+    finish("FishingDeck", bm, ["cream", "roof", "ink", "sandDark", "wood"], fishing)
+    empty("FishingTop", (-0.5, 0, 3.3), fishing)
+
+    dinghy = empty("Dinghy", (0, 0, 0), root)
+    hull_loft(
+        "DinghyHull",
+        [(-0.9, 0.42, 0.32, 0.02), (-0.6, 0.52, 0.3, -0.12), (0.0, 0.56, 0.32, -0.18), (0.6, 0.42, 0.38, -0.12), (1.0, 0.04, 0.5, 0.05)],
+        "wood",
+        dinghy,
+        ring=8,
+        deck_key="woodDark",
+    )
+    bm = bmesh.new()
+    for x in (-0.55, 0.25):
+        bm_box(bm, (x, 0, 0.34), (0.2, 0.92, 0.05), 0)
+    for side in (-1, 1):
+        bm_beam(bm, (-0.6, side * 0.3, 0.42), (-0.1, side * 1.15, 0.12), 0.04, 1)
+        bm_box(bm, (-0.05, side * 1.2, 0.1), (0.14, 0.05, 0.03), 1)
+    finish("DinghyFittings", bm, ["wood", "woodDark"], dinghy)
+
+    small.location = (-6, 0, 0)
+    dinghy.location = (4, 0, 0)
+    preview("boats.png", (-1, 0, 1.4), 16, 0.2, -0.35)
+    small.location = (0, 0, 0)
+    dinghy.location = (0, 0, 0)
+    export(root, "boats.glb")
 
 
 # ------------------------------------------------------------------ #
@@ -970,6 +1070,47 @@ def build_props():
                 f.material_index = 1
         finish(name, bm, ["rock", "sageDark"], root)
 
+    for name, height, lean, seed in (("Palm_A", 4.2, 0.9, 41), ("Palm_B", 3.3, -0.6, 43)):
+        local = random.Random(seed)
+        bm = bmesh.new()
+        segs = 7
+        pts = []
+        for k in range(segs + 1):
+            t = k / segs
+            pts.append(Vector((lean * t * t, 0.15 * lean * t, height * t)))
+        for k in range(segs):
+            r0 = 0.2 - 0.09 * k / segs
+            v = bm_cyl(bm, (0, 0, 0), r0, r0 * 0.86, (pts[k + 1] - pts[k]).length + 0.04, 7, k % 2)
+            d = (pts[k + 1] - pts[k]).normalized()
+            rot = Vector((0, 0, 1)).rotation_difference(d).to_matrix().to_4x4()
+            bmesh.ops.transform(bm, matrix=Matrix.Translation(pts[k]) @ rot, verts=v)
+        top = pts[-1]
+        fronds = 8
+        for f in range(fronds):
+            a = 2 * math.pi * f / fronds + local.uniform(-0.2, 0.2)
+            length = local.uniform(1.6, 2.1)
+            dirv = Vector((math.cos(a), math.sin(a), 0))
+            side = Vector((-math.sin(a), math.cos(a), 0))
+            rows = 5
+            prev = None
+            for r in range(rows + 1):
+                t = r / rows
+                centre = top + dirv * length * t + Vector((0, 0, 0.5 * t - 1.25 * t * t))
+                w = 0.32 * math.sin(math.pi * min(1, t * 1.15 + 0.08))
+                lv = bm.verts.new(centre + side * w - Vector((0, 0, 0.08 * w)))
+                mv = bm.verts.new(centre + Vector((0, 0, 0.04)))
+                rv = bm.verts.new(centre - side * w - Vector((0, 0, 0.08 * w)))
+                if prev:
+                    for qa, qb in ((0, 1), (1, 2)):
+                        face = bm.faces.new((prev[qa], prev[qb], (lv, mv, rv)[qb], (lv, mv, rv)[qa]))
+                        face.material_index = 2 + (f % 2)
+                prev = (lv, mv, rv)
+        for c in range(3):
+            a = 2 * math.pi * c / 3
+            bm_ico(bm, top + Vector((math.cos(a) * 0.16, math.sin(a) * 0.16, -0.18)), 0.11, 1, mat_index=1)
+        palm = finish(name, bm, ["wood", "woodDark", "sage", "sageDark"], root)
+        solidify(palm, 0.03)
+
     bm = bmesh.new()
     bm_cyl(bm, (0, 0, 0), 0.32, 0.32, 0.8, 10, 0)
     bm_cyl(bm, (0, 0, 0.22), 0.335, 0.335, 0.06, 10, 1)
@@ -985,7 +1126,7 @@ def build_props():
     finish("Bollard", bm, "ink", root)
 
     # Proof layout
-    xs = {"Gull": 0, "Cloud_A": 4, "Cloud_B": 10, "Cloud_C": 15, "Rock_A": -5, "Rock_B": -8, "Rock_C": -12, "Barrel": -15, "Crate": -16.5, "Bollard": -18}
+    xs = {"Palm_A": 20, "Palm_B": 24, "Gull": 0, "Cloud_A": 4, "Cloud_B": 10, "Cloud_C": 15, "Rock_A": -5, "Rock_B": -8, "Rock_C": -12, "Barrel": -15, "Crate": -16.5, "Bollard": -18}
     for k, x in xs.items():
         bpy.data.objects[k].location = (x, 0, 0)
     bpy.data.objects["Gull"].scale = (4, 4, 4)
@@ -999,6 +1140,7 @@ def build_props():
 PALETTE["white"] = "#fbf8f1"
 
 build_sailboat()
+build_boats()
 build_buoy()
 build_lighthouse()
 build_dock()

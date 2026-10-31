@@ -11,9 +11,9 @@ import { BlenderLocator } from "./blender-locator.mjs";
 class HarborAssetBuild {
   static repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   static script = path.join(HarborAssetBuild.repoRoot, "scripts", "build-harbor-assets-blender.py");
-  static outputs = ["sailboat.glb", "buoy.glb", "lighthouse.glb", "dock.glb", "terrain.glb", "props.glb"];
-  /** Hard budget per file; the scene aims well below it. */
-  static maxBytes = 2 * 1024 * 1024;
+  static outputs = ["sailboat.glb", "boats.glb", "buoy.glb", "lighthouse.glb", "dock.glb", "terrain.glb", "props.glb"];
+  /** Budget per file (the hard limit is 2 MB; the set aims well below 400 KB each). */
+  static maxBytes = 400 * 1024;
 
   static run() {
     let blender;
