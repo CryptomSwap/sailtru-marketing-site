@@ -66,6 +66,8 @@ export class HarborDirector {
   private readonly sources: Floater[] = [];
   private readonly sourcePings: THREE.Mesh[] = [];
   private readonly marker: Floater;
+  /** The marker's band turns from ink to the accent when its finding is selected. */
+  private readonly markerBand: THREE.MeshToonMaterial;
   private readonly markerRings: THREE.Mesh[] = [];
   private readonly nextBuoy: Floater;
   private readonly floaters: Floater[] = [];
@@ -132,7 +134,8 @@ export class HarborDirector {
       this.root.add(ping);
       this.sourcePings.push(ping);
     });
-    this.marker = this.buoy(models.buoy, HarborLayout3D.MARKER.x, HarborLayout3D.MARKER.z, accent, 1.2);
+    this.markerBand = ink.clone();
+    this.marker = this.buoy(models.buoy, HarborLayout3D.MARKER.x, HarborLayout3D.MARKER.z, this.markerBand, 1.2);
     for (const [inner, outer] of [
       [1.2, 1.42],
       [1.9, 2.02]
@@ -218,8 +221,9 @@ export class HarborDirector {
     place(part(terrain, "Islet_B"), 50, 0, -7, 1.3);
     place(part(terrain, "Reef"), HarborLayout3D.REEF.x, 0, HarborLayout3D.REEF.z, 1.3);
     const props = models.props;
-    place(part(props, "Rock_C"), -41.5, 0, 6.5, 1.3, 0.4);
-    place(part(props, "Palm_B"), -41.2, 0.55, 6.2, 1.2);
+    // Foreground framing on the right edge of the opening view.
+    place(part(props, "Rock_C"), -39.5, 0, 14.5, 1.3, 0.4);
+    place(part(props, "Palm_B"), -39.2, 0.55, 14.2, 1.2, 0.8);
     place(part(props, "Palm_A"), -26.4, 1.0, -14.7, 1.1, 1.2);
     place(part(props, "Palm_B"), -28.2, 0.8, -14.1, 0.9, 2.1);
     // Foreground rocks: the near layer of the opening composition.
@@ -230,7 +234,7 @@ export class HarborDirector {
     place(part(props, "Rock_A"), 47, 0, 1.2, 0.9, 2.2);
     place(part(props, "Palm_A"), 49.6, 1.1, -7.2, 1.25, 0.6);
     for (const [x, z, w, d] of [
-      [-41.5, 6.5, 6, 3.2],
+      [-39.5, 14.5, 6, 3.2],
       [-27, -4.5, 3.4, 2.2],
       [-27, 11, 4.6, 3.2],
       [14.5, -5.2, 3.2, 2.2],
@@ -372,6 +376,8 @@ export class HarborDirector {
       (ping.material as THREE.MeshBasicMaterial).opacity = scene.sources * (1 - cycle) * 0.85;
       ping.visible = scene.sources > 0.01;
     });
+    // Once selected (evidence chapter onward) the finding stays cobalt.
+    this.markerBand.color.set(HarborTheme.INK).lerp(new THREE.Color(HarborTheme.ACCENT), Math.min(1, Math.max(0, (frame.s - 1.4) / 0.5)));
     this.markerRings.forEach((ring, i) => {
       const pulse = i === 1 ? 1 + ((t * 0.6) % 1) * 0.35 : 1;
       ring.scale.setScalar(pulse);

@@ -351,7 +351,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
 
     /** Where the 3D subject sits: the middle of the free area between the copy column and the active card. */
     function focusTarget3d() {
-      const card = beatRef.current.step < STEP_IDS.length - 1 ? cardRects[slotFor(beatRef.current.step)] : null;
+      const step = beatRef.current.step;
+      const card = step > 0 && step < STEP_IDS.length - 1 ? cardRects[slotFor(step)] : null;
       const edge = card ? (rtl ? size.w - card.right : card.left) - 24 : size.w * 0.94;
       const free = Math.max(160, edge - size.col);
       return { x: size.col + free * 0.5, y: size.h * 0.57, free };
@@ -431,7 +432,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       const b = beatRef.current;
       const lines: string[] = [];
       const anchors = LEADER_ANCHORS[b.step] ?? [];
-      const card = cardRects[slotFor(b.step)];
+      const card = b.step > 0 ? cardRects[slotFor(b.step)] : null;
 
       // Buoy tags follow their buoys in every step where they are on screen.
       TAG_ANCHORS.forEach((name, i) => {
@@ -745,7 +746,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
         </div>
         <div className="hs-artifacts">
           {[1, 2, 3, 4, 5, 6].map((slot) => {
-            const active = slotFor(beat.step) === slot && beat.step < STEP_IDS.length - 1;
+            // The opening keeps the scene clear; the chart arrives with the first chapter.
+            const active = slotFor(beat.step) === slot && beat.step > 0 && beat.step < STEP_IDS.length - 1;
             const step = slot === 1 ? (beat.step === 0 ? 0 : 1) : slot;
             const sub = beat.step === step ? beat.sub : beat.step > step ? 99 : 0;
             return (

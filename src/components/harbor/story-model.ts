@@ -282,7 +282,7 @@ export class HarborLayout3D {
 
   /** Boat stations per story step; yaw turns the bow (+x) toward (-) or away from (+) the viewer. */
   static readonly STATIONS: { x: number; z: number; yaw: number }[] = [
-    { x: -33, z: 3.2, yaw: -0.32 },
+    { x: -33, z: 3.2, yaw: -1.4 },
     { x: -23, z: 3.2, yaw: -0.1 },
     { x: -6.2, z: 2.6, yaw: -0.08 },
     { x: 3, z: 3.2, yaw: -0.05 },
@@ -390,7 +390,9 @@ export class CameraRig3D {
 
   /** Desktop poses: the subject is framed into the free area between the copy column and the cards. */
   static readonly DESKTOP: CameraPose3D[] = [
-    { target: [-32.2, 2.5, 3], distance: 22, yaw: -14, pitch: 7 },
+    // Opening: a long view down the harbor — the boat in profile in front, the evidence
+    // buoys, the lighthouse and the working dock with its crane across the water.
+    { target: [-28, 2.2, 2.2], distance: 30.3, yaw: -68.9, pitch: 8.2 },
     { target: [-18.8, 1.7, 0.2], distance: 30, yaw: -17, pitch: 10 },
     { target: [-3.4, 1.7, 1.6], distance: 27, yaw: -6, pitch: 9 },
     { target: [8.6, 0.6, 0.8], distance: 40, yaw: -24, pitch: 25 },

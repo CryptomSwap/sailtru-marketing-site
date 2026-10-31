@@ -101,7 +101,8 @@ export class HarborWater {
           float near = 1.0 - smoothstep(22.0, 58.0, dist);
           float r = ripple(p, vec2(2.4, 0.95), 0.36, 0.035) * near;
           r = max(r, ripple(p + vec2(17.3, 4.1), vec2(5.6, 1.6), 0.3, 0.05) * (1.0 - smoothstep(30.0, 90.0, dist)));
-          col = mix(col, uInk, r * 0.3);
+          // Strokes right under the camera stay lighter so they never dominate the foreground.
+          col = mix(col, uInk, r * 0.3 * mix(0.45, 1.0, smoothstep(8.0, 22.0, dist)));
           gl_FragColor = vec4(col, 1.0);
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
