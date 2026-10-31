@@ -653,7 +653,29 @@ body:has(.harbor)::before {
 
   .hs-step__demo {
     margin-top: 0;
-    max-width: none;
+    max-width: 620px;
+  }
+
+  /* The copy stays beside the still and its artifact while both are read. */
+  .hs-step__pin {
+    align-items: start;
+  }
+
+  .hs-step__copy {
+    position: sticky;
+    top: calc(var(--header-h) + 48px);
+  }
+
+  .hs-step--opening .hs-step__pin {
+    align-items: center;
+  }
+
+  .hs-step--opening .hs-step__copy {
+    position: static;
+  }
+
+  .hx-card--inline .hx-chart__map {
+    aspect-ratio: 320 / 110;
   }
 
   .hs-step--close .hs-step__pin {
@@ -941,8 +963,31 @@ body:has(.harbor)::before {
     font-size: 16px;
   }
 
+  .hs-step--opening .hs-step__pin {
+    padding-bottom: 84px;
+  }
+
+  .hs-step--opening .hs-hero__title {
+    font-size: clamp(38px, 4vw, 54px);
+  }
+
+  .hs-step--opening .hs-actions {
+    gap: 10px;
+  }
+
+  .hs-step--opening .hs-btn {
+    min-height: 48px;
+  }
+
+  /* The chapter bar at the bottom is the scroll cue on short screens. */
   .hs-cue {
-    margin-top: 18px;
+    display: none;
+  }
+
+  /* Completed middle steps of the workflow keep their label; input, review
+     and output keep their full text. */
+  .hx-flow__step.is-done:is(:nth-child(2), :nth-child(3)) .hx-flow__text {
+    display: none;
   }
 
   .hx-card {
@@ -2331,4 +2376,10 @@ summary.hx-report__finding-head::-webkit-details-marker {
 
 .hb-footer a:hover {
   text-decoration: underline;
+}
+
+/* Anchor jumps land below the fixed header. */
+.harbor section[id],
+.harbor .hs-step[id] {
+  scroll-margin-top: var(--header-h);
 }

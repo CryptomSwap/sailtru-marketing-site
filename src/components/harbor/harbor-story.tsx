@@ -232,9 +232,16 @@ export function HarborStory() {
     function measureCards() {
       const origin = stage!.getBoundingClientRect();
       const rel = (r: DOMRect) => new DOMRect(r.left - origin.left, r.top - origin.top, r.width, r.height);
+      const room = stage!.querySelector<HTMLElement>(".hs-artifacts")?.clientHeight ?? 0;
       cardRects = {};
       for (const key of Object.keys(slotRefs.current)) {
         const el = slotRefs.current[Number(key)]?.firstElementChild as HTMLElement | null;
+        if (el && room) {
+          // A card taller than the stage scales down to stay whole on short screens.
+          const fit = Math.max(0.78, Math.min(1, room / el.offsetHeight));
+          el.style.transform = fit < 1 ? `scale(${fit.toFixed(3)})` : "";
+          el.style.transformOrigin = rtl ? "top left" : "top right";
+        }
         cardRects[Number(key)] = el ? rel(el.getBoundingClientRect()) : null;
       }
       const rows = stage!.querySelectorAll<HTMLElement>(".hs-slot--1 .hx-chart__source");
@@ -435,6 +442,16 @@ export function HarborStory() {
     const ro = new ResizeObserver(() => onResize());
     ro.observe(root);
 
+    // Cards change height as their beats play (the report expands, the workflow grows).
+    const cardRo = new ResizeObserver(() => {
+      measureCards();
+      kick();
+    });
+    for (const slot of Object.values(slotRefs.current)) {
+      const card = slot?.firstElementChild;
+      if (card) cardRo.observe(card);
+    }
+
     const onVisibility = () => kick();
     const onMotionPref = () => onResize();
     const onPauseToggle = () => kick();
@@ -451,6 +468,7 @@ export function HarborStory() {
       window.clearTimeout(measureTimer);
       io.disconnect();
       ro.disconnect();
+      cardRo.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
