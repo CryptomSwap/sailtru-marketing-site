@@ -37,14 +37,11 @@ export class HarborModelFiles {
     return Object.values(HarborModelFiles.FILES);
   }
 
-  /** Start fetching the models as soon as this chunk loads. */
-  static preload() {
-    useGLTF.setDecoderPath(HarborModelFiles.DECODER);
-    useGLTF.preload(HarborModelFiles.list(), HarborModelFiles.DECODER);
-  }
 }
 
-HarborModelFiles.preload();
+// The models are fetched when this lazily loaded chunk first renders (useGLTF below), so
+// nothing 3D is requested before the story needs it. The Draco decoder is self-hosted.
+useGLTF.setDecoderPath(HarborModelFiles.DECODER);
 
 export type HarborSceneProps = {
   /** "stage": the desktop sticky stage. "vignette": a small, centred still/live view on phones. */
