@@ -268,6 +268,12 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     let rowRects: DOMRect[] = [];
     let measureTimer = 0;
     let ambientT = 0;
+    // Slow devices (software WebGL, old phones): once the story is settled, ambient-only
+    // frames are throttled so text, cards and controls keep the main thread.
+    let frameEma = 0;
+    let frameCount = 0;
+    let lowPower = false;
+    let idleTimer = 0;
     let focus3d = { x: -1, y: 0 };
 
     const q = <T extends Element>(sel: string) => stage.querySelector<T>(sel);
@@ -492,13 +498,19 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
 
     function frame(time: number) {
       raf = 0;
-      const dt = last ? Math.min(0.1, (time - last) / 1000) : 0.016;
+      const realDt = last ? (time - last) / 1000 : 0.016;
+      const dt = Math.min(0.1, realDt);
       last = time;
+      if (stage3dRef.current && !lowPower) {
+        frameCount += 1;
+        frameEma = frameCount === 1 ? realDt : frameEma * 0.9 + realDt * 0.1;
+        if (frameCount > 24 && frameEma > 0.045) lowPower = true;
+      }
       const k = 1 - Math.exp(-dt * 9);
       if (uDisp < 0) uDisp = uTarget;
       uDisp += (uTarget - uDisp) * k;
       if (Math.abs(uTarget - uDisp) < 0.0004) uDisp = uTarget;
-      if (!pausedRef.current && !reduceQuery.matches) ambientT += dt;
+      if (!pausedRef.current && !reduceQuery.matches) ambientT += Math.min(0.3, realDt);
       pointer = {
         x: pointer.x + (pointerTarget.x - pointer.x) * k * 0.6,
         y: pointer.y + (pointerTarget.y - pointer.y) * k * 0.6
@@ -508,7 +520,14 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
         uDisp === uTarget && Math.abs(pointer.x - pointerTarget.x) < 0.002 && Math.abs(pointer.y - pointerTarget.y) < 0.002;
       const ambient = !pausedRef.current && !reduceQuery.matches;
       if (inView && document.visibilityState === "visible" && (!settled || ambient)) {
-        raf = requestAnimationFrame(frame);
+        if (settled && lowPower) {
+          idleTimer = window.setTimeout(() => {
+            idleTimer = 0;
+            kick();
+          }, 220);
+        } else {
+          raf = requestAnimationFrame(frame);
+        }
       } else {
         last = 0;
       }
@@ -516,6 +535,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
 
     function kick() {
       if (!cinematic || raf) return;
+      window.clearTimeout(idleTimer);
+      idleTimer = 0;
       raf = requestAnimationFrame(frame);
     }
 
@@ -579,6 +600,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     return () => {
       cancelAnimationFrame(raf);
       window.clearTimeout(measureTimer);
+      window.clearTimeout(idleTimer);
       io.disconnect();
       ro.disconnect();
       cardRo.disconnect();
