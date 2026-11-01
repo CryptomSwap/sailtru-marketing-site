@@ -348,7 +348,7 @@ export class HarborLayout3D {
 
   /** Boat stations per story step; yaw turns the bow (+x) toward (-) or away from (+) the viewer. */
   static readonly STATIONS: { x: number; z: number; yaw: number }[] = [
-    { x: -33, z: 3.2, yaw: -1.4 },
+    { x: -33, z: 3.2, yaw: 0.45 },
     { x: -23, z: 3.2, yaw: -0.1 },
     { x: -6.2, z: 2.6, yaw: -0.08 },
     { x: 3, z: 3.2, yaw: -0.05 },

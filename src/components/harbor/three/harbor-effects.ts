@@ -33,7 +33,7 @@ export class HarborWater {
   readonly uniforms: Record<string, THREE.IUniform>;
 
   constructor() {
-    const geometry = new THREE.PlaneGeometry(220, 150, 220, 110);
+    const geometry = new THREE.PlaneGeometry(220, 150, 110, 55);
     geometry.rotateX(-Math.PI / 2);
     this.uniforms = {
       ...fogUniforms(),

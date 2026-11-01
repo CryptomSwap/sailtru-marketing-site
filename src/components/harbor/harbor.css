@@ -64,6 +64,28 @@ body:has(.harbor)::before {
   }
 }
 
+/* Lenis (smooth wheel scrolling on the harbor story page; never under reduced motion). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+html.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 .harbor a {
   color: inherit;
 }
@@ -3146,4 +3168,20 @@ body:has(.harbor-hero)[data-cobalt-hero] .hs-nav {
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.25s ease, visibility 0s 0.25s;
+}
+
+/* Cobalt opens on the same sticky stage and scroll clock as the 3D story. */
+.hs-cobalt-hero { position:relative; z-index:4; }
+.hs--cobalt-arrival { --arrival-copy:1; --arrival-cards:1; --arrival-hero:1; --arrival-story:0; --arrival-radius:0vmax; }
+.hs--cobalt-arrival .hs-cobalt-hero .field-hero { color:white; }
+@media (min-width:960px) and (min-height:600px) and (prefers-reduced-motion:no-preference) {
+  .hs-cobalt-hero { position:sticky; top:0; height:100svh; margin-top:-100svh; pointer-events:auto; opacity:var(--arrival-hero); mask-image:radial-gradient(circle at 23% 68%,transparent calc(var(--arrival-radius) - 8vmax),#000 var(--arrival-radius)); }
+  .hs-cobalt-hero .home-cobalt-field,.hs-cobalt-hero .field-hero { min-height:100svh; }
+  .hs-cobalt-hero .field-main { opacity:var(--arrival-copy); transform:translateY(calc((1 - var(--arrival-copy))*-30px)); will-change:opacity,transform; }
+  .hs-cobalt-hero .hsw__diagram--hero { opacity:var(--arrival-cards); transform:translateY(calc((1 - var(--arrival-cards))*-45px)); will-change:opacity,transform; }
+  .hs-cobalt-hero[aria-hidden=true] { pointer-events:none; }
+  .hs--cobalt-arrival .hs-deck { opacity:var(--arrival-story); }
+  .hs--cobalt-arrival .hs-arrival-track { height:180svh; }
+  .hs--cobalt-arrival[data-arriving=true] .hs-stage__veil { opacity:0; }
+  .hs--cobalt-arrival[data-arriving=true] .hs-nav { visibility:hidden; }
 }

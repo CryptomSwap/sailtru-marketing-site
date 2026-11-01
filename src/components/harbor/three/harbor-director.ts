@@ -83,6 +83,7 @@ export class HarborDirector {
   private readonly crate: THREE.Object3D;
   private readonly cable: THREE.Mesh;
   private readonly crateRest = new THREE.Vector3();
+  private readonly deliverySocket = new THREE.Vector3();
   private readonly windowMaterials: THREE.MeshToonMaterial[] = [];
   private readonly windowGlows: THREE.Sprite[] = [];
   private readonly workshopFocus: THREE.Object3D;
@@ -92,6 +93,13 @@ export class HarborDirector {
   private readonly gulls: Gull[] = [];
 
   private readonly socket: THREE.Object3D;
+
+  /** The live camera's damped position and look-at point, and this frame's goals. */
+  private readonly camPos = new THREE.Vector3();
+  private readonly camLook = new THREE.Vector3();
+  private readonly camGoal = new THREE.Vector3();
+  private readonly lookGoal = new THREE.Vector3();
+  private camLive = false;
 
   /** Provider boats (neutral hulls): the platforms buyers search and ask. Their badges are HTML overlays. */
   private readonly providers: { holder: THREE.Group; bob: THREE.Group; masthead: THREE.Object3D; phase: number }[] = [];
@@ -135,6 +143,11 @@ export class HarborDirector {
     ToonKit.prepare(this.boatCrate, { pick: (name) => (name === "pal_cobalt" ? accent : undefined) });
     this.socket = sailboat.getObjectByName("CrateSocket") ?? sailboat;
     this.socket.add(this.boatCrate);
+    // Fixed berth target, independent of the boat's later sailing or entrance.
+    this.boat.updateMatrixWorld(true);
+    this.socket.getWorldPosition(this.deliverySocket);
+    this.boat.worldToLocal(this.deliverySocket);
+    this.deliverySocket.add(new THREE.Vector3(HarborLayout3D.BERTH.x, 0, HarborLayout3D.BERTH.z));
     this.boatCrate.visible = false;
 
     // Evidence sources and the selected finding.
@@ -356,8 +369,21 @@ export class HarborDirector {
     return mesh;
   }
 
-  /** Update everything for one frame and place the camera. */
-  update(frame: HarborFrame, camera: THREE.PerspectiveCamera, width: number, height: number, poses: CameraPose3D[], mirror: boolean) {
+  /**
+   * Update everything for one frame and place the camera. With `damp`, the
+   * camera eases toward the pose (frame-rate independent) and the remaining
+   * distance is returned; without it (first frame, stills) the camera is placed
+   * exactly and the live camera's damping state is left untouched.
+   */
+  update(
+    frame: HarborFrame,
+    camera: THREE.PerspectiveCamera,
+    width: number,
+    height: number,
+    poses: CameraPose3D[],
+    mirror: boolean,
+    damp?: { dt: number; lambda: number; snap?: boolean }
+  ): number {
     const t = frame.ambient;
     const { scene } = frame;
 
@@ -370,11 +396,56 @@ export class HarborDirector {
       pitch: pose.pitch - frame.pointer.y * 0.8
     };
     const [cx, cy, cz] = CameraRig3D.position(scaled);
-    camera.position.set(cx, cy, cz);
-    camera.lookAt(pose.target[0], pose.target[1], pose.target[2]);
+    this.camGoal.set(cx, cy, cz);
+    this.lookGoal.set(pose.target[0], pose.target[1], pose.target[2]);
+    const arrival = frame.arrival ?? 1;
+    const smooth = (x:number) => {x=THREE.MathUtils.clamp(x,0,1);return x*x*(3-2*x);};
+    const turn = smooth(arrival/.62), settle = smooth((arrival-.6)/.4);
+    const boatPose = HarborLayout3D.boatAt(frame.s);
+    const entryX = THREE.MathUtils.lerp(-39, boatPose.x, smooth(arrival));
+    const entryZ = THREE.MathUtils.lerp(6.4, boatPose.z, smooth(arrival));
+    if (arrival < 1) {
+      const distance = THREE.MathUtils.lerp(34,18,smooth(arrival/.52));
+      // Low stern/starboard tracking view: hull stays at water level, not in camera space.
+      tmp.set(entryX-distance*.766, 4.8, entryZ+distance*.643);
+      this.camGoal.lerpVectors(tmp,this.camGoal,settle);
+      tmp.set(entryX,2.5,entryZ);
+      this.lookGoal.lerpVectors(tmp,this.lookGoal,settle);
+    }
+    let rest = 0;
+    if (damp && this.camLive && !damp.snap) {
+      const d = (a: THREE.Vector3, b: THREE.Vector3) => {
+        a.set(
+          THREE.MathUtils.damp(a.x, b.x, damp.lambda, damp.dt),
+          THREE.MathUtils.damp(a.y, b.y, damp.lambda, damp.dt),
+          THREE.MathUtils.damp(a.z, b.z, damp.lambda, damp.dt)
+        );
+      };
+      d(this.camPos, this.camGoal);
+      d(this.camLook, this.lookGoal);
+      rest = Math.max(this.camPos.distanceTo(this.camGoal), this.camLook.distanceTo(this.lookGoal));
+      if (rest < 0.002) {
+        this.camPos.copy(this.camGoal);
+        this.camLook.copy(this.lookGoal);
+      }
+      camera.position.copy(this.camPos);
+      camera.lookAt(this.camLook);
+    } else {
+      if (damp) {
+        // A live frame that snaps (first frame, resize, jump without motion) restarts the damping from the pose.
+        this.camPos.copy(this.camGoal);
+        this.camLook.copy(this.lookGoal);
+        this.camLive = true;
+      }
+      camera.position.copy(this.camGoal);
+      camera.lookAt(this.lookGoal);
+    }
     camera.fov = CameraRig3D.FOV;
     camera.aspect = width / Math.max(1, height);
-    camera.setViewOffset(width, height, width / 2 - frame.focus.x, height / 2 - frame.focus.y, width, height);
+    const entranceX = width*(mirror ? .77 : .23);
+    const focusX = arrival < 1 ? THREE.MathUtils.lerp(entranceX,frame.focus.x,settle) : frame.focus.x;
+    const focusY = arrival < 1 ? THREE.MathUtils.lerp(height*.55,frame.focus.y,settle) : frame.focus.y;
+    camera.setViewOffset(width, height, width / 2 - focusX, height / 2 - focusY, width, height);
     camera.updateProjectionMatrix();
 
     this.sky.update(camera);
@@ -385,10 +456,14 @@ export class HarborDirector {
     const swell = HarborWave.height(b.x, b.z, t);
     this.boat.position.set(b.x, 0, b.z);
     this.boat.rotation.y = b.yaw;
+    if(arrival<1) {
+      this.boat.position.set(entryX,0,entryZ);
+      this.boat.rotation.y=lerpAngle(-.35,.45,turn);
+    }
     this.boatBob.position.y = swell * 0.9 + Math.sin(t * 1.3) * 0.035;
     this.boatBob.rotation.x = Math.sin(t * 0.9) * 0.035 - b.sailing * 0.07;
     this.boatBob.rotation.z = Math.sin(t * 1.1 + 1) * 0.022;
-    (this.boatWake.material as THREE.MeshBasicMaterial).opacity = b.sailing * 0.9;
+    (this.boatWake.material as THREE.MeshBasicMaterial).opacity = (arrival < 1 ? .85 : b.sailing) * 0.9;
     if (this.pennant) this.pennant.rotation.y = Math.sin(t * 5.2) * 0.22 + Math.sin(t * 8.1) * 0.08;
     this.updateRig(scene.mainDown, scene.boomOut);
 
@@ -459,6 +534,7 @@ export class HarborDirector {
       if (g.wingL) g.wingL.rotation.x = -flap;
       if (g.wingR) g.wingR.rotation.x = flap;
     }
+    return rest;
   }
 
   /**
@@ -482,15 +558,15 @@ export class HarborDirector {
     const { lift, slew, lower } = CraneMotion3D.phases(value);
     const pivot = this.slew.position;
     // Boat socket in dock space (the boat is at its berth while the crane works).
-    this.boat.updateMatrixWorld(true);
-    this.socket.getWorldPosition(tmp);
+    tmp.copy(this.deliverySocket);
+    this.dock.updateMatrixWorld(true);
     this.dock.worldToLocal(tmp);
     const restAngle = Math.atan2(-(this.crateRest.z - pivot.z), this.crateRest.x - pivot.x);
     const restR = Math.hypot(this.crateRest.x - pivot.x, this.crateRest.z - pivot.z);
     const boatAngle = Math.atan2(-(tmp.z - pivot.z), tmp.x - pivot.x);
     const boatR = Math.hypot(tmp.x - pivot.x, tmp.z - pivot.z);
     const angle = lerpAngle(restAngle, boatAngle, slew);
-    const r = restR + (boatR - restR) * slew;
+    const r = THREE.MathUtils.clamp(restR + (boatR - restR) * slew, .4, 6.0);
     this.slew.rotation.y = angle;
     this.trolley.position.x = r;
 
@@ -510,9 +586,13 @@ export class HarborDirector {
     this.crate.visible = !landed;
     this.boatCrate.visible = landed;
 
-    const top = pivot.y + 0.02;
+    // The cable starts at the actual trolley, including its authored height.
+    this.trolley.updateWorldMatrix(true,false);
+    this.trolley.getWorldPosition(tmp2);
+    this.dock.worldToLocal(tmp2);
+    const top = tmp2.y;
     const bottom = y + 0.3;
-    this.cable.position.set(hx, (top + bottom) / 2, hz);
+    this.cable.position.set(tmp2.x, (top + bottom) / 2, tmp2.z);
     this.cable.scale.y = Math.max(0.01, top - bottom);
 
     const active = value > 0.001 && value < 0.999;

@@ -37,7 +37,9 @@ export function HarborHeader({ afterHero }: { afterHero?: string }) {
     if (!hero) return;
     const update = () => {
       const bar = document.querySelector(".hh__bar")?.getBoundingClientRect().height ?? 64;
-      setShown(HeaderReveal.isRevealed(hero.getBoundingClientRect().bottom, bar));
+      const story=hero.closest<HTMLElement>(".hs--cobalt-arrival");
+      const cinematic=story&&getComputedStyle(story.querySelector(".hs-stage")!).display!=="none";
+      setShown(cinematic ? -story.getBoundingClientRect().top > innerHeight*1.62 : HeaderReveal.isRevealed(hero.getBoundingClientRect().bottom, bar));
     };
     update();
     window.addEventListener("scroll", update, { passive: true });
@@ -64,7 +66,7 @@ export function HarborHeader({ afterHero }: { afterHero?: string }) {
           <img src="/images/sailtrue-mark.svg" alt="" width="40" height="40" className="hh__mark" />
           <span className="hh__word" aria-hidden />
         </Link>
-        <nav id="hh-nav" className="hh__nav" aria-label={t("nav")}>
+        <nav id="hh-nav" className="hh__nav" aria-label={t("nav")} data-lenis-prevent>
           <ul>
             {links.map((link) => (
               <li key={link.href}>

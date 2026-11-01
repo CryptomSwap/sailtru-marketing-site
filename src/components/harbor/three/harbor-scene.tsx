@@ -1,13 +1,13 @@
 "use client";
 
-import { advance, Canvas, useThree } from "@react-three/fiber";
+import { advance, Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei/core/Gltf";
 import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
 import { HarborTheme } from "../harbor-theme";
-import { CameraRig3D, STEP_BEATS, STEP_IDS, StoryCues, sceneForStep } from "../story-model";
+import { CameraRig3D, STEP_BEATS, STEP_IDS, StoryCues, sceneAt, sceneForStep, storyFromLinear } from "../story-model";
 import { HarborDirector, type HarborModels } from "./harbor-director";
-import type { HarborAnchor, HarborFrame, HarborStage } from "./stage-types";
+import type { HarborAnchor, HarborFrameInput, HarborFrameResult, HarborStage } from "./stage-types";
 import { ToonKit } from "./toon";
 
 /**
@@ -37,6 +37,14 @@ export class HarborModelFiles {
     return Object.values(HarborModelFiles.FILES);
   }
 
+}
+
+/** Damping rates (1/s, for THREE.MathUtils.damp) applied in useFrame on top of the smoothed scroll. */
+export class StageDamping {
+  static readonly PROGRESS = 11;
+  static readonly CAMERA = 9;
+  static readonly POINTER = 5.4;
+  static readonly FOCUS = 5;
 }
 
 // The models are fetched when this lazily loaded chunk first renders (useGLTF below), so
@@ -72,12 +80,63 @@ function World({ layout, mirror, onStage, onReady, onError }: HarborSceneProps) 
   const gltfs = useGLTF(HarborModelFiles.list(), HarborModelFiles.DECODER);
   const get = useThree((state) => state.get);
   const readyRef = useRef(false);
+  /** This frame's targets (set by stage.frame just before advance) and the damped state useFrame produces. */
+  const inputRef = useRef<HarborFrameInput | null>(null);
+  const resultRef = useRef<HarborFrameResult>({ u: 0, s: 0, scene: sceneAt(0, 0), settled: true });
+  const motionRef = useRef({ u: -1, pointer: { x: 0, y: 0 }, focus: { x: -1, y: 0 } });
 
   const director = useMemo(() => {
     const keys = Object.keys(HarborModelFiles.FILES) as (keyof HarborModels)[];
     const models = Object.fromEntries(keys.map((k, i) => [k, gltfs[i].scene])) as unknown as HarborModels;
     return new HarborDirector(models);
   }, [gltfs]);
+
+  const poses = layout === "stage" ? CameraRig3D.DESKTOP : CameraRig3D.MOBILE;
+
+  // Progress, pointer, framing and camera are damped here, frame-rate independent (delta is the
+  // time since the previous advance). Nothing here touches React state.
+  useFrame((state, delta) => {
+    const input = inputRef.current;
+    if (!input) return;
+    const m = motionRef.current;
+    const dt = Math.min(0.1, Math.max(0, delta));
+    const snap = Boolean(input.snap) || m.u < 0;
+    if (snap) {
+      m.u = input.uTarget;
+      m.pointer = { ...input.pointerTarget };
+      m.focus = { ...input.focusTarget };
+    } else {
+      m.u = THREE.MathUtils.damp(m.u, input.uTarget, StageDamping.PROGRESS, dt);
+      if (Math.abs(m.u - input.uTarget) < 0.0004) m.u = input.uTarget;
+      m.pointer = {
+        x: THREE.MathUtils.damp(m.pointer.x, input.pointerTarget.x, StageDamping.POINTER, dt),
+        y: THREE.MathUtils.damp(m.pointer.y, input.pointerTarget.y, StageDamping.POINTER, dt)
+      };
+      m.focus = {
+        x: THREE.MathUtils.damp(m.focus.x, input.focusTarget.x, StageDamping.FOCUS, dt),
+        y: THREE.MathUtils.damp(m.focus.y, input.focusTarget.y, StageDamping.FOCUS, dt)
+      };
+    }
+    const s = storyFromLinear(m.u);
+    const scene = sceneAt(s, m.u);
+    const { width, height } = state.size;
+    const cameraRest = director.update(
+      { s, u: m.u, arrival: input.arrival, scene, ambient: input.ambient, pointer: m.pointer, focus: m.focus, freeWidth: input.freeWidth },
+      state.camera as THREE.PerspectiveCamera,
+      width,
+      height,
+      poses,
+      mirror,
+      { dt, lambda: StageDamping.CAMERA, snap }
+    );
+    const near = (a: { x: number; y: number }, b: { x: number; y: number }, e: number) => Math.abs(a.x - b.x) < e && Math.abs(a.y - b.y) < e;
+    resultRef.current = {
+      u: m.u,
+      s,
+      scene,
+      settled: m.u === input.uTarget && near(m.pointer, input.pointerTarget, 0.002) && near(m.focus, input.focusTarget, 0.5) && cameraRest < 0.002
+    };
+  });
 
   useEffect(() => {
     const state = get();
@@ -92,19 +151,20 @@ function World({ layout, mirror, onStage, onReady, onError }: HarborSceneProps) 
     };
     gl.domElement.addEventListener("webglcontextlost", lost);
 
-    const poses = layout === "stage" ? CameraRig3D.DESKTOP : CameraRig3D.MOBILE;
     const stage: HarborStage = {
-      frame(input: HarborFrame) {
+      frame(input: HarborFrameInput) {
         const s = get();
         const { width, height } = s.size;
-        if (width < 2 || height < 2) return;
+        if (width < 2 || height < 2) return resultRef.current;
         ToonKit.setResolution(width, height, s.viewport.dpr);
-        director.update(input, s.camera as THREE.PerspectiveCamera, width, height, poses, mirror);
+        inputRef.current = input;
+        // Runs the useFrame damping above, then renders.
         advance(performance.now() / 1000, true, s);
         if (!readyRef.current) {
           readyRef.current = true;
           onReady();
         }
+        return resultRef.current;
       },
       project(anchor: HarborAnchor) {
         const s = get();
@@ -153,7 +213,7 @@ function World({ layout, mirror, onStage, onReady, onError }: HarborSceneProps) 
       gl.domElement.removeEventListener("webglcontextlost", lost);
       scene.remove(director.root);
     };
-  }, [director, get, layout, mirror, onError, onReady, onStage]);
+  }, [director, get, layout, mirror, onError, onReady, onStage, poses]);
 
   return null;
 }
@@ -164,7 +224,7 @@ export default function HarborScene(props: HarborSceneProps) {
       <Canvas
         frameloop="never"
         flat
-        dpr={[1, 1.75]}
+        dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         camera={{ fov: CameraRig3D.FOV, near: 0.5, far: 1200, position: [0, 6, 40] }}
         aria-hidden

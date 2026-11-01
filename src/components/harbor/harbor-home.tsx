@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { HarborHeader } from "./harbor-header";
 import { HarborStory } from "./harbor-story";
-import { HeroChrome } from "./hero-chrome";
 import {
   BuildSection,
   ClosingSection,
@@ -10,6 +9,7 @@ import {
   ProofSection,
   SampleReportSection
 } from "./harbor-sections";
+import "@/components/sections/home-v2/mobile-home.css";
 import "./harbor.css";
 
 /** Selector of the cobalt hero that opens /en and /he. */
@@ -26,12 +26,6 @@ const HERO_SELECTOR = "#hero";
 export function HarborHome({ skipLabel, hero, scene3d = false }: { skipLabel: string; hero?: ReactNode; scene3d?: boolean }) {
   return (
     <>
-      {hero ? (
-        <div className="harbor-hero">
-          <HeroChrome hero={HERO_SELECTOR} />
-          {hero}
-        </div>
-      ) : null}
       <div className={`harbor${hero ? " harbor--below-hero" : ""}`}>
         {hero ? null : (
           <a href="#main-content" className="harbor-skip">
@@ -44,7 +38,7 @@ export function HarborHome({ skipLabel, hero, scene3d = false }: { skipLabel: st
         </noscript>
         <HarborHeader afterHero={hero ? HERO_SELECTOR : undefined} />
         <main id="main-content" className="harbor-main">
-          <HarborStory belowHero={Boolean(hero)} scene3d={scene3d} />
+          <HarborStory belowHero={Boolean(hero)} scene3d={scene3d} hero={hero} />
           <SampleReportSection />
           <BuildSection />
           <ProofSection />

@@ -39,6 +39,7 @@ import {
 } from "./story-model";
 import type { Harbor3DState, HarborAnchor, HarborStage, ScreenPoint } from "./three/stage-types";
 import { WebGLSupport } from "./three/webgl-support";
+import { SmoothScroll } from "./smooth-scroll";
 
 /** The 3D harbor loads on demand, after the page is interactive; the SVG harbor is server-rendered first. */
 const HarborScene3D = dynamic(() => import("./three/harbor-scene"), { ssr: false, loading: () => null });
@@ -217,12 +218,13 @@ function Words({ text }: { text: string }) {
   );
 }
 
-export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?: boolean; scene3d?: boolean } = {}) {
+export function HarborStory({ belowHero = false, scene3d = false, hero }: { belowHero?: boolean; scene3d?: boolean; hero?: ReactNode } = {}) {
   const t = useTranslations("harbor");
   const locale = useLocale();
   const rtl = locale === "he";
   const maskId = `hw-route-stage-${useId().replace(/:/g, "")}`;
 
+  const heroRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const layerRefs = useRef<Partial<Record<LayerName, SVGGElement | null>>>({});
@@ -286,6 +288,12 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       (window.cancelIdleCallback ?? window.clearTimeout)(idle);
     };
   }, [scene3d, setHarbor3d]);
+  // Smooth wheel scrolling for the 3D story page (Lenis on gsap.ticker; off under reduced motion).
+  useEffect(() => {
+    if (!scene3d) return;
+    return SmoothScroll.mount();
+  }, [scene3d]);
+
   const [paused, setPaused] = useState(false);
   const pausedRef = useRef(false);
   const beatRef = useRef<Beat>({ step: 0, sub: 0 });
@@ -303,6 +311,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
 
   useEffect(() => {
     const root = rootRef.current;
+    const heroNode = heroRef.current, deckNode = deckRef.current;
     const stage = stageRef.current;
     if (!root || !stage) return;
 
@@ -311,6 +320,10 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     let size = { w: 0, h: 0, col: 0 };
     let cinematic = false;
     let uTarget = 0;
+    let arrival = hero ? 0 : 1;
+    let paintedArrival = -1;
+    let arrivalStart = 0;
+    let arrivalLength = 1;
     let uDisp = -1;
     let pointer = { x: 0, y: 0 };
     let pointerTarget = { x: 0, y: 0 };
@@ -323,13 +336,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     const overlayHidden = new Set<number>();
     let measureTimer = 0;
     let ambientT = 0;
-    // Slow devices (software WebGL, old phones): once the story is settled, ambient-only
-    // frames are throttled so text, cards and controls keep the main thread.
-    let frameEma = 0;
-    let frameCount = 0;
-    let lowPower = false;
-    let idleTimer = 0;
-    let focus3d = { x: -1, y: 0 };
+    /** The next 3D frame jumps straight to its targets (resize, instant jumps). */
+    let snapNext = true;
 
     const q = <T extends Element>(sel: string) => stage.querySelector<T>(sel);
     const nodes = {
@@ -365,6 +373,9 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
         return r.top + scrollY + (r.height - vh) / 2;
       });
       if (anchors.length) anchors[0] = StoryScroll.firstAnchor(anchors[0], root!.getBoundingClientRect().top + scrollY);
+      arrivalStart = root!.getBoundingClientRect().top + scrollY;
+      arrivalLength = vh * 1.8;
+      if (hero && cinematic) anchors[0] = arrivalStart + arrivalLength;
       measureCards();
     }
 
@@ -440,28 +451,58 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       return { x: size.col + free * 0.5, y: size.h * 0.57, free };
     }
 
-    function render(time: number, dt: number) {
-      const ambient = !pausedRef.current && !reduceQuery.matches;
+    /**
+     * The 3D harbor: hand the scene this frame's targets; it damps progress,
+     * pointer, framing and camera in useFrame and reports the damped state,
+     * which the copy, cards and overlays then follow.
+     */
+    function updateArrival() {
+      arrival = hero && cinematic ? clamp((window.scrollY-arrivalStart)/arrivalLength,0,1) : 1;
+      if (arrival === paintedArrival) return;
+      paintedArrival = arrival;
+      const ease=(a:number,b:number)=>{const x=clamp((arrival-a)/(b-a),0,1);return x*x*(3-2*x);};
+      root!.style.setProperty("--arrival-copy",String(1-ease(.03,.28)));
+      root!.style.setProperty("--arrival-cards",String(1-ease(.2,.55)));
+      root!.style.setProperty("--arrival-hero",String(1-ease(.58,.9)));
+      root!.style.setProperty("--arrival-radius",`${ease(.12,.83)*155}vmax`);
+      root!.style.setProperty("--arrival-story",String(ease(.82,1)));
+      root!.dataset.arriving=String(Boolean(hero)&&cinematic&&arrival<.9);
+      if(heroRef.current) { heroRef.current.inert=cinematic&&arrival>.55; heroRef.current.setAttribute("aria-hidden",String(cinematic&&arrival>.55)); }
+      if(deckRef.current) deckRef.current.inert=Boolean(hero)&&cinematic&&arrival<.9;
+    }
+
+    function render3d(stage3d: HarborStage) {
+      const target = focusTarget3d();
+      const out = stage3d.frame({
+        uTarget,
+        arrival: hero ? arrival : undefined,
+        pointerTarget,
+        focusTarget: { x: target.x, y: target.y },
+        freeWidth: target.free,
+        ambient: ambientT,
+        snap: snapNext
+      });
+      snapNext = false;
+      uDisp = out.u;
+      updateBeat(uDisp);
+      drawOverlays(out.scene, (a) => stage3d.project(a));
+      return out.settled;
+    }
+
+    /** The illustrated harbor (no WebGL): the same progression, damped here. */
+    function renderSvg(time: number, dt: number) {
+      const k = 1 - Math.exp(-dt * 9);
+      if (uDisp < 0) uDisp = uTarget;
+      uDisp += (uTarget - uDisp) * k;
+      if (Math.abs(uTarget - uDisp) < 0.0004) uDisp = uTarget;
+      pointer = {
+        x: pointer.x + (pointerTarget.x - pointer.x) * k * 0.6,
+        y: pointer.y + (pointerTarget.y - pointer.y) * k * 0.6
+      };
+      updateBeat(uDisp);
+      const ambient = !pausedRef.current && !reduceQuery.matches && (!hero || arrival > .01);
       const s = storyFromLinear(uDisp);
       const scene = sceneAt(s, uDisp);
-      const stage3d = stage3dRef.current;
-      if (stage3d) {
-        const target = focusTarget3d();
-        if (focus3d.x < 0) focus3d = { x: target.x, y: target.y };
-        const k = 1 - Math.exp(-dt * 5);
-        focus3d = { x: focus3d.x + (target.x - focus3d.x) * k, y: focus3d.y + (target.y - focus3d.y) * k };
-        stage3d.frame({
-          s,
-          u: uDisp,
-          scene,
-          ambient: ambientT,
-          pointer,
-          focus: focus3d,
-          freeWidth: target.free
-        });
-        drawOverlays(scene, (a) => stage3d.project(a));
-        return;
-      }
       const baseCam = cameraAt(s, DESKTOP_POSES);
       const cam = { ...baseCam, zoom: baseCam.zoom * zoomScale() };
       const focus = focusPoint();
@@ -508,6 +549,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
         if (a === "boat") return projectMain(cam, focus, scene.boat.x, scene.boat.y - 330);
         return projectMain(cam, focus, SVG_ANCHORS[a].x, SVG_ANCHORS[a].y);
       });
+      return uDisp === uTarget && Math.abs(pointer.x - pointerTarget.x) < 0.002 && Math.abs(pointer.y - pointerTarget.y) < 0.002;
     }
 
     function toScreen(p: { x: number; y: number }) {
@@ -606,35 +648,14 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       const realDt = last ? (time - last) / 1000 : 0.016;
       const dt = Math.min(0.1, realDt);
       last = time;
-      if (stage3dRef.current && !lowPower) {
-        frameCount += 1;
-        frameEma = frameCount === 1 ? realDt : frameEma * 0.9 + realDt * 0.1;
-        if (frameCount > 24 && frameEma > 0.045) lowPower = true;
-      }
-      const k = 1 - Math.exp(-dt * 9);
-      if (uDisp < 0) uDisp = uTarget;
-      uDisp += (uTarget - uDisp) * k;
-      if (Math.abs(uTarget - uDisp) < 0.0004) uDisp = uTarget;
-      // Copy, cards and overlays follow the same smoothed position as the scene.
-      updateBeat(uDisp);
       if (!pausedRef.current && !reduceQuery.matches) ambientT += Math.min(0.3, realDt);
-      pointer = {
-        x: pointer.x + (pointerTarget.x - pointer.x) * k * 0.6,
-        y: pointer.y + (pointerTarget.y - pointer.y) * k * 0.6
-      };
-      render(time, dt);
-      const settled =
-        uDisp === uTarget && Math.abs(pointer.x - pointerTarget.x) < 0.002 && Math.abs(pointer.y - pointerTarget.y) < 0.002;
+      updateArrival();
+      // Copy, cards and overlays follow the same damped position as the scene.
+      const stage3d = stage3dRef.current;
+      const settled = stage3d ? render3d(stage3d) : renderSvg(time, dt);
       const ambient = !pausedRef.current && !reduceQuery.matches;
       if (inView && document.visibilityState === "visible" && (!settled || ambient)) {
-        if (settled && lowPower) {
-          idleTimer = window.setTimeout(() => {
-            idleTimer = 0;
-            kick();
-          }, 220);
-        } else {
-          raf = requestAnimationFrame(frame);
-        }
+        raf = SmoothScroll.requestFrame(frame);
       } else {
         last = 0;
       }
@@ -642,9 +663,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
 
     function kick() {
       if (!cinematic || raf) return;
-      window.clearTimeout(idleTimer);
-      idleTimer = 0;
-      raf = requestAnimationFrame(frame);
+      raf = SmoothScroll.requestFrame(frame);
     }
 
     function onScroll() {
@@ -655,8 +674,11 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
 
     function onResize() {
       measure();
+      paintedArrival = -1;
+      updateArrival();
       uTarget = linearFromScroll();
       uDisp = uTarget;
+      snapNext = true;
       updateBeat(uDisp);
       kick();
     }
@@ -677,7 +699,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       if (!el) return false;
       const r = el.getBoundingClientRect();
       const top = index === 0 ? anchors[0] : r.top + window.scrollY + (r.height - window.innerHeight) / 2;
-      window.scrollTo({ top, behavior: smooth && !reduceQuery.matches ? "smooth" : "auto" });
+      // Lenis when it runs (a timed, eased jump), native otherwise; instant when motion is reduced.
+      SmoothScroll.scrollTo(top, { smooth: smooth && !reduceQuery.matches });
       return true;
     };
 
@@ -704,6 +727,32 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     }
     overlayRefs.current.forEach((el) => el && cardRo.observe(el));
 
+    /**
+     * Same-page anchors: a chapter id lands on that chapter's settled state (the
+     * chapters' articles sit in the sticky deck, so a native jump would miss);
+     * other targets scroll with Lenis when it runs and take focus, like a native
+     * anchor jump. The skip link jumps at once.
+     */
+    function onAnchorClick(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element | null)?.closest?.<HTMLAnchorElement>('a[href^="#"]');
+      const id = link ? decodeURIComponent(link.getAttribute("href")!.slice(1)) : "";
+      if (!link || !id) return;
+      const index = id === "top" ? 0 : STEP_IDS.indexOf(id as (typeof STEP_IDS)[number]);
+      if (index >= 0 && jumpRef.current(index, true)) {
+        event.preventDefault();
+        history.replaceState(null, "", `#${id}`);
+        return;
+      }
+      const target = document.getElementById(id);
+      if (!target || !SmoothScroll.active) return;
+      event.preventDefault();
+      SmoothScroll.scrollTo(target, { smooth: !link.classList.contains("harbor-skip") });
+      if (!target.matches("a, button, input, select, textarea, summary, [tabindex]")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+      history.replaceState(null, "", `#${id}`);
+    }
+
     const onVisibility = () => kick();
     const onMotionPref = () => onResize();
     const onPauseToggle = () => kick();
@@ -717,15 +766,15 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     document.addEventListener("visibilitychange", onVisibility);
     reduceQuery.addEventListener("change", onMotionPref);
     root.addEventListener("harbor:kick", onPauseToggle);
+    document.addEventListener("click", onAnchorClick);
     document.fonts?.ready.then(() => {
       measureCards();
       kick();
     });
 
     return () => {
-      cancelAnimationFrame(raf);
+      SmoothScroll.cancelFrame(raf);
       window.clearTimeout(measureTimer);
-      window.clearTimeout(idleTimer);
       io.disconnect();
       ro.disconnect();
       cardRo.disconnect();
@@ -734,8 +783,11 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       document.removeEventListener("visibilitychange", onVisibility);
       reduceQuery.removeEventListener("change", onMotionPref);
       root.removeEventListener("harbor:kick", onPauseToggle);
+      document.removeEventListener("click", onAnchorClick);
+      if(heroNode) { heroNode.inert=false; heroNode.removeAttribute("aria-hidden"); }
+      if(deckNode) deckNode.inert=false;
     };
-  }, [rtl]);
+  }, [rtl, hero]);
 
   // Phones: one live opening view, and 3D stills for the other chapters, from the same WebGL context.
   useEffect(() => {
@@ -755,7 +807,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       if (!stage || !box) return false;
       const w = box.clientWidth;
       const h = box.clientHeight;
-      stage.frame({ s: 0, u: 0, scene: sceneForStep(0), ambient: t, pointer: { x: 0, y: 0 }, focus: { x: w / 2, y: h * 0.56 }, freeWidth: w });
+      stage.frame({ uTarget: 0, pointerTarget: { x: 0, y: 0 }, focusTarget: { x: w / 2, y: h * 0.56 }, freeWidth: w, ambient: t, snap: true });
       live?.classList.add("is-3d");
       return true;
     }
@@ -814,12 +866,12 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
         stillsStarted = true;
         timer = window.setTimeout(renderStills, 60);
       }
-      if (inView && ambient && document.visibilityState === "visible") raf = requestAnimationFrame(frame);
+      if (inView && ambient && document.visibilityState === "visible") raf = SmoothScroll.requestFrame(frame);
       else last = 0;
     }
 
     function kick() {
-      if (!raf) raf = requestAnimationFrame(frame);
+      if (!raf) raf = SmoothScroll.requestFrame(frame);
     }
 
     const io = new IntersectionObserver((entries) => {
@@ -831,7 +883,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     document.addEventListener("visibilitychange", kick);
     kick();
     return () => {
-      cancelAnimationFrame(raf);
+      SmoothScroll.cancelFrame(raf);
       window.clearTimeout(timer);
       io.disconnect();
       root.removeEventListener("harbor:kick", kick);
@@ -911,7 +963,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
   return (
     <section
       ref={rootRef}
-      className={`hs${paused ? " is-still" : ""}`}
+      className={`hs${hero ? " hs--cobalt-arrival" : ""}${paused ? " is-still" : ""}`}
       data-story-root
       style={{ "--hs-steps": STEP_IDS.length } as CSSProperties}
     >
@@ -961,6 +1013,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
           })}
         </div>
       </div>
+
+      {hero ? <div ref={heroRef} className="hs-cobalt-hero harbor-hero">{hero}</div> : null}
 
       <div ref={deckRef} className="hs-deck" onFocus={onDeckFocus}>
         {STEP_IDS.map((id, index) => {
@@ -1086,6 +1140,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       </div>
 
       <div className="hs-track" aria-hidden>
+        {hero ? <div className="hs-arrival-track" /> : null}
         {STEP_IDS.map((id, index) => (
           <div
             key={id}
