@@ -15,7 +15,15 @@ export type HarborAnchor =
   | "route"
   | "crate"
   | "workshop"
-  | "boat";
+  | "boat"
+  /** Mastheads of the provider boats (ChatGPT, Google, Perplexity). */
+  | "provider0"
+  | "provider1"
+  | "provider2"
+  /** The client's harbor (Example Studio's town). */
+  | "client"
+  /** The buoy at the end of the onward route (the next decision). */
+  | "nextBuoy";
 
 export type ScreenPoint = { x: number; y: number };
 
@@ -44,7 +52,7 @@ export interface HarborStage {
   project(anchor: HarborAnchor): ScreenPoint | null;
   /**
    * Render a still of one story step at a given CSS size (phone vignettes) and
-   * return it as an image URL, with the source-tag positions in that image.
+   * return it as an image URL, with the positions of the requested anchors in that image.
    */
-  still(step: number, width: number, height: number): { url: string; tags: (ScreenPoint | null)[] } | null;
+  still(step: number, width: number, height: number, anchors: HarborAnchor[]): { url: string; points: (ScreenPoint | null)[] } | null;
 }

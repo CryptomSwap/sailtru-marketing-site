@@ -5,7 +5,7 @@ import { useGLTF } from "@react-three/drei/core/Gltf";
 import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
 import { HarborTheme } from "../harbor-theme";
-import { CameraRig3D, sceneForStep } from "../story-model";
+import { CameraRig3D, STEP_BEATS, STEP_IDS, StoryCues, sceneForStep } from "../story-model";
 import { HarborDirector, type HarborModels } from "./harbor-director";
 import type { HarborAnchor, HarborFrame, HarborStage } from "./stage-types";
 import { ToonKit } from "./toon";
@@ -110,7 +110,7 @@ function World({ layout, mirror, onStage, onReady, onError }: HarborSceneProps) 
         const s = get();
         return director.project(anchor, s.camera, s.size.width, s.size.height);
       },
-      still(step: number, width: number, height: number) {
+      still(step: number, width: number, height: number, anchors: HarborAnchor[]) {
         const s = get();
         const { gl, camera } = s;
         const keep = { w: s.size.width, h: s.size.height, dpr: gl.getPixelRatio() };
@@ -122,7 +122,7 @@ function World({ layout, mirror, onStage, onReady, onError }: HarborSceneProps) 
           director.update(
             {
               s: step,
-              u: step + 0.45,
+              u: StoryCues.settled(step, STEP_BEATS[STEP_IDS[step]] - 1),
               scene: sceneForStep(step),
               ambient: 2.4,
               pointer: { x: 0, y: 0 },
@@ -137,8 +137,8 @@ function World({ layout, mirror, onStage, onReady, onError }: HarborSceneProps) 
           );
           gl.render(s.scene, camera);
           const url = gl.domElement.toDataURL("image/webp", 0.86);
-          const tags = (["tag0", "tag1", "tag2"] as const).map((a) => director.project(a, camera, width, height));
-          return { url, tags };
+          const points = anchors.map((a) => director.project(a, camera, width, height));
+          return { url, points };
         } catch {
           return null;
         } finally {

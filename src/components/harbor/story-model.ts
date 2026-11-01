@@ -19,28 +19,31 @@ export const STEP_IDS = [
 
 export type StepId = (typeof STEP_IDS)[number];
 
-/** Sub-beats per step. The artifact for a step advances through these while the camera holds. */
+/**
+ * Supporting lines per step. Each line is one sub-beat: the narrative card
+ * shows one line at a time and the scene and demonstration card act it out.
+ */
 export const STEP_BEATS: Record<StepId, number> = {
   opening: 1,
   find: 3,
   evidence: 3,
   report: 3,
-  build: 2,
-  workflow: 6,
-  review: 2,
+  build: 3,
+  workflow: 4,
+  review: 3,
   close: 1
 };
 
 /** Relative scroll length of each step (in viewport heights) in the cinematic layout. */
 export const STEP_LENGTH: Record<StepId, number> = {
   opening: 1,
-  find: 1.7,
-  evidence: 1.9,
-  report: 2.1,
-  build: 1.7,
-  workflow: 2.6,
-  review: 1.7,
-  close: 1.15
+  find: 1.8,
+  evidence: 1.7,
+  report: 1.7,
+  build: 1.8,
+  workflow: 2.1,
+  review: 1.6,
+  close: 1.1
 };
 
 export type CameraPose = { x: number; y: number; zoom: number };
@@ -65,7 +68,7 @@ export const DESKTOP_POSES: CameraPose[] = [
 /** Portrait vignette poses: wider and lower so the subject sits above the caption. */
 export const MOBILE_POSES: CameraPose[] = [
   { x: 1060, y: 620, zoom: 0.5 },
-  { x: 1300, y: 640, zoom: 0.56 },
+  { x: 1460, y: 650, zoom: 0.5 },
   { x: 1800, y: 650, zoom: 0.92 },
   { x: 2560, y: 650, zoom: 0.36 },
   { x: 3170, y: 640, zoom: 0.66 },
@@ -157,53 +160,108 @@ export function boatAt(s: number): BoatState {
 
 export type SceneState = {
   boat: BoatState;
+  /** 0..1 the provider boats sailing in (Find). */
+  providers: number;
   /** 0..1 how much of the recommended route is drawn. */
   route: number;
   /** 0..1 the onward route toward the next decision. */
   nextRoute: number;
-  /** 0..1 evidence lines from source buoys to the chart. */
+  /** 0..1 the three investigation areas (buoys, pings and their labels). */
   sources: number;
-  /** Selected finding highlight on the channel marker. */
+  /** Rings around the F01 marker while the finding is being shown. */
   marker: number;
-  /** Crane phase: 0 = crate on dock, 1 = crate lowered onto the boat. */
+  /** 0..1 the F01 marker turning from ink to the accent once the finding is located; it stays selected. */
+  selected: number;
+  /** Crane phase: 0 = crate on the quay, 1 = crate lowered onto the boat. */
   crane: number;
+  /** 0..1 the empty hook lifting clear once the crate is aboard. */
+  hook: number;
   /** Workshop lamp / activity. */
   workshop: number;
 };
 
+/** Global beat: which step is in view and which of its lines is showing. */
+export type Beat = { step: number; sub: number };
+
+/**
+ * One progression for the whole story. Every line of every step starts at a
+ * cue (linear story units, relative to the step's centre). Copy, demonstration
+ * cards, overlays and the scene's actions all read their timing from here, so
+ * scrolling backward, jumping or resizing always lands on the same state.
+ *
+ * A step is in view for u in [i - 0.5, i + 0.5); the camera holds on it for
+ * u in [i - HOLD, i + HOLD]. The first line shows as the step arrives; the
+ * others are spread over the hold so each action happens on a still view.
+ */
+export class StoryCues {
+  static readonly CUES: Record<StepId, number[]> = {
+    opening: [-0.5],
+    find: [-0.5, -0.06, 0.16],
+    evidence: [-0.5, -0.08, 0.15],
+    report: [-0.5, -0.08, 0.15],
+    // The crane works from the camera's arrival (-HOLD) until the second line, when the page changes.
+    build: [-0.5, -0.04, 0.18],
+    workflow: [-0.5, -0.14, 0.04, 0.21],
+    review: [-0.5, -0.08, 0.15],
+    close: [-0.5]
+  };
+
+  /** Absolute linear position where line `sub` of `step` starts. */
+  static cue(step: StepId, sub: number): number {
+    return STEP_IDS.indexOf(step) + StoryCues.CUES[step][sub];
+  }
+
+  static beatAt(u: number): Beat {
+    const max = STEP_IDS.length - 1;
+    const cu = clamp(u, 0, max);
+    const step = Math.min(max, Math.floor(cu + 0.5));
+    const cues = StoryCues.CUES[STEP_IDS[step]];
+    let sub = 0;
+    for (let i = 1; i < cues.length; i += 1) if (cu - step >= cues[i]) sub = i;
+    return { step, sub };
+  }
+
+  /** A linear position that shows `sub` of `step` settled (used by stills and tests). */
+  static settled(step: number, sub: number): number {
+    const cues = StoryCues.CUES[STEP_IDS[step]];
+    const start = cues[sub];
+    const end = sub + 1 < cues.length ? cues[sub + 1] : 0.5;
+    return step + Math.max(start, Math.min(end - 0.02, start + 0.06 + (end - start) * 0.4));
+  }
+}
+
+const cue = StoryCues.cue;
+
 /** Scene state from the eased story position `s` and the linear position `u`. */
 export function sceneAt(s: number, u: number): SceneState {
+  const holdIn = (step: number) => step - HOLD;
   return {
     boat: boatAt(s),
-    route: clamp((u - 2.62) / 0.5),
-    nextRoute: clamp((u - 5.7) / 0.6),
-    sources: clamp((u - 0.62) / 0.5) * (1 - clamp((s - 1.25) / 0.45)),
-    marker: clamp((s - 1.4) / 0.5) * (1 - clamp((s - 3.4) / 0.5)),
-    crane: clamp((u - 3.55) / 0.42),
-    workshop: clamp((s - 4.4) / 0.5) * (1 - clamp((s - 5.6) / 0.4))
+    // Provider boats sail in while the camera arrives at Find.
+    providers: clamp((u - 0.42) / 0.36),
+    // Investigation areas light up with Find's third line, and fade as the story moves on.
+    sources: clamp((u - cue("find", 2)) / 0.1) * (1 - clamp((s - 1.3) / 0.35)),
+    // Evidence's second line locates the footer link: F01 is found and selected.
+    selected: clamp((u - cue("evidence", 1)) / 0.1),
+    marker: clamp((u - cue("evidence", 1)) / 0.1) * (1 - clamp((s - 3.4) / 0.5)),
+    // Report's second line chooses F01: the route draws from the chart to the shipyard.
+    route: clamp((u - cue("report", 1)) / 0.22),
+    // The crane lifts as the camera settles on the shipyard and lands on Build's second line.
+    crane: clamp((u - holdIn(4)) / (cue("build", 1) - holdIn(4))),
+    hook: clamp((u - cue("build", 1)) / 0.14),
+    workshop: clamp((s - 4.4) / 0.5) * (1 - clamp((s - 5.6) / 0.4)),
+    // Review's third line: the next decision.
+    nextRoute: clamp((u - cue("review", 2)) / 0.24)
   };
 }
 
-/** Static scene for a step (used by vignettes and reduced motion). */
+/** Static scene for a step (used by vignettes and reduced motion): its last line, settled. */
 export function sceneForStep(index: number): SceneState {
-  return sceneAt(index, index + 0.45);
+  return sceneAt(index, StoryCues.settled(index, STEP_BEATS[STEP_IDS[index]] - 1));
 }
 
-/** Global beat for the artifacts: which step is in view and which sub-beat it has reached. */
-export type Beat = { step: number; sub: number };
-
 export function beatAt(u: number): Beat {
-  const max = STEP_IDS.length - 1;
-  const cu = clamp(u, 0, max);
-  const step = Math.round(cu);
-  const n = STEP_BEATS[STEP_IDS[step]];
-  if (n <= 1) return { step, sub: 0 };
-  // Sub-beats play as the step arrives and are complete once it is centred,
-  // so the settled state gets a still reading hold.
-  const start = step - 0.46;
-  const span = 0.5;
-  const sub = Math.floor(clamp((cu - start) / span, 0, 0.9999) * n);
-  return { step, sub: Math.max(0, Math.min(n - 1, sub)) };
+  return StoryCues.beatAt(u);
 }
 
 /** World y of the horizon / still-water line. Every layer meets here. */
@@ -270,7 +328,7 @@ export type BoatPose3D = { x: number; z: number; yaw: number; sailing: number };
 
 /**
  * Where everything sits in the 3D harbor. The same meanings as the
- * illustrated harbor: boat = the business, buoys = evidence sources, cobalt
+ * illustrated harbor: cobalt boat = SailTru's journey, buoys = investigation areas, cobalt
  * marker = the selected finding, route = the recommended next action,
  * dock = implementation.
  */
@@ -287,7 +345,7 @@ export class HarborLayout3D {
     { x: -6.2, z: 2.6, yaw: -0.08 },
     { x: 3, z: 3.2, yaw: -0.05 },
     { x: 22.4, z: -1.25, yaw: 0 },
-    { x: 22.4, z: -1.25, yaw: 0 },
+    { x: 26.4, z: 2.0, yaw: -0.08 },
     { x: 33.5, z: 3.6, yaw: -0.12 },
     { x: 37.5, z: 3.4, yaw: -0.06 }
   ];
@@ -306,17 +364,30 @@ export class HarborLayout3D {
 
   /** A short diagonal line receding from the boat's bow, so all three read beside the copy. */
   static readonly SOURCE_BUOYS: XZ[] = [
-    { x: -18.4, z: 0.9 },
-    { x: -15.6, z: -1.2 },
-    { x: -12.6, z: -3.4 }
+    { x: -19.8, z: 2.0 },
+    { x: -17.2, z: 0.6 },
+    { x: -14.6, z: -0.8 }
   ];
 
   /** The selected finding: a cobalt channel marker beside the reef. */
   static readonly MARKER: XZ = { x: -1.2, z: 0.6 };
   static readonly REEF: XZ = { x: 1.8, z: -1.6 };
 
+  /**
+   * Provider boats in the Find view: the active provider (ChatGPT) nearest the
+   * question card, two supporting boats further off. Each sails in from `from`.
+   */
+  static readonly PROVIDERS: { x: number; z: number; yaw: number; scale: number; from: XZ }[] = [
+    { x: -13.6, z: -6.2, yaw: 2.95, scale: 0.82, from: { x: -6.5, z: -7.5 } },
+    { x: -16.2, z: -12, yaw: 2.8, scale: 0.7, from: { x: -10, z: -13.5 } },
+    { x: -12.4, z: -18.5, yaw: 3.05, scale: 0.7, from: { x: -6, z: -20 } }
+  ];
+
+  /** Example Studio's harbor: a point among the town's houses (the client's business). */
+  static readonly CLIENT = { x: 35.5, y: 6.2, z: -21 };
+
   /** The onward route toward the next decision, and the buoy that ends it. */
-  static readonly NEXT_BUOY: XZ = { x: 45, z: 2.2 };
+  static readonly NEXT_BUOY: XZ = { x: 42.4, z: 3.4 };
 
   /** The recommended route: from the report station to the berth (the boat sails it in step 3 → 4). */
   static route(): XZ[] {
@@ -326,7 +397,7 @@ export class HarborLayout3D {
 
   static nextRoute(): XZ[] {
     const s = HarborLayout3D.STATIONS[6];
-    return [{ x: s.x + 2.6, z: s.z }, { x: 39.5, z: 4.4 }, HarborLayout3D.NEXT_BUOY];
+    return [{ x: s.x + 2.6, z: s.z }, { x: 38.4, z: 4.6 }, HarborLayout3D.NEXT_BUOY];
   }
 
   /** Centripetal-free uniform Catmull-Rom through `points` at t ∈ [0, 1]. */
@@ -395,10 +466,13 @@ export class CameraRig3D {
     { target: [-28, 2.2, 2.2], distance: 30.3, yaw: -68.9, pitch: 8.2 },
     { target: [-18.8, 1.7, 0.2], distance: 30, yaw: -17, pitch: 10 },
     { target: [-3.4, 1.7, 1.6], distance: 27, yaw: -6, pitch: 9 },
-    { target: [8.6, 0.6, 0.8], distance: 40, yaw: -24, pitch: 25 },
-    { target: [23.2, 3.1, -2.4], distance: 23, yaw: 7, pitch: 9 },
-    { target: [29.2, 3.2, -4.6], distance: 19, yaw: 11, pitch: 6 },
-    { target: [36.2, 1.9, 2.4], distance: 29, yaw: 5, pitch: 10 },
+    { target: [6.4, 0.6, 0.8], distance: 40, yaw: -24, pitch: 25 },
+    // Build: the boat at its berth on the left, the crane and the crate on the quay beside it.
+    { target: [25, 3.2, -2.6], distance: 28, yaw: 24, pitch: 10 },
+    // Custom systems: the lit workshop, with the loaded boat lying off the quay in front of it.
+    { target: [27, 3.2, -4], distance: 26, yaw: 14, pitch: 7 },
+    // Review: the boat at the client's harbor, the town above and the next decision's buoy ahead.
+    { target: [37.6, 1.9, 2.2], distance: 30, yaw: 10, pitch: 10 },
     { target: [37.6, 2.1, 1.8], distance: 34, yaw: 3, pitch: 12 }
   ];
 
