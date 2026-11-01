@@ -1147,8 +1147,13 @@ body:has(.harbor)::before {
     pointer-events: auto;
   }
 
+  /* The opening copy stays above the chapter bar, also when the actions wrap (Hebrew). */
   .hs-step--opening .hs-step__pin {
-    padding-bottom: 48px;
+    padding-bottom: 92px;
+  }
+
+  .hs-step--opening .hs-cue {
+    margin-top: 20px;
   }
 
   .hs-narr {
