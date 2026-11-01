@@ -63,6 +63,11 @@ export type HarborFrameInput = {
   freeWidth: number;
   /** Ambient clock in seconds; it only advances while ambient motion is allowed. */
   ambient: number;
+  /**
+   * Seconds since the loop's previous frame, for the damping (the loop restarts it
+   * after an idle stretch, so the first frame back doesn't lurch). Defaults to R3F's delta.
+   */
+  dt?: number;
   /** Jump straight to the targets (first frame, resize, phone vignettes). */
   snap?: boolean;
 };

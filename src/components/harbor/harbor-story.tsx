@@ -471,7 +471,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       if(deckRef.current) deckRef.current.inert=Boolean(hero)&&cinematic&&arrival<.9;
     }
 
-    function render3d(stage3d: HarborStage) {
+    function render3d(stage3d: HarborStage, dt: number) {
       const target = focusTarget3d();
       const out = stage3d.frame({
         uTarget,
@@ -480,6 +480,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
         focusTarget: { x: target.x, y: target.y },
         freeWidth: target.free,
         ambient: ambientT,
+        dt,
         snap: snapNext
       });
       snapNext = false;
@@ -649,10 +650,12 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       const dt = Math.min(0.1, realDt);
       last = time;
       if (!pausedRef.current && !reduceQuery.matches) ambientT += Math.min(0.3, realDt);
+      // The scroll as Lenis left it on this tick (the scroll event only arrives with the next frame).
+      if (cinematic) uTarget = linearFromScroll();
       updateArrival();
       // Copy, cards and overlays follow the same damped position as the scene.
       const stage3d = stage3dRef.current;
-      const settled = stage3d ? render3d(stage3d) : renderSvg(time, dt);
+      const settled = stage3d ? render3d(stage3d, dt) : renderSvg(time, dt);
       const ambient = !pausedRef.current && !reduceQuery.matches;
       if (inView && document.visibilityState === "visible" && (!settled || ambient)) {
         raf = SmoothScroll.requestFrame(frame);
@@ -669,7 +672,15 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     function onScroll() {
       if (!cinematic) return;
       uTarget = linearFromScroll();
-      kick();
+      if (inView) {
+        kick();
+        return;
+      }
+      // Below the story (the report, #build-examples, proof...) scrolling renders no 3D frames; the
+      // state still follows the scroll, and the first frame back lands on it without catching up.
+      uDisp = uTarget;
+      snapNext = true;
+      updateBeat(uTarget);
     }
 
     function onResize() {
@@ -756,11 +767,17 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     const onVisibility = () => kick();
     const onMotionPref = () => onResize();
     const onPauseToggle = () => kick();
+    /** A chapter hash typed or traversed later (back/forward) lands like a direct link, not on the deck's article. */
+    const onHashChange = () => {
+      const index = STEP_IDS.indexOf(window.location.hash.slice(1) as (typeof STEP_IDS)[number]);
+      if (index > 0) jumpRef.current(index, false);
+    };
 
     onResize();
     // A chapter link opened directly (/#report) lands on that chapter's settled state.
     const hashIndex = STEP_IDS.indexOf(window.location.hash.slice(1) as (typeof STEP_IDS)[number]);
     if (hashIndex > 0) jumpRef.current(hashIndex, false);
+    window.addEventListener("hashchange", onHashChange);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointermove", onPointer, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
@@ -778,6 +795,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       io.disconnect();
       ro.disconnect();
       cardRo.disconnect();
+      window.removeEventListener("hashchange", onHashChange);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);

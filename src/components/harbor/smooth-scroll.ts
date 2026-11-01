@@ -9,12 +9,18 @@ type Gsap = (typeof import("gsap"))["gsap"];
  *   nothing is added to the first-load script.
  * - Off under prefers-reduced-motion: Lenis is never created and scrolling is
  *   native. The media query is followed at runtime (on → off destroys Lenis).
+ * - Off without a fine pointer (phones, touch-only tablets): there is no wheel
+ *   to smooth, so those pages keep plain native scrolling and native anchor
+ *   jumps. A mouse or trackpad attached later starts it (any-pointer: fine).
  * - Wheel input only: touch keeps native scrolling (syncTouch stays off), and
- *   keyboard, focus and anchor scrolling stay native too; Lenis follows them.
+ *   keyboard and focus scrolling stay native too; Lenis follows them.
+ *   Programmatic jumps (chapter bar, same-page anchors) go through scrollTo.
  * - Lenis scrolls the window itself, so everything that reads window.scrollY
  *   (the story's progress, camera and cards) reads the smoothed scroll.
- *   ScrollTrigger is updated on every Lenis scroll.
- * - Elements marked data-lenis-prevent keep native wheel scrolling.
+ *   ScrollTrigger is updated on every Lenis scroll, and requestFrame runs the
+ *   story's loop on the same GSAP tick, right after Lenis has moved.
+ * - Elements marked data-lenis-prevent (open nav sheets) keep native wheel
+ *   scrolling, and an open nav sheet keeps the page locked.
  */
 export class SmoothScroll {
   /** gsap.ticker's default lag smoothing (restored when Lenis stops). */
@@ -23,7 +29,9 @@ export class SmoothScroll {
   private static lenis: Lenis | null = null;
   private static gsap: Gsap | null = null;
   private static tick: ((time: number) => void) | null = null;
-  private static query: MediaQueryList | null = null;
+  /** Lenis runs while motion is allowed and a fine pointer (mouse, trackpad) is present. */
+  private static reduced: MediaQueryList | null = null;
+  private static finePointer: MediaQueryList | null = null;
   private static mounts = 0;
   /** Bumped on every start/stop, so a slow lazy load can't start Lenis after it was stopped. */
   private static generation = 0;
@@ -48,9 +56,11 @@ export class SmoothScroll {
   static mount(): () => void {
     SmoothScroll.mounts += 1;
     if (SmoothScroll.mounts === 1) {
-      SmoothScroll.query = window.matchMedia("(prefers-reduced-motion: reduce)");
-      SmoothScroll.query.addEventListener("change", SmoothScroll.onMotionChange);
-      if (!SmoothScroll.query.matches) void SmoothScroll.start();
+      SmoothScroll.reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+      SmoothScroll.finePointer = window.matchMedia("(any-pointer: fine)");
+      SmoothScroll.reduced.addEventListener("change", SmoothScroll.onMediaChange);
+      SmoothScroll.finePointer.addEventListener("change", SmoothScroll.onMediaChange);
+      SmoothScroll.onMediaChange();
     }
     let done = false;
     return () => {
@@ -58,8 +68,9 @@ export class SmoothScroll {
       done = true;
       SmoothScroll.mounts -= 1;
       if (SmoothScroll.mounts > 0) return;
-      SmoothScroll.query?.removeEventListener("change", SmoothScroll.onMotionChange);
-      SmoothScroll.query = null;
+      SmoothScroll.reduced?.removeEventListener("change", SmoothScroll.onMediaChange);
+      SmoothScroll.finePointer?.removeEventListener("change", SmoothScroll.onMediaChange);
+      SmoothScroll.reduced = SmoothScroll.finePointer = null;
       SmoothScroll.stop();
     };
   }
@@ -98,9 +109,13 @@ export class SmoothScroll {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
 
-  private static onMotionChange(event: MediaQueryListEvent) {
-    if (event.matches) SmoothScroll.stop();
-    else void SmoothScroll.start();
+  private static get wanted(): boolean {
+    return Boolean(SmoothScroll.finePointer?.matches) && !SmoothScroll.reduced?.matches;
+  }
+
+  private static onMediaChange() {
+    if (SmoothScroll.wanted) void SmoothScroll.start();
+    else SmoothScroll.stop();
   }
 
   private static async start() {
@@ -111,9 +126,18 @@ export class SmoothScroll {
       import("gsap"),
       import("gsap/ScrollTrigger")
     ]);
-    if (generation !== SmoothScroll.generation || SmoothScroll.mounts === 0 || SmoothScroll.query?.matches || SmoothScroll.lenis) return;
+    if (generation !== SmoothScroll.generation || SmoothScroll.mounts === 0 || !SmoothScroll.wanted || SmoothScroll.lenis) return;
     gsap.registerPlugin(ScrollTrigger);
-    const lenis = new LenisClass({ autoRaf: false, smoothWheel: true, syncTouch: false, lerp: 0.12 });
+    const lenis = new LenisClass({
+      autoRaf: false,
+      smoothWheel: true,
+      syncTouch: false,
+      lerp: 0.12,
+      // Same-page anchors are routed by the story (chapters land on their settled state).
+      anchors: false,
+      // An open nav sheet locks the page (body.nav-open { overflow: hidden }); the wheel stays native there too.
+      prevent: () => document.body.classList.contains("nav-open")
+    });
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (time: number) => {
       lenis.raf(time * 1000);

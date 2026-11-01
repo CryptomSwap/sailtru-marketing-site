@@ -93,13 +93,13 @@ function World({ layout, mirror, onStage, onReady, onError }: HarborSceneProps) 
 
   const poses = layout === "stage" ? CameraRig3D.DESKTOP : CameraRig3D.MOBILE;
 
-  // Progress, pointer, framing and camera are damped here, frame-rate independent (delta is the
-  // time since the previous advance). Nothing here touches React state.
+  // Progress, pointer, framing and camera are damped here, frame-rate independent (the story loop's
+  // frame time, else the time since the previous advance). Nothing here touches React state.
   useFrame((state, delta) => {
     const input = inputRef.current;
     if (!input) return;
     const m = motionRef.current;
-    const dt = Math.min(0.1, Math.max(0, delta));
+    const dt = Math.min(0.1, Math.max(0, input.dt ?? delta));
     const snap = Boolean(input.snap) || m.u < 0;
     if (snap) {
       m.u = input.uTarget;
