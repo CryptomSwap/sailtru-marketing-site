@@ -90,6 +90,10 @@ export class HarborDirector {
 
   private readonly socket: THREE.Object3D;
 
+  /** Provider boats (neutral hulls): the platforms buyers search and ask. Their badges are HTML overlays. */
+  private readonly providers: { holder: THREE.Group; bob: THREE.Group; masthead: THREE.Object3D; phase: number }[] = [];
+  private readonly clientFocus = new THREE.Object3D();
+
   constructor(models: HarborModels) {
     const sun = new THREE.Vector3(-0.55, 0.32, -0.77);
     this.sky = new HarborSky(sun);
@@ -103,7 +107,7 @@ export class HarborDirector {
     const accent = ToonKit.toon(HarborTheme.ACCENT);
     const ink = ToonKit.toon(HarborTheme.INK);
 
-    // The client's boat.
+    // SailTru's boat: the investigation and delivery journey.
     const sailboat = models.sailboat.clone(true);
     ToonKit.prepare(sailboat, { pick: (name) => (name === "pal_cobalt" ? accent : undefined) });
     this.pennant = sailboat.getObjectByName("Pennant");
@@ -261,6 +265,24 @@ export class HarborDirector {
       this.root.add(holder);
       this.floaters.push({ group: g, x, z, phase: x * 0.37, amp: 1, baseYaw: 0 });
     };
+    // Provider boats: the same neutral sloop, sailing into the Find view. Never cobalt.
+    HarborLayout3D.PROVIDERS.forEach((p, i) => {
+      const node = part(boats, "SmallSloop");
+      ToonKit.prepare(node);
+      node.scale.setScalar(p.scale);
+      const bob = new THREE.Group();
+      bob.add(node);
+      const holder = new THREE.Group();
+      holder.add(WaterDecal.shadow(4.6 * p.scale, 2 * p.scale, 0.4), WaterDecal.foam(4.4 * p.scale, 1.9 * p.scale, 0.7), bob);
+      this.root.add(holder);
+      const masthead = node.getObjectByName("SmallPennant") ?? node;
+      this.providers.push({ holder, bob, masthead, phase: 0.8 + i * 1.3 });
+    });
+
+    // The client's harbor: Example Studio's town on the hill behind the quay.
+    this.clientFocus.position.set(HarborLayout3D.CLIENT.x, HarborLayout3D.CLIENT.y, HarborLayout3D.CLIENT.z);
+    this.root.add(this.clientFocus);
+
     neighbour("SmallSloop", 5.5, -11.5, 0.5);
     neighbour("SmallSloop", 15.5, -13, -0.35, 0.9);
     neighbour("FishingBoat", 35.6, -3.1, 0);
@@ -376,8 +398,22 @@ export class HarborDirector {
       (ping.material as THREE.MeshBasicMaterial).opacity = scene.sources * (1 - cycle) * 0.85;
       ping.visible = scene.sources > 0.01;
     });
-    // Once selected (evidence chapter onward) the finding stays cobalt.
-    this.markerBand.color.set(HarborTheme.INK).lerp(new THREE.Color(HarborTheme.ACCENT), Math.min(1, Math.max(0, (frame.s - 1.4) / 0.5)));
+    // Provider boats sail in on Find and lie at their moorings afterwards.
+    HarborLayout3D.PROVIDERS.forEach((p, i) => {
+      const b = this.providers[i];
+      const k = scene.providers;
+      const e = k * k * (3 - 2 * k);
+      const x = p.from.x + (p.x - p.from.x) * e;
+      const z = p.from.z + (p.z - p.from.z) * e;
+      b.holder.position.set(x, 0, z);
+      b.holder.rotation.y = p.yaw;
+      b.bob.position.y = HarborWave.height(x, z, t) * 0.9;
+      b.bob.rotation.x = Math.sin(t * 1.05 + b.phase) * 0.04 - (1 - e) * e * 0.18;
+      b.bob.rotation.z = Math.sin(t * 0.9 + b.phase * 1.4) * 0.03;
+    });
+
+    // Once located (Evidence, second line) the finding F01 stays cobalt.
+    this.markerBand.color.set(HarborTheme.INK).lerp(new THREE.Color(HarborTheme.ACCENT), scene.selected);
     this.markerRings.forEach((ring, i) => {
       const pulse = i === 1 ? 1 + ((t * 0.6) % 1) * 0.35 : 1;
       ring.scale.setScalar(pulse);
@@ -389,7 +425,7 @@ export class HarborDirector {
     this.nextRoute.update(t, scene.nextRoute, 0.85);
     this.nextBuoy.group.scale.setScalar(Math.max(0.001, scene.nextRoute));
 
-    this.updateCrane(scene.crane);
+    this.updateCrane(scene.crane, scene.hook);
 
     // Workshop windows warm up while we build.
     const lit = scene.workshop;
@@ -416,7 +452,7 @@ export class HarborDirector {
     }
   }
 
-  private updateCrane(value: number) {
+  private updateCrane(value: number, release: number) {
     const { lift, slew, lower } = CraneMotion3D.phases(value);
     const pivot = this.slew.position;
     // Boat socket in dock space (the boat is at its berth while the crane works).
@@ -436,13 +472,15 @@ export class HarborDirector {
     const groundY = this.crateRest.y + sling;
     const highY = pivot.y - 2.6;
     const deckY = tmp.y + sling;
-    const y = lower > 0 ? highY + (deckY - highY) * lower : groundY + (highY - groundY) * lift;
+    const landed = value >= 0.999;
+    // Once the crate is aboard, the empty hook rises clear of the mast and sails.
+    const up = release * release * (3 - 2 * release);
+    const y = landed ? deckY + (highY - deckY) * up : lower > 0 ? highY + (deckY - highY) * lower : groundY + (highY - groundY) * lift;
     const hx = pivot.x + Math.cos(angle) * r;
     const hz = pivot.z - Math.sin(angle) * r;
     this.hook.position.set(hx, y, hz);
     this.crate.position.set(hx, y - sling, hz);
 
-    const landed = value >= 0.999;
     this.crate.visible = !landed;
     this.boatCrate.visible = landed;
 
@@ -467,8 +505,8 @@ export class HarborDirector {
         const i = Number(anchor.slice(-1));
         const f = this.sources[i];
         f.group.getWorldPosition(out);
-        // Tags stagger in height so neighbouring labels never collide.
-        out.y += anchor.startsWith("tag") ? (i === 1 ? 4.6 : 2.9) : 2.1;
+        // Labels meet the buoy's top mark; their stems differ in length so neighbours never collide.
+        out.y += 2.2;
         return out;
       }
       case "marker":
@@ -487,7 +525,21 @@ export class HarborDirector {
         return this.workshopFocus.getWorldPosition(out);
       case "boat":
         this.boat.getWorldPosition(out);
-        out.y += 3;
+        out.y += 6.5;
+        return out;
+      case "provider0":
+      case "provider1":
+      case "provider2": {
+        const b = this.providers[Number(anchor.slice(-1))];
+        b.masthead.getWorldPosition(out);
+        out.y += 0.55;
+        return out;
+      }
+      case "client":
+        return this.clientFocus.getWorldPosition(out);
+      case "nextBuoy":
+        this.nextBuoy.group.getWorldPosition(out);
+        out.y += 2.6;
         return out;
       default:
         return null;

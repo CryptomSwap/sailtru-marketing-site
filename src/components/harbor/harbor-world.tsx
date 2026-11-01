@@ -5,8 +5,10 @@ import { BOAT_DOCKED, SOURCE_BUOYS, type SceneState } from "./story-model";
 /**
  * The SailTru harbor, drawn as layered vector illustration.
  * Layer content is authored in layer space (x = worldX × depth).
- * Meanings stay fixed: boat = the client's business, buoys = evidence
- * sources, cobalt route = the recommended next action, dock = implementation.
+ * Meanings stay fixed: the cobalt boat = SailTru's investigation and delivery,
+ * the town and quay = the client's business, provider boats = the platforms
+ * buyers search and ask, buoys = investigation areas and findings, cobalt
+ * route = the recommended next action, dock = implementation.
  */
 
 export const INK = HarborTheme.INK;
@@ -95,7 +97,7 @@ export function HarborDefs() {
 /* Boat                                                                */
 /* ------------------------------------------------------------------ */
 
-/** The client's business: a sloop with a cobalt hull, drawn bow toward +x. */
+/** SailTru's boat: a sloop with a cobalt hull, drawn bow toward +x. */
 export function Boat() {
   return (
     <g className="hw-boat-art">
@@ -183,7 +185,36 @@ export function Boat() {
   );
 }
 
-/** The built improvement, carried from the dock to the business. */
+/** Where the provider boats lie in the illustrated harbor (waterline centre, scale); bows toward the SailTru boat. */
+export const PROVIDER_BOATS = [
+  { x: 1790, y: 762, s: 0.62 },
+  { x: 1910, y: 716, s: 0.48 },
+  { x: 1660, y: 708, s: 0.46 }
+];
+
+/** A provider boat: a small neutral sloop. Its platform badge is an HTML overlay at the masthead. */
+function ProviderBoat({ x, y, s }: { x: number; y: number; s: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${-s} ${s})`}>
+      <ellipse cx="4" cy="18" rx="140" ry="12" fill={INK} opacity="0.1" />
+      <line x1="10" y1="-30" x2="10" y2="-318" stroke={INK} strokeWidth="5" strokeLinecap="round" />
+      <line x1="10" y1="-314" x2="134" y2="-46" stroke={INK} strokeWidth="1.6" />
+      <path d="M14 -308 C-6 -232 -52 -132 -112 -66 L14 -62 Z" fill="#f7f2e7" stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+      <path d="M18 -282 C58 -200 100 -118 128 -52 L32 -66 C38 -130 32 -210 18 -282 Z" fill="#f7f2e7" stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+      <line x1="12" y1="-60" x2="-114" y2="-62" stroke={INK} strokeWidth="5" strokeLinecap="round" />
+      <path
+        d="M-126 -32 C-64 -20 40 -22 140 -48 C130 -20 112 4 76 14 C28 24 -40 24 -92 14 C-112 8 -122 -6 -126 -32 Z"
+        fill="#e7e1d3"
+        stroke={INK}
+        strokeWidth="3.2"
+        strokeLinejoin="round"
+      />
+      <path d="M-125 -30 C-64 -18 40 -20 139 -46 L136 -38 C40 -10 -64 -8 -122 -20 Z" fill={INK} opacity="0.7" />
+    </g>
+  );
+}
+
+/** The built improvement (F01), carried from the dock to the client's harbor. */
 function Crate({ x, y }: { x: number; y: number }) {
   return (
     <g transform={`translate(${x} ${y}) scale(0.76)`}>
@@ -399,6 +430,13 @@ export function MainLayer({ scene, routeMaskId }: { scene: SceneState; routeMask
             </g>
           ))}
         </g>
+      </g>
+
+      {/* provider boats: the platforms buyers search and ask */}
+      <g data-hw="providers">
+        {PROVIDER_BOATS.map((b, i) => (
+          <ProviderBoat key={i} {...b} />
+        ))}
       </g>
 
       {/* the reef and the selected-finding channel marker */}
