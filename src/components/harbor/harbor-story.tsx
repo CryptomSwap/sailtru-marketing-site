@@ -469,6 +469,9 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       root!.dataset.arriving=String(Boolean(hero)&&cinematic&&arrival<.9);
       if(heroRef.current) { heroRef.current.inert=cinematic&&arrival>.55; heroRef.current.setAttribute("aria-hidden",String(cinematic&&arrival>.55)); }
       if(deckRef.current) deckRef.current.inert=Boolean(hero)&&cinematic&&arrival<.9;
+      // --arrival-hero is 0 from .9 on: the hero is gone, and its dot field stops drawing (set only on change).
+      const dissolved=cinematic&&arrival>=.9;
+      if(heroRef.current&&heroRef.current.hasAttribute("data-dissolved")!==dissolved) heroRef.current.toggleAttribute("data-dissolved",dissolved);
     }
 
     function render3d(stage3d: HarborStage, dt: number) {
@@ -802,7 +805,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       reduceQuery.removeEventListener("change", onMotionPref);
       root.removeEventListener("harbor:kick", onPauseToggle);
       document.removeEventListener("click", onAnchorClick);
-      if(heroNode) { heroNode.inert=false; heroNode.removeAttribute("aria-hidden"); }
+      if(heroNode) { heroNode.inert=false; heroNode.removeAttribute("aria-hidden"); heroNode.removeAttribute("data-dissolved"); }
       if(deckNode) deckNode.inert=false;
     };
   }, [rtl, hero]);
