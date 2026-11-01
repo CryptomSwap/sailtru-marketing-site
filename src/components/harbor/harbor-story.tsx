@@ -72,12 +72,12 @@ type OverlaySpec = {
  */
 const OVERLAYS: OverlaySpec[] = [
   { key: "provider0", anchor: "provider0", kind: "badge", provider: "chatgpt", lead: true, show: (b, s) => (b.step === 1 ? s.providers : 0), stills: [1] },
-  { key: "provider1", anchor: "provider1", kind: "badge", provider: "google", show: (b, s) => (b.step === 1 && b.sub < 2 ? s.providers * 0.92 : 0), stills: [1] },
-  { key: "provider2", anchor: "provider2", kind: "badge", provider: "perplexity", show: (b, s) => (b.step === 1 && b.sub < 2 ? s.providers * 0.92 : 0), stills: [1] },
+  { key: "provider1", anchor: "provider1", kind: "badge", provider: "google", show: (b, s) => (b.step === 1 && b.sub < 2 ? s.providers * 0.92 : 0) },
+  { key: "provider2", anchor: "provider2", kind: "badge", provider: "perplexity", show: (b, s) => (b.step === 1 && b.sub < 2 ? s.providers * 0.92 : 0) },
   { key: "boat", anchor: "boat", kind: "label", show: (b) => (b.step === 1 && b.sub < 2 ? 1 : 0) },
   { key: "area0", anchor: "tag0", kind: "label", show: (b, s) => (b.step === 1 ? s.sources : 0) },
-  { key: "area1", anchor: "tag1", kind: "label", stem: 58, show: (b, s) => (b.step === 1 ? s.sources : 0) },
-  { key: "area2", anchor: "tag2", kind: "label", show: (b, s) => (b.step === 1 ? s.sources : 0) },
+  { key: "area1", anchor: "tag1", kind: "label", stem: 22, show: (b, s) => (b.step === 1 ? s.sources : 0) },
+  { key: "area2", anchor: "tag2", kind: "label", stem: 92, show: (b, s) => (b.step === 1 ? s.sources : 0) },
   { key: "f01", anchor: "marker", kind: "label", accent: true, show: (b) => (b.step === 2 && b.sub >= 1 ? 1 : 0), stills: [2] },
   { key: "crate", anchor: "crate", kind: "label", accent: true, show: (b) => (b.step === 4 ? 1 : 0), stills: [4] },
   { key: "client", anchor: "client", kind: "label", show: (b) => (b.step === 6 ? 1 : 0), stills: [6] },

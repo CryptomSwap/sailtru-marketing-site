@@ -264,7 +264,10 @@ export function EvidenceDemo({ sub, inline }: DemoProps) {
       </div>
       <div className="hx-site__finding" data-on={level >= 2}>
         <FindingChip id={f01.id} title={f01.title} tone="accent" />
-        <p className="hx-site__where">{t("where")}</p>
+        <p className="hx-site__where">
+          {t("where")}{" "}
+          <span dir="ltr">{t("url").slice(t("url").indexOf("/"))}</span>
+        </p>
       </div>
       <p className="hx-card__foot hx-card__foot--muted">{t("caveat")}</p>
     </Card>

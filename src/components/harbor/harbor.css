@@ -339,8 +339,12 @@ body:has(.harbor)::before {
 .hs-btn--primary {
   background: var(--cobalt);
   color: #fff !important;
-  border: 1.5px solid var(--cobalt);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 10px 24px -14px rgba(36, 72, 224, 0.9);
+  border: 1.5px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+[dir="rtl"] .hs-btn--primary {
+  box-shadow: -3px 3px 0 var(--ink);
 }
 
 .hs-btn--primary:hover {
