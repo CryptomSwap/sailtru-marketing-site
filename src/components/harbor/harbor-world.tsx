@@ -187,9 +187,9 @@ export function Boat() {
 
 /** Where the provider boats lie in the illustrated harbor (waterline centre, scale); bows toward the SailTru boat. */
 export const PROVIDER_BOATS = [
-  { x: 1790, y: 762, s: 0.62 },
-  { x: 1910, y: 716, s: 0.48 },
-  { x: 1660, y: 708, s: 0.46 }
+  { x: 1560, y: 735, s: 0.5 },
+  { x: 1420, y: 690, s: 0.38 },
+  { x: 1490, y: 676, s: 0.34 }
 ];
 
 /** A provider boat: a small neutral sloop. Its platform badge is an HTML overlay at the masthead. */

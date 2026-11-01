@@ -103,9 +103,9 @@ const SVG_ANCHORS: Record<HarborAnchor, { x: number; y: number }> = {
   crate: { x: 3022, y: 700 },
   workshop: { x: 3594, y: 676 },
   boat: { x: 1040, y: 420 },
-  provider0: { x: 1790, y: 560 },
-  provider1: { x: 1910, y: 590 },
-  provider2: { x: 1660, y: 590 },
+  provider0: { x: 1555, y: 562 },
+  provider1: { x: 1416, y: 558 },
+  provider2: { x: 1486, y: 560 },
   client: { x: 3690, y: 560 },
   nextBuoy: { x: 4340, y: 790 }
 };

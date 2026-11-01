@@ -56,7 +56,7 @@ export type CameraPose = { x: number; y: number; zoom: number };
  */
 export const DESKTOP_POSES: CameraPose[] = [
   { x: 760, y: 560, zoom: 1.05 },
-  { x: 1180, y: 590, zoom: 0.92 },
+  { x: 1330, y: 600, zoom: 0.72 },
   { x: 1720, y: 640, zoom: 1.3 },
   { x: 2480, y: 600, zoom: 0.66 },
   { x: 3200, y: 620, zoom: 1.0 },
@@ -80,7 +80,7 @@ export const MOBILE_POSES: CameraPose[] = [
 /** Boat stations in world units (waterline centre). */
 const BOAT_STATIONS = [
   { x: 640, y: 742 },
-  { x: 1040, y: 744 },
+  { x: 1100, y: 744 },
   { x: 1690, y: 748 },
   { x: 2140, y: 746 },
   { x: 3112, y: 792 },
