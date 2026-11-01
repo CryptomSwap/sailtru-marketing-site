@@ -62,6 +62,9 @@ export class HarborDirector {
   private readonly boatWake: THREE.Mesh;
   private readonly boatCrate: THREE.Object3D;
   private readonly pennant: THREE.Object3D | undefined;
+  /** The boom (pivot at the gooseneck) and the mainsail and battens it carries. */
+  private readonly boom: THREE.Object3D | undefined;
+  private readonly mainsail: THREE.Object3D[] = [];
 
   private readonly sources: Floater[] = [];
   private readonly sourcePings: THREE.Mesh[] = [];
@@ -111,6 +114,11 @@ export class HarborDirector {
     const sailboat = models.sailboat.clone(true);
     ToonKit.prepare(sailboat, { pick: (name) => (name === "pal_cobalt" ? accent : undefined) });
     this.pennant = sailboat.getObjectByName("Pennant");
+    this.boom = sailboat.getObjectByName("Boom");
+    for (const name of ["Mainsail", "Battens"]) {
+      const node = sailboat.getObjectByName(name);
+      if (node) this.mainsail.push(node);
+    }
     this.boatBob.add(sailboat);
     this.boat.add(WaterDecal.shadow(6.8, 2.8, 0.5));
     const foam = WaterDecal.foam(6.4, 2.6, 0.85);
@@ -382,6 +390,7 @@ export class HarborDirector {
     this.boatBob.rotation.z = Math.sin(t * 1.1 + 1) * 0.022;
     (this.boatWake.material as THREE.MeshBasicMaterial).opacity = b.sailing * 0.9;
     if (this.pennant) this.pennant.rotation.y = Math.sin(t * 5.2) * 0.22 + Math.sin(t * 8.1) * 0.08;
+    this.updateRig(scene.mainDown, scene.boomOut);
 
     for (const f of this.floaters) {
       f.group.position.y = HarborWave.height(f.x, f.z, t) * 0.9;
@@ -450,6 +459,23 @@ export class HarborDirector {
       if (g.wingL) g.wingL.rotation.x = -flap;
       if (g.wingR) g.wingR.rotation.x = flap;
     }
+  }
+
+  /**
+   * Lower the mainsail onto the boom (it folds down to its foot, 0.07 m above the
+   * boom's pivot) and swing the boom out over the water, away from the quay.
+   */
+  private updateRig(down: number, out: number) {
+    const smooth = (v: number) => v * v * (3 - 2 * v);
+    const k = 1 - 0.95 * smooth(down);
+    const foot = 1.52;
+    const pivot = 1.45;
+    for (const node of this.mainsail) {
+      node.scale.y = k;
+      // Sail vertices are in boat space under a node offset of -pivot: keep the foot fixed while scaling.
+      node.position.y = foot - pivot - foot * k;
+    }
+    if (this.boom) this.boom.rotation.y = smooth(out) * 1.15;
   }
 
   private updateCrane(value: number, release: number) {

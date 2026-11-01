@@ -457,7 +457,6 @@ def sloop(root, prefix="", hull_key="cobalt", stripe_key="cream", pennant_key="c
     mast_x = 0.55
     bm = bmesh.new()
     bm_cyl(bm, (mast_x, 0, 0.95), 0.055, 0.04, 5.0, 8, 0)
-    bm_beam(bm, (mast_x, 0, 1.45), (mast_x - 2.25, 0, 1.38), 0.08, 1)  # boom
     bm_beam(bm, (mast_x, 0, 5.85), (2.36, 0, 0.92), 0.018, 1)  # forestay
     bm_beam(bm, (mast_x, 0, 5.85), (-2.0, 0, 0.66), 0.016, 1)  # backstay
     for side in (-1, 1):
@@ -474,6 +473,15 @@ def sloop(root, prefix="", hull_key="cobalt", stripe_key="cream", pennant_key="c
         bm_beam(bm, (-1.6, side * 0.66, 0.98), (1.5, side * 0.66, 1.0), 0.016, 1)
     finish(f"{prefix}Rig", bm, ["cream", "ink"], root)
 
+    # The boom is its own node, pivoting at the gooseneck, and carries the mainsail and its battens:
+    # in code the main can be lowered onto the boom and the boom swung clear (e.g. while loading at a berth).
+    gooseneck = (mast_x, 0, 1.45)
+    boom = empty(f"{prefix}Boom", gooseneck, root)
+    on_boom = tuple(-c for c in gooseneck)
+    bm = bmesh.new()
+    bm_beam(bm, (0, 0, 0), (-2.25, 0, -0.07), 0.08, 0)
+    finish(f"{prefix}BoomSpar", bm, "ink", boom)
+
     # Sails: a slightly billowed mainsail and jib, solidified for clean outlines.
     def main(u, v):
         # u along the foot (0 = mast, 1 = clew), v up the luff
@@ -484,7 +492,7 @@ def sloop(root, prefix="", hull_key="cobalt", stripe_key="cream", pennant_key="c
 
     bm = bmesh.new()
     bm_grid_surface(bm, main, 8, 6)
-    sail = finish(f"{prefix}Mainsail", bm, sail_key, root, smooth=True)
+    sail = finish(f"{prefix}Mainsail", bm, sail_key, boom, smooth=True, location=on_boom)
     solidify(sail, 0.04)
 
     def jib(u, v):
@@ -510,7 +518,7 @@ def sloop(root, prefix="", hull_key="cobalt", stripe_key="cream", pennant_key="c
         mid = Vector(main(0.5, v))
         bm_beam(bm, a + Vector((0, 0.03, 0)), mid + Vector((0, 0.03, 0)), 0.02, 0)
         bm_beam(bm, mid + Vector((0, 0.03, 0)), b + Vector((0, 0.03, 0)), 0.02, 0)
-    finish(f"{prefix}Battens", bm, "ink", root)
+    finish(f"{prefix}Battens", bm, "ink", boom, location=on_boom)
 
     # Pennant at the masthead: its own node so code can flutter it.
     pennant_root = empty(f"{prefix}Pennant", (mast_x, 0, 5.95), root)

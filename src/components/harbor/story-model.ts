@@ -176,6 +176,10 @@ export type SceneState = {
   crane: number;
   /** 0..1 the empty hook lifting clear once the crate is aboard. */
   hook: number;
+  /** 0..1 the mainsail lowered onto the boom while the boat is alongside (Build, Custom systems). */
+  mainDown: number;
+  /** 0..1 the boom swung out over the water so the crate can be lowered into the cockpit. */
+  boomOut: number;
   /** Workshop lamp / activity. */
   workshop: number;
 };
@@ -249,6 +253,10 @@ export function sceneAt(s: number, u: number): SceneState {
     // The crane lifts as the camera settles on the shipyard and lands on Build's second line.
     crane: clamp((u - holdIn(4)) / (cue("build", 1) - holdIn(4))),
     hook: clamp((u - cue("build", 1)) / 0.14),
+    // Sails stay coherent with the crane: the main comes down as the boat berths and goes up as it leaves,
+    // and the boom swings clear for the crate and back once the hook has lifted away.
+    mainDown: clamp((s - 3.45) / 0.35) * (1 - clamp((s - 5.05) / 0.35)),
+    boomOut: clamp((s - 3.72) / 0.26) * (1 - clamp((u - cue("build", 1) - 0.12) / 0.12)),
     workshop: clamp((s - 4.4) / 0.5) * (1 - clamp((s - 5.6) / 0.4)),
     // Review's third line: the next decision.
     nextRoute: clamp((u - cue("review", 2)) / 0.24)
