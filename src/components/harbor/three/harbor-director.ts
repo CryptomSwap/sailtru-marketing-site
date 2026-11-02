@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { HarborTheme } from "../harbor-theme";
-import { CameraRig3D, CraneMotion3D, HarborLayout3D, type CameraPose3D } from "../story-model";
+import { CameraRig3D, CobaltArrival, CraneMotion3D, HarborLayout3D, StoryPath, type BoatPose3D, type CameraPose3D } from "../story-model";
 import { HarborSky, HarborWater, HarborWave, LighthouseBeam, RouteRibbon, WaterDecal } from "./harbor-effects";
 import type { HarborAnchor, HarborFrame, ScreenPoint } from "./stage-types";
 import { ToonKit } from "./toon";
@@ -16,10 +16,19 @@ export type HarborModels = {
 };
 
 type Floater = { group: THREE.Object3D; x: number; z: number; phase: number; amp: number; baseYaw: number };
+/** A harbour neighbour drifting a slow loop around its mooring (rx, rz metres; speed rad/s, its sign the direction). */
+type Drifter = { holder: THREE.Object3D; float: Floater; x: number; z: number; rx: number; rz: number; speed: number; phase: number };
 type Gull = { node: THREE.Object3D; wingL?: THREE.Object3D; wingR?: THREE.Object3D; cx: number; cy: number; cz: number; r: number; speed: number; phase: number };
 
 const tmp = new THREE.Vector3();
 const tmp2 = new THREE.Vector3();
+const spread = HarborLayout3D.spread;
+const REACH = HarborLayout3D.REACH;
+
+function smooth(x: number) {
+  const c = THREE.MathUtils.clamp(x, 0, 1);
+  return c * c * (3 - 2 * c);
+}
 
 /** Find a node by name in a Blender scene and clone it (materials are converted afterwards). */
 function part(source: THREE.Object3D, name: string): THREE.Object3D {
@@ -94,6 +103,22 @@ export class HarborDirector {
 
   private readonly socket: THREE.Object3D;
 
+  /** SailTru's boat alone, for the overlay that carries it across the cobalt entrance. */
+  private readonly overlay = new THREE.Scene();
+  /** On the cobalt nothing hides the keel, so the overlay is cut at the water (a little under the foam and wake). */
+  private readonly waterline = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
+  private boatSwell = 0;
+  private readonly drifters: Drifter[] = [];
+
+  /** Per-frame scratch: poses and colours are reused, never allocated in update(). */
+  private readonly pose: CameraPose3D = { target: [0, 0, 0], distance: 1, yaw: 0, pitch: 0 };
+  private readonly camXYZ: [number, number, number] = [0, 0, 0];
+  private readonly boatPose: BoatPose3D = { x: 0, z: 0, yaw: 0, sailing: 0 };
+  private readonly inkColor = new THREE.Color(HarborTheme.INK);
+  private readonly accentColor = new THREE.Color(HarborTheme.ACCENT);
+  private readonly glassColor = new THREE.Color(HarborTheme.INK).lerp(new THREE.Color("#5a6170"), 0.4);
+  private readonly warmColor = new THREE.Color(HarborTheme.WINDOW_LIT);
+
   /** The live camera's damped position and look-at point, and this frame's goals. */
   private readonly camPos = new THREE.Vector3();
   private readonly camLook = new THREE.Vector3();
@@ -114,6 +139,9 @@ export class HarborDirector {
     const key = new THREE.DirectionalLight("#fff3df", 1.95);
     key.position.set(-30, 40, 28);
     this.root.add(hemi, key, key.target);
+    // The overlay is lit like the harbor, so the boat on the cobalt is the boat in the harbor.
+    const overlayKey = key.clone();
+    this.overlay.add(hemi.clone(), overlayKey, overlayKey.target);
 
     const accent = ToonKit.toon(HarborTheme.ACCENT);
     const ink = ToonKit.toon(HarborTheme.INK);
@@ -175,13 +203,12 @@ export class HarborDirector {
     // The working dock.
     this.dock = models.dock.clone(true);
     this.dock.position.set(HarborLayout3D.DOCK.x, 0, HarborLayout3D.DOCK.z);
-    const glass = new THREE.Color(HarborTheme.INK).lerp(new THREE.Color("#5a6170"), 0.4);
     this.hookMaterial = ink.clone();
     ToonKit.prepare(this.dock, {
       pick: (name, mesh) => {
         if (name === "pal_cobalt") return accent;
         if (name === "pal_glass" && within(mesh, /^WorkshopWindow/)) {
-          const m = new THREE.MeshToonMaterial({ color: glass.clone(), gradientMap: ToonKit.gradientMap() });
+          const m = new THREE.MeshToonMaterial({ color: this.glassColor.clone(), gradientMap: ToonKit.gradientMap() });
           this.windowMaterials.push(m);
           return m;
         }
@@ -218,7 +245,7 @@ export class HarborDirector {
     // Lighthouse with a turning lamp.
     const lighthouse = models.lighthouse.clone(true);
     ToonKit.prepare(lighthouse);
-    lighthouse.position.set(9, 0, -24);
+    lighthouse.position.set(spread(9), 0, -24);
     lighthouse.scale.setScalar(1.25);
     const lamp = lighthouse.getObjectByName("LighthouseLamp");
     if (lamp) {
@@ -238,31 +265,34 @@ export class HarborDirector {
       this.root.add(node);
       return node;
     };
-    place(part(terrain, "Headland"), -47, 0, -13, 1.15, 0.1);
-    place(part(terrain, "TownHill"), 37, 0, -25, 1.1);
-    const ridge = place(part(terrain, "FarRidge"), 6, -0.3, -100, 2.2);
+    place(part(terrain, "Headland"), spread(-47, REACH.opening), 0, -13, 1.15, 0.1);
+    place(part(terrain, "TownHill"), spread(37, REACH.town), 0, -25, 1.1);
+    // The far ridge stretches with the coast it backs.
+    const ridge = place(part(terrain, "FarRidge"), spread(6), -0.3, -100, 2.2);
+    ridge.scale.x *= StoryPath.SPREAD;
     ridge.scale.y = 0.9;
-    place(part(terrain, "Islet_A"), -27, 0, -15, 1.2);
-    place(part(terrain, "Islet_B"), 50, 0, -7, 1.3);
+    place(part(terrain, "Islet_A"), spread(-27), 0, -15, 1.2);
+    place(part(terrain, "Islet_B"), spread(50, REACH.town), 0, -7, 1.3);
     place(part(terrain, "Reef"), HarborLayout3D.REEF.x, 0, HarborLayout3D.REEF.z, 1.3);
     const props = models.props;
-    // Foreground framing on the right edge of the opening view.
-    place(part(props, "Rock_C"), -39.5, 0, 14.5, 1.3, 0.4);
-    place(part(props, "Palm_B"), -39.2, 0.55, 14.2, 1.2, 0.8);
-    place(part(props, "Palm_A"), -26.4, 1.0, -14.7, 1.1, 1.2);
-    place(part(props, "Palm_B"), -28.2, 0.8, -14.1, 0.9, 2.1);
+    // A rock and palm on the headland point, behind the boat's way in on the cobalt entrance.
+    const point = spread(-47.2, REACH.opening);
+    place(part(props, "Rock_C"), point, 0, -3.2, 1.3, 0.4);
+    place(part(props, "Palm_B"), point + 0.3, 0.55, -3.5, 1.2, 0.8);
+    place(part(props, "Palm_A"), spread(-26.4, -27), 1.0, -14.7, 1.1, 1.2);
+    place(part(props, "Palm_B"), spread(-28.2, -27), 0.8, -14.1, 0.9, 2.1);
     // Foreground rocks: the near layer of the opening composition.
-    place(part(props, "Rock_A"), -27.5, 0, 10.5, 1.0, 0.7);
-    place(part(props, "Rock_B"), -26, 0, 11.6, 0.7, 2.4);
-    place(part(props, "Rock_A"), -27, 0, -4.5, 1.0, 1.1);
-    place(part(props, "Rock_B"), 14.5, 0, -5.2, 1.1);
-    place(part(props, "Rock_A"), 47, 0, 1.2, 0.9, 2.2);
-    place(part(props, "Palm_A"), 49.6, 1.1, -7.2, 1.25, 0.6);
+    place(part(props, "Rock_A"), spread(-27.5, REACH.opening), 0, 10.5, 1.0, 0.7);
+    place(part(props, "Rock_B"), spread(-26, REACH.opening), 0, 11.6, 0.7, 2.4);
+    place(part(props, "Rock_A"), spread(-27), 0, -4.5, 1.0, 1.1);
+    place(part(props, "Rock_B"), spread(14.5), 0, -5.2, 1.1);
+    place(part(props, "Rock_A"), spread(47, REACH.town), 0, 1.2, 0.9, 2.2);
+    place(part(props, "Palm_A"), spread(49.6, REACH.town), 1.1, -7.2, 1.25, 0.6);
     for (const [x, z, w, d] of [
-      [-39.5, 14.5, 6, 3.2],
-      [-27, -4.5, 3.4, 2.2],
-      [-27, 11, 4.6, 3.2],
-      [14.5, -5.2, 3.2, 2.2],
+      [point, -3.2, 6, 3.2],
+      [spread(-27), -4.5, 3.4, 2.2],
+      [spread(-27, REACH.opening), 11, 4.6, 3.2],
+      [spread(14.5), -5.2, 3.2, 2.2],
       [HarborLayout3D.REEF.x, HarborLayout3D.REEF.z, 6.8, 3.4]
     ]) {
       const f = WaterDecal.foam(w, d, 0.75);
@@ -270,9 +300,9 @@ export class HarborDirector {
       this.root.add(f);
     }
 
-    // Harbour neighbours: never cobalt, they bob quietly.
+    // Harbour neighbours: never cobalt. They bob, and drift slow loops around their moorings.
     const boats = models.boats;
-    const neighbour = (name: string, x: number, z: number, yaw: number, s = 1) => {
+    const neighbour = (name: string, x: number, z: number, loop: { rx: number; rz: number; speed: number; phase: number }, s = 1) => {
       const node = part(boats, name);
       ToonKit.prepare(node);
       node.scale.setScalar(s);
@@ -282,9 +312,10 @@ export class HarborDirector {
       const holder = new THREE.Group();
       holder.add(shadow, g);
       holder.position.set(x, 0, z);
-      holder.rotation.y = yaw;
       this.root.add(holder);
-      this.floaters.push({ group: g, x, z, phase: x * 0.37, amp: 1, baseYaw: 0 });
+      const float = { group: g, x, z, phase: x * 0.37, amp: 1, baseYaw: 0 };
+      this.floaters.push(float);
+      this.drifters.push({ holder, float, x, z, ...loop });
     };
     // Provider boats: the same neutral sloop, sailing into the Find view. Never cobalt.
     HarborLayout3D.PROVIDERS.forEach((p, i) => {
@@ -304,10 +335,11 @@ export class HarborDirector {
     this.clientFocus.position.set(HarborLayout3D.CLIENT.x, HarborLayout3D.CLIENT.y, HarborLayout3D.CLIENT.z);
     this.root.add(this.clientFocus);
 
-    neighbour("SmallSloop", 5.5, -11.5, 0.5);
-    neighbour("SmallSloop", 15.5, -13, -0.35, 0.9);
-    neighbour("FishingBoat", 35.6, -3.1, 0);
-    neighbour("Dinghy", 16.6, -1.7, 0.35);
+    neighbour("SmallSloop", spread(5.5), -11.5, { rx: 3.2, rz: 1.4, speed: 0.045, phase: 0.4 });
+    // Off to the side of the berth as the Build view sees it, so it never sails in behind SailTru's mast.
+    neighbour("SmallSloop", spread(12), -14, { rx: 2.6, rz: 1.2, speed: -0.05, phase: 2.1 }, 0.9);
+    neighbour("FishingBoat", spread(35.6, REACH.town), -3.1, { rx: 2.4, rz: 0.9, speed: 0.04, phase: 4.2 });
+    neighbour("Dinghy", spread(16.6), -1.7, { rx: 1.6, rz: 0.7, speed: -0.06, phase: 1.3 });
 
     // Clouds and gulls.
     // Clouds stay paper-white: no fog, a soft toon band and their own ink line.
@@ -322,10 +354,10 @@ export class HarborDirector {
       this.clouds.push({ node: c, speed: 0.35 + (i % 3) * 0.12, baseX: c.position.x });
     });
     const gullSpots: [number, number, number, number][] = [
-      [-30, 9.5, -2, 6],
-      [-12, 11, -6, 8],
-      [22, 12.5, -5, 7],
-      [38, 10, -1, 5]
+      [spread(-30), 9.5, -2, 6],
+      [spread(-12), 11, -6, 8],
+      [spread(22), 12.5, -5, 7],
+      [spread(38), 10, -1, 5]
     ];
     gullSpots.forEach(([cx, cy, cz, r], i) => {
       const node = part(props, "Gull");
@@ -386,43 +418,22 @@ export class HarborDirector {
   ): number {
     const t = frame.ambient;
     const { scene } = frame;
-
-    // Camera: the step's pose, the viewport's framing, then a restrained pointer offset.
-    const pose = CameraRig3D.poseAt(frame.s, poses);
-    const scaled: CameraPose3D = {
-      ...pose,
-      distance: pose.distance * CameraRig3D.distanceScale(frame.freeWidth, height),
-      yaw: pose.yaw + frame.pointer.x * (mirror ? -1.6 : 1.6),
-      pitch: pose.pitch - frame.pointer.y * 0.8
-    };
-    const [cx, cy, cz] = CameraRig3D.position(scaled);
-    this.camGoal.set(cx, cy, cz);
-    this.lookGoal.set(pose.target[0], pose.target[1], pose.target[2]);
     const arrival = frame.arrival ?? 1;
-    const smooth = (x:number) => {x=THREE.MathUtils.clamp(x,0,1);return x*x*(3-2*x);};
-    const turn = smooth(arrival/.62), settle = smooth((arrival-.6)/.4);
-    const boatPose = HarborLayout3D.boatAt(frame.s);
-    const entryX = THREE.MathUtils.lerp(-39, boatPose.x, smooth(arrival));
-    const entryZ = THREE.MathUtils.lerp(6.4, boatPose.z, smooth(arrival));
-    if (arrival < 1) {
-      const distance = THREE.MathUtils.lerp(34,18,smooth(arrival/.52));
-      // Low stern/starboard tracking view: hull stays at water level, not in camera space.
-      tmp.set(entryX-distance*.766, 4.8, entryZ+distance*.643);
-      this.camGoal.lerpVectors(tmp,this.camGoal,settle);
-      tmp.set(entryX,2.5,entryZ);
-      this.lookGoal.lerpVectors(tmp,this.lookGoal,settle);
-    }
+    const standBack = CameraRig3D.distanceScale(frame.freeWidth, height);
+
+    // Camera: the step's pose (turning in from the arrival view during the cobalt entrance),
+    // the viewport's framing, then a restrained pointer offset.
+    const pose = CameraRig3D.poseAt(frame.s, poses, this.pose);
+    if (arrival < 1) CameraRig3D.blend(CameraRig3D.ARRIVAL, pose, CobaltArrival.ease(arrival, CobaltArrival.CAMERA), pose);
+    this.lookGoal.set(pose.target[0], pose.target[1], pose.target[2]);
+    pose.distance *= standBack;
+    pose.yaw += frame.pointer.x * (mirror ? -1.6 : 1.6);
+    pose.pitch -= frame.pointer.y * 0.8;
+    this.camGoal.fromArray(CameraRig3D.position(pose, this.camXYZ));
     let rest = 0;
     if (damp && this.camLive && !damp.snap) {
-      const d = (a: THREE.Vector3, b: THREE.Vector3) => {
-        a.set(
-          THREE.MathUtils.damp(a.x, b.x, damp.lambda, damp.dt),
-          THREE.MathUtils.damp(a.y, b.y, damp.lambda, damp.dt),
-          THREE.MathUtils.damp(a.z, b.z, damp.lambda, damp.dt)
-        );
-      };
-      d(this.camPos, this.camGoal);
-      d(this.camLook, this.lookGoal);
+      this.dampTo(this.camPos, this.camGoal, damp.lambda, damp.dt);
+      this.dampTo(this.camLook, this.lookGoal, damp.lambda, damp.dt);
       rest = Math.max(this.camPos.distanceTo(this.camGoal), this.camLook.distanceTo(this.lookGoal));
       if (rest < 0.002) {
         this.camPos.copy(this.camGoal);
@@ -442,31 +453,39 @@ export class HarborDirector {
     }
     camera.fov = CameraRig3D.FOV;
     camera.aspect = width / Math.max(1, height);
-    const entranceX = width*(mirror ? .77 : .23);
-    const focusX = arrival < 1 ? THREE.MathUtils.lerp(entranceX,frame.focus.x,settle) : frame.focus.x;
-    const focusY = arrival < 1 ? THREE.MathUtils.lerp(height*.55,frame.focus.y,settle) : frame.focus.y;
-    camera.setViewOffset(width, height, width / 2 - focusX, height / 2 - focusY, width, height);
+    camera.setViewOffset(width, height, width / 2 - frame.focus.x, height / 2 - frame.focus.y, width, height);
     camera.updateProjectionMatrix();
 
     this.sky.update(camera);
     this.water.update(t, camera);
 
-    // The boat sails the story; the swell and the wind are ambient.
-    const b = HarborLayout3D.boatAt(frame.s);
+    // The boat sails the story (on the entrance, its way in to the opening stop); the swell and the wind are ambient.
+    const b =
+      arrival < 1
+        ? HarborLayout3D.entryAt(arrival, this.entryOffscreen(width, height, frame.focus.x, standBack), this.boatPose)
+        : HarborLayout3D.boatAt(frame.s, this.boatPose);
     const swell = HarborWave.height(b.x, b.z, t);
+    this.boatSwell = swell;
     this.boat.position.set(b.x, 0, b.z);
     this.boat.rotation.y = b.yaw;
-    if(arrival<1) {
-      this.boat.position.set(entryX,0,entryZ);
-      this.boat.rotation.y=lerpAngle(-.35,.45,turn);
-    }
     this.boatBob.position.y = swell * 0.9 + Math.sin(t * 1.3) * 0.035;
     this.boatBob.rotation.x = Math.sin(t * 0.9) * 0.035 - b.sailing * 0.07;
     this.boatBob.rotation.z = Math.sin(t * 1.1 + 1) * 0.022;
-    (this.boatWake.material as THREE.MeshBasicMaterial).opacity = (arrival < 1 ? .85 : b.sailing) * 0.9;
+    (this.boatWake.material as THREE.MeshBasicMaterial).opacity = b.sailing * 0.9;
     if (this.pennant) this.pennant.rotation.y = Math.sin(t * 5.2) * 0.22 + Math.sin(t * 8.1) * 0.08;
     this.updateRig(scene.mainDown, scene.boomOut);
 
+    // Harbour neighbours drift their loops on the ambient clock alone, so scrolling never moves them.
+    for (const n of this.drifters) {
+      const a = t * n.speed + n.phase;
+      const x = n.x + Math.cos(a) * n.rx;
+      const z = n.z + Math.sin(a) * n.rz;
+      n.holder.position.set(x, 0, z);
+      // Bow along the loop's tangent.
+      n.holder.rotation.y = Math.atan2(-Math.cos(a) * n.rz * n.speed, -Math.sin(a) * n.rx * n.speed);
+      n.float.x = x;
+      n.float.z = z;
+    }
     for (const f of this.floaters) {
       f.group.position.y = HarborWave.height(f.x, f.z, t) * 0.9;
       f.group.rotation.x = Math.sin(t * 1.2 + f.phase) * 0.05 * f.amp;
@@ -482,22 +501,23 @@ export class HarborDirector {
       (ping.material as THREE.MeshBasicMaterial).opacity = scene.sources * (1 - cycle) * 0.85;
       ping.visible = scene.sources > 0.01;
     });
-    // Provider boats sail in on Find and lie at their moorings afterwards.
+    // Provider boats sail in on Find, then lie off their moorings, swinging slowly on the ambient clock.
     HarborLayout3D.PROVIDERS.forEach((p, i) => {
       const b = this.providers[i];
       const k = scene.providers;
       const e = k * k * (3 - 2 * k);
-      const x = p.from.x + (p.x - p.from.x) * e;
-      const z = p.from.z + (p.z - p.from.z) * e;
+      const swing = t * 0.09 + b.phase;
+      const x = p.from.x + (p.x - p.from.x) * e + Math.cos(swing) * 1.3;
+      const z = p.from.z + (p.z - p.from.z) * e + Math.sin(swing * 0.8) * 0.6;
       b.holder.position.set(x, 0, z);
-      b.holder.rotation.y = p.yaw;
+      b.holder.rotation.y = p.yaw + Math.sin(swing * 0.6) * 0.08;
       b.bob.position.y = HarborWave.height(x, z, t) * 0.9;
       b.bob.rotation.x = Math.sin(t * 1.05 + b.phase) * 0.04 - (1 - e) * e * 0.18;
       b.bob.rotation.z = Math.sin(t * 0.9 + b.phase * 1.4) * 0.03;
     });
 
     // Once located (Evidence, second line) the finding F01 stays cobalt.
-    this.markerBand.color.set(HarborTheme.INK).lerp(new THREE.Color(HarborTheme.ACCENT), scene.selected);
+    this.markerBand.color.copy(this.inkColor).lerp(this.accentColor, scene.selected);
     this.markerRings.forEach((ring, i) => {
       const pulse = i === 1 ? 1 + ((t * 0.6) % 1) * 0.35 : 1;
       ring.scale.setScalar(pulse);
@@ -513,9 +533,7 @@ export class HarborDirector {
 
     // Workshop windows warm up while we build.
     const lit = scene.workshop;
-    const glass = new THREE.Color(HarborTheme.INK).lerp(new THREE.Color("#5a6170"), 0.4);
-    const warm = new THREE.Color(HarborTheme.WINDOW_LIT);
-    for (const m of this.windowMaterials) m.color.copy(glass).lerp(warm, lit);
+    for (const m of this.windowMaterials) m.color.copy(this.glassColor).lerp(this.warmColor, lit);
     for (const g of this.windowGlows) g.material.opacity = lit * 0.75;
 
     this.beam.group.rotation.y = t * 0.55;
@@ -537,12 +555,38 @@ export class HarborDirector {
     return rest;
   }
 
+  private dampTo(a: THREE.Vector3, b: THREE.Vector3, lambda: number, dt: number) {
+    a.set(THREE.MathUtils.damp(a.x, b.x, lambda, dt), THREE.MathUtils.damp(a.y, b.y, lambda, dt), THREE.MathUtils.damp(a.z, b.z, lambda, dt));
+  }
+
+  /**
+   * How far across the arrival view the boat starts: just beyond the frame's left
+   * edge (the frame is wider on wide screens), so at the top of the page the
+   * cobalt hero is clear and the bow shows with the first scroll.
+   */
+  private entryOffscreen(width: number, height: number, focusX: number, standBack: number) {
+    const halfTan = Math.tan(THREE.MathUtils.degToRad(CameraRig3D.FOV / 2));
+    const leftTan = (2 * (width / Math.max(1, height)) * halfTan * focusX) / Math.max(1, width);
+    return CameraRig3D.ARRIVAL.distance * standBack * leftTan + 3.8;
+  }
+
+  /** Draw SailTru's boat alone (its shadow, foam and wake too) from the harbor camera, for the cobalt overlay. */
+  renderBoat(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
+    this.waterline[0].constant = -Math.min(this.boatSwell, 0.02);
+    renderer.clippingPlanes = this.waterline;
+    this.overlay.add(this.boat);
+    try {
+      renderer.render(this.overlay, camera);
+    } finally {
+      this.root.add(this.boat);
+    }
+  }
+
   /**
    * Lower the mainsail onto the boom (it folds down to its foot, 0.07 m above the
    * boom's pivot) and swing the boom out over the water, away from the quay.
    */
   private updateRig(down: number, out: number) {
-    const smooth = (v: number) => v * v * (3 - 2 * v);
     const k = 1 - 0.95 * smooth(down);
     const foot = 1.52;
     const pivot = 1.45;
@@ -559,7 +603,7 @@ export class HarborDirector {
     const pivot = this.slew.position;
     // Boat socket in dock space (the boat is at its berth while the crane works).
     tmp.copy(this.deliverySocket);
-    this.dock.updateMatrixWorld(true);
+    this.dock.updateWorldMatrix(true, false);
     this.dock.worldToLocal(tmp);
     const restAngle = Math.atan2(-(this.crateRest.z - pivot.z), this.crateRest.x - pivot.x);
     const restR = Math.hypot(this.crateRest.x - pivot.x, this.crateRest.z - pivot.z);
@@ -632,6 +676,10 @@ export class HarborDirector {
       case "boat":
         this.boat.getWorldPosition(out);
         out.y += 6.5;
+        return out;
+      case "hull":
+        this.boat.getWorldPosition(out);
+        out.y += 1.6;
         return out;
       case "provider0":
       case "provider1":

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { ProviderMark, StepDemo } from "./artifacts";
 import {
@@ -13,12 +13,14 @@ import {
   MainLayer,
   MidLayer,
   SkyLayer,
+  DOCK_SHIFT,
   boatTransform,
   cranePose,
   type LayerName
 } from "./harbor-world";
 import type { ProviderId } from "./providers";
 import {
+  CobaltArrival,
   DESKTOP_POSES,
   MOBILE_POSES,
   SOURCE_BUOYS,
@@ -26,6 +28,7 @@ import {
   STEP_IDS,
   STEP_LENGTH,
   StoryCues,
+  SvgReach,
   cameraAt,
   clamp,
   layerTransform,
@@ -37,7 +40,7 @@ import {
   type Beat,
   type SceneState
 } from "./story-model";
-import type { Harbor3DState, HarborAnchor, HarborStage, ScreenPoint } from "./three/stage-types";
+import type { Harbor3DState, HarborAnchor, HarborFrameInput, HarborStage, ScreenPoint } from "./three/stage-types";
 import { WebGLSupport } from "./three/webgl-support";
 import { SmoothScroll } from "./smooth-scroll";
 
@@ -48,6 +51,9 @@ const LAYERS: LayerName[] = ["sky", "far", "mid", "main", "fore"];
 
 /** Steps 1–6 are the chapters with a narrative card, lines and a demonstration. */
 const CHAPTER_STEPS = [1, 2, 3, 4, 5, 6];
+
+/** The illustrated harbor as server-rendered; the loop moves it from there imperatively. */
+const INITIAL_SCENE = sceneAt(0, 0);
 
 type OverlaySpec = {
   key: string;
@@ -69,7 +75,7 @@ type OverlaySpec = {
 /**
  * Context labels and platform badges attached to things in the harbor. They
  * follow their anchors as the camera and the boats move; a label that would
- * cover a card, the chapter bar or another label is hidden instead.
+ * cover a card, the header or another label is hidden instead.
  */
 const OVERLAYS: OverlaySpec[] = [
   { key: "provider0", anchor: "provider0", kind: "badge", provider: "chatgpt", lead: true, show: (b, s) => (b.step === 1 ? s.providers : 0), stills: [1] },
@@ -99,16 +105,17 @@ const SVG_ANCHORS: Record<HarborAnchor, { x: number; y: number }> = {
   source0: { x: SOURCE_BUOYS[0].x, y: SOURCE_BUOYS[0].y - 96 },
   source1: { x: SOURCE_BUOYS[1].x, y: SOURCE_BUOYS[1].y - 96 },
   source2: { x: SOURCE_BUOYS[2].x, y: SOURCE_BUOYS[2].y - 96 },
-  marker: { x: 2060, y: 640 },
-  route: { x: 2700, y: 822 },
-  crate: { x: 3022, y: 700 },
-  workshop: { x: 3594, y: 676 },
-  boat: { x: 1040, y: 420 },
-  provider0: { x: 1555, y: 562 },
-  provider1: { x: 1416, y: 558 },
-  provider2: { x: 1486, y: 560 },
-  client: { x: 3690, y: 560 },
-  nextBuoy: { x: 4340, y: 790 }
+  marker: { x: SvgReach.x(2060, SvgReach.EVIDENCE), y: 640 },
+  route: { x: SvgReach.x(2700, SvgReach.REPORT) + (SvgReach.shift(SvgReach.SHIPYARD) - SvgReach.shift(SvgReach.REPORT)) * 0.55, y: 822 },
+  crate: { x: SvgReach.x(3022, SvgReach.SHIPYARD), y: 700 },
+  workshop: { x: SvgReach.x(3594, SvgReach.SHIPYARD), y: 676 },
+  boat: { x: SvgReach.x(1040, SvgReach.FIND), y: 420 },
+  hull: { x: 640, y: 720 },
+  provider0: { x: SvgReach.x(1555, SvgReach.FIND), y: 562 },
+  provider1: { x: SvgReach.x(1416, SvgReach.FIND), y: 558 },
+  provider2: { x: SvgReach.x(1486, SvgReach.FIND), y: 560 },
+  client: { x: SvgReach.x(3690, SvgReach.SHIPYARD), y: 560 },
+  nextBuoy: { x: SvgReach.x(4340, SvgReach.REVIEW), y: 790 }
 };
 
 /** Vignette framing (portrait-friendly stills for mobile and reduced motion). */
@@ -127,7 +134,8 @@ function lineFor(step: number, beat: Beat) {
   return beat.sub;
 }
 
-function Layers({ scene, maskId, refs }: { scene: SceneState; maskId: string; refs?: (name: LayerName) => (el: SVGGElement | null) => void }) {
+/** The stage's illustrated harbor. Memoised: a new beat re-renders the story, never these layers (the loop moves them). */
+const Layers = memo(function Layers({ scene, maskId, refs }: { scene: SceneState; maskId: string; refs?: (name: LayerName) => (el: SVGGElement | null) => void }) {
   const content: Record<LayerName, ReactNode> = {
     sky: <SkyLayer />,
     far: <FarLayer />,
@@ -144,7 +152,7 @@ function Layers({ scene, maskId, refs }: { scene: SceneState; maskId: string; re
       ))}
     </>
   );
-}
+});
 
 /** The visible content of one context label or badge. */
 function OverlayBody({ spec, text }: { spec: OverlaySpec; text: string }) {
@@ -159,8 +167,8 @@ function OverlayBody({ spec, text }: { spec: OverlaySpec; text: string }) {
   );
 }
 
-/** A static still of the harbor for one step. */
-function Vignette({ step, live, texts }: { step: number; live?: ReactNode; texts: Record<string, string> }) {
+/** A static still of the harbor for one step. Memoised: it depends on the step, the language and the live view only. */
+const Vignette = memo(function Vignette({ step, live, texts }: { step: number; live?: ReactNode; texts: Record<string, string> }) {
   const maskId = `hw-route-${useId().replace(/:/g, "")}`;
   const scene = sceneForStep(step);
   const cam = MOBILE_POSES[step];
@@ -199,7 +207,12 @@ function Vignette({ step, live, texts }: { step: number; live?: ReactNode; texts
       })}
     </div>
   );
-}
+});
+
+/** A chapter's complete demonstration (stacked layout and assistive tech); it never changes with the beat. */
+const DemoComplete = memo(function DemoComplete({ step }: { step: number }) {
+  return <StepDemo step={step} sub={9} inline />;
+});
 
 /** A headline whose words rise into place when its chapter arrives. */
 function Words({ text }: { text: string }) {
@@ -232,8 +245,9 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
   const overlayRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const markRefs = useRef<(HTMLElement | null)[]>([]);
   const slotRefs = useRef<Record<number, HTMLDivElement | null>>({});
-  const navRef = useRef<HTMLElement>(null);
   const deckRef = useRef<HTMLDivElement>(null);
+  /** The transparent canvas over the cobalt hero that SailTru's boat sails in on. */
+  const [boatCanvas, setBoatCanvas] = useState<HTMLCanvasElement | null>(null);
   const jumpRef = useRef<(index: number, smooth: boolean) => boolean>(() => false);
 
   const [beat, setBeat] = useState<Beat>({ step: 0, sub: 0 });
@@ -294,8 +308,6 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     return SmoothScroll.mount();
   }, [scene3d]);
 
-  const [paused, setPaused] = useState(false);
-  const pausedRef = useRef(false);
   const beatRef = useRef<Beat>({ step: 0, sub: 0 });
 
   const setLayerRef = useCallback(
@@ -304,10 +316,6 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     },
     []
   );
-
-  useEffect(() => {
-    pausedRef.current = paused;
-  }, [paused]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -320,10 +328,17 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     let size = { w: 0, h: 0, col: 0 };
     let cinematic = false;
     let uTarget = 0;
-    let arrival = hero ? 0 : 1;
+    /** The cobalt entrance read from the scroll, and as last painted (with the hole it opens around the boat). */
+    let arrivalTarget = hero ? 0 : 1;
     let paintedArrival = -1;
+    let paintedOn = false;
     let arrivalStart = 0;
     let arrivalLength = 1;
+    const hole = { x: -1, y: -1, paintedX: -1, paintedY: -1, paintedR: -1 };
+    const heroParts = {
+      copy: heroNode?.querySelector<HTMLElement>(".field-main") ?? null,
+      cards: heroNode?.querySelector<HTMLElement>(".hsw__diagram--hero") ?? null
+    };
     let uDisp = -1;
     let pointer = { x: 0, y: 0 };
     let pointerTarget = { x: 0, y: 0 };
@@ -334,6 +349,19 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     let blockers: Rect[] = [];
     let overlaySizes: { w: number; h: number; stem: number }[] = [];
     const overlayHidden = new Set<number>();
+    /** What each overlay last had written, so unchanged styles are never written again. */
+    const overlayPainted = OVERLAYS.map(() => ({ opacity: "", transform: "", stem: "" }));
+    const placed: Rect[] = [];
+    const points = new Map<HarborAnchor, { x: number; y: number }>();
+    const frameInput: HarborFrameInput = {
+      uTarget: 0,
+      pointerTarget: { x: 0, y: 0 },
+      focusTarget: { x: 0, y: 0 },
+      freeWidth: 1,
+      ambient: 0
+    };
+    /** The illustrated harbor's scene, updated in place each frame. */
+    const svgScene = sceneAt(0, 0);
     let measureTimer = 0;
     let ambientT = 0;
     /** The next 3D frame jumps straight to its targets (resize, instant jumps). */
@@ -374,7 +402,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       });
       if (anchors.length) anchors[0] = StoryScroll.firstAnchor(anchors[0], root!.getBoundingClientRect().top + scrollY);
       arrivalStart = root!.getBoundingClientRect().top + scrollY;
-      arrivalLength = vh * 1.8;
+      arrivalLength = vh * CobaltArrival.LENGTH;
       if (hero && cinematic) anchors[0] = arrivalStart + arrivalLength;
       measureCards();
     }
@@ -388,16 +416,20 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       const rel = (r: DOMRect) => new DOMRect(r.left - origin.left, r.top - origin.top, r.width, r.height);
       const room = stage!.querySelector<HTMLElement>(".hs-artifacts")?.clientHeight ?? 0;
       cardRects = {};
-      for (const key of Object.keys(slotRefs.current)) {
-        const el = slotRefs.current[Number(key)]?.firstElementChild as HTMLElement | null;
-        if (el && room) {
-          // A card taller than the stage scales down to stay whole on short screens.
-          const fit = Math.max(0.8, Math.min(1, room / el.offsetHeight));
-          el.style.transform = fit < 1 ? `scale(${fit.toFixed(3)})` : "";
-          el.style.transformOrigin = rtl ? "top left" : "top right";
-        }
-        cardRects[Number(key)] = el ? rel(el.getBoundingClientRect()) : null;
-      }
+      const keys = Object.keys(slotRefs.current).map(Number);
+      const cards = keys.map((key) => slotRefs.current[key]?.firstElementChild as HTMLElement | null);
+      // Reads, then writes, then reads: one layout for the fit and one for the rects, never one per card.
+      const heights = cards.map((el) => el?.offsetHeight ?? 0);
+      cards.forEach((el, i) => {
+        if (!el || !room || !heights[i]) return;
+        // A card taller than the stage scales down to stay whole on short screens.
+        const fit = Math.max(0.8, Math.min(1, room / heights[i]));
+        el.style.transform = fit < 1 ? `scale(${fit.toFixed(3)})` : "";
+        el.style.transformOrigin = rtl ? "top left" : "top right";
+      });
+      cards.forEach((el, i) => {
+        cardRects[keys[i]] = el ? rel(el.getBoundingClientRect()) : null;
+      });
       const step = beatRef.current.step;
       blockers = [];
       const card = cardRects[step];
@@ -407,16 +439,17 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
         const r = rel(narr.getBoundingClientRect());
         blockers.push({ left: r.left, top: r.top, right: r.right + 8, bottom: r.bottom + 8 });
       }
-      if (navRef.current) {
-        const r = rel(navRef.current.getBoundingClientRect());
-        blockers.push({ left: r.left, top: r.top, right: r.right, bottom: r.bottom });
-      }
       const header = document.querySelector<HTMLElement>(".hh");
       blockers.push({ left: 0, top: 0, right: size.w, bottom: (header?.getBoundingClientRect().bottom ?? 64) + 4 });
       overlaySizes = OVERLAYS.map((o, i) => {
         const el = overlayRefs.current[i];
         return { w: el?.offsetWidth ?? 0, h: el?.offsetHeight ?? 0, stem: o.stem ?? (o.kind === "badge" ? 12 : 16) };
       });
+    }
+
+    /** The cobalt entrance from the scroll: 0 at the top of the story, 1 once its track has passed. */
+    function arrivalFromScroll() {
+      return hero && cinematic ? clamp((window.scrollY - arrivalStart) / arrivalLength, 0, 1) : 1;
     }
 
     function linearFromScroll() {
@@ -452,42 +485,111 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     }
 
     /**
-     * The 3D harbor: hand the scene this frame's targets; it damps progress,
-     * pointer, framing and camera in useFrame and reports the damped state,
-     * which the copy, cards and overlays then follow.
+     * The cobalt entrance as painted: the hero's copy and cards fade, the cobalt
+     * opens around the boat and fades, and the opening copy comes in. Styles are
+     * written to the elements that show them (never custom properties on the
+     * story root, which would restyle the whole story every frame), and only when
+     * the entrance or the hole around the boat has moved.
      */
-    function updateArrival() {
-      arrival = hero && cinematic ? clamp((window.scrollY-arrivalStart)/arrivalLength,0,1) : 1;
+    function updateArrival(a: number) {
+      const on = Boolean(hero) && cinematic;
+      const arrival = on ? a : 1;
+      const heroEl = heroRef.current;
+      const deck = deckRef.current;
+      if (on !== paintedOn) {
+        paintedOn = on;
+        paintedArrival = -1;
+        hole.paintedR = -1;
+        if (!on) {
+          // The stacked layout: the hero and the deck are plain page content again.
+          for (const el of [heroEl, heroParts.copy, heroParts.cards, deck]) {
+            if (!el) continue;
+            el.style.opacity = "";
+            el.style.transform = "";
+            el.style.maskImage = "";
+          }
+        }
+      }
+      if (on) paintHole(arrival);
       if (arrival === paintedArrival) return;
       paintedArrival = arrival;
-      const ease=(a:number,b:number)=>{const x=clamp((arrival-a)/(b-a),0,1);return x*x*(3-2*x);};
-      root!.style.setProperty("--arrival-copy",String(1-ease(.03,.28)));
-      root!.style.setProperty("--arrival-cards",String(1-ease(.2,.55)));
-      root!.style.setProperty("--arrival-hero",String(1-ease(.58,.9)));
-      root!.style.setProperty("--arrival-radius",`${ease(.12,.83)*155}vmax`);
-      root!.style.setProperty("--arrival-story",String(ease(.82,1)));
-      root!.dataset.arriving=String(Boolean(hero)&&cinematic&&arrival<.9);
-      if(heroRef.current) { heroRef.current.inert=cinematic&&arrival>.55; heroRef.current.setAttribute("aria-hidden",String(cinematic&&arrival>.55)); }
-      if(deckRef.current) deckRef.current.inert=Boolean(hero)&&cinematic&&arrival<.9;
-      // --arrival-hero is 0 from .9 on: the hero is gone, and its dot field stops drawing (set only on change).
-      const dissolved=cinematic&&arrival>=.9;
-      if(heroRef.current&&heroRef.current.hasAttribute("data-dissolved")!==dissolved) heroRef.current.toggleAttribute("data-dissolved",dissolved);
+      const E = CobaltArrival;
+      if (on) {
+        const copy = E.ease(arrival, E.COPY);
+        const cards = E.ease(arrival, E.CARDS);
+        if (heroParts.copy) {
+          heroParts.copy.style.opacity = (1 - copy).toFixed(4);
+          heroParts.copy.style.transform = copy > 0 ? `translateY(${(-30 * copy).toFixed(2)}px)` : "";
+        }
+        if (heroParts.cards) {
+          heroParts.cards.style.opacity = (1 - cards).toFixed(4);
+          heroParts.cards.style.transform = cards > 0 ? `translateY(${(-45 * cards).toFixed(2)}px)` : "";
+        }
+        if (heroEl) heroEl.style.opacity = (1 - E.ease(arrival, E.HERO)).toFixed(4);
+        if (deck) deck.style.opacity = E.ease(arrival, E.STORY).toFixed(4);
+      }
+      // Attributes change only when they flip (a write on the story root restyles all of it).
+      const gone = E.HERO[1];
+      const arriving = String(on && arrival < gone);
+      if (root!.dataset.arriving !== arriving) root!.dataset.arriving = arriving;
+      if (heroEl) {
+        const away = on && arrival > E.CARDS[1];
+        if (heroEl.inert !== away) {
+          heroEl.inert = away;
+          heroEl.setAttribute("aria-hidden", String(away));
+        }
+        // Once the hero is gone its dot field stops drawing.
+        const dissolved = on && arrival >= gone;
+        if (heroEl.hasAttribute("data-dissolved") !== dissolved) heroEl.toggleAttribute("data-dissolved", dissolved);
+      }
+      if (deck && deck.inert !== (on && arrival < gone)) deck.inert = on && arrival < gone;
     }
 
+    /** The cobalt opens around the boat: a soft-edged hole centred on its hull (or where it comes to rest, without the 3D boat). */
+    function paintHole(arrival: number) {
+      const heroEl = heroRef.current;
+      if (!heroEl) return;
+      const r = CobaltArrival.ease(arrival, CobaltArrival.OPEN) * 155;
+      const x = hole.x >= 0 ? hole.x : size.w * 0.23;
+      const y = hole.y >= 0 ? hole.y : size.h * 0.68;
+      if (r === hole.paintedR && (r === 0 || (Math.abs(x - hole.paintedX) < 0.5 && Math.abs(y - hole.paintedY) < 0.5))) return;
+      hole.paintedR = r;
+      hole.paintedX = x;
+      hole.paintedY = y;
+      heroEl.style.maskImage =
+        r > 0 ? `radial-gradient(circle at ${x.toFixed(1)}px ${y.toFixed(1)}px, transparent ${(r - 8).toFixed(2)}vmax, #000 ${r.toFixed(2)}vmax)` : "";
+    }
+
+    /**
+     * The 3D harbor: hand the scene this frame's targets; it damps progress,
+     * the entrance, pointer, framing and camera in useFrame and reports the
+     * damped state, which the copy, cards, overlays and the cobalt hero then follow.
+     */
     function render3d(stage3d: HarborStage, dt: number) {
       const target = focusTarget3d();
-      const out = stage3d.frame({
-        uTarget,
-        arrival: hero ? arrival : undefined,
-        pointerTarget,
-        focusTarget: { x: target.x, y: target.y },
-        freeWidth: target.free,
-        ambient: ambientT,
-        dt,
-        snap: snapNext
-      });
+      const input = frameInput;
+      input.uTarget = uTarget;
+      input.arrival = hero ? arrivalTarget : undefined;
+      input.pointerTarget.x = pointerTarget.x;
+      input.pointerTarget.y = pointerTarget.y;
+      input.focusTarget.x = target.x;
+      input.focusTarget.y = target.y;
+      input.freeWidth = target.free;
+      input.ambient = ambientT;
+      input.dt = dt;
+      input.snap = snapNext;
+      const out = stage3d.frame(input);
       snapNext = false;
       uDisp = out.u;
+      if (hero && cinematic && out.arrival < CobaltArrival.HERO[1]) {
+        // The hole in the cobalt follows the boat as it sails in.
+        const p = stage3d.project("hull");
+        if (p) {
+          hole.x = rtl ? size.w - p.x : p.x;
+          hole.y = p.y;
+        }
+      }
+      updateArrival(out.arrival);
       updateBeat(uDisp);
       drawOverlays(out.scene, (a) => stage3d.project(a));
       return out.settled;
@@ -504,9 +606,9 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
         y: pointer.y + (pointerTarget.y - pointer.y) * k * 0.6
       };
       updateBeat(uDisp);
-      const ambient = !pausedRef.current && !reduceQuery.matches && (!hero || arrival > .01);
+      const ambient = !reduceQuery.matches && (!hero || arrivalTarget > 0.01);
       const s = storyFromLinear(uDisp);
-      const scene = sceneAt(s, uDisp);
+      const scene = sceneAt(s, uDisp, svgScene);
       const baseCam = cameraAt(s, DESKTOP_POSES);
       const cam = { ...baseCam, zoom: baseCam.zoom * zoomScale() };
       const focus = focusPoint();
@@ -549,7 +651,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       nodes.crate?.setAttribute("transform", `translate(${crane.x.toFixed(1)} ${crane.y.toFixed(1)})`);
 
       drawOverlays(scene, (a) => {
-        if (a === "crate") return projectMain(cam, focus, crane.x + 22, crane.y - 26);
+        if (a === "crate") return projectMain(cam, focus, crane.x + DOCK_SHIFT + 22, crane.y - 26);
         if (a === "boat") return projectMain(cam, focus, scene.boat.x, scene.boat.y - 330);
         return projectMain(cam, focus, SVG_ANCHORS[a].x, SVG_ANCHORS[a].y);
       });
@@ -560,18 +662,35 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       return { x: rtl ? size.w - p.x : p.x, y: p.y };
     }
 
+    /** Write an overlay's styles, skipping any that haven't changed since the last frame. */
+    function paintOverlay(i: number, el: HTMLElement, opacity: string, transform?: string, stem?: string) {
+      const painted = overlayPainted[i];
+      if (painted.opacity !== opacity) {
+        painted.opacity = opacity;
+        el.style.opacity = opacity;
+      }
+      if (transform !== undefined && painted.transform !== transform) {
+        painted.transform = transform;
+        el.style.transform = transform;
+      }
+      if (stem !== undefined && painted.stem !== stem) {
+        painted.stem = stem;
+        el.style.setProperty("--stem-x", stem);
+      }
+    }
+
     /** Context labels and badges follow their anchors; leaders tie the active card to its subject. */
     function drawOverlays(scene: SceneState, project: (anchor: HarborAnchor) => ScreenPoint | null) {
       const b = beatRef.current;
-      const placed: Rect[] = [];
-      const points: Partial<Record<HarborAnchor, { x: number; y: number }>> = {};
+      placed.length = 0;
+      points.clear();
       OVERLAYS.forEach((o, i) => {
         const el = overlayRefs.current[i];
         if (!el) return;
         let opacity = o.show(b, scene);
         const projected = opacity > 0.01 ? project(o.anchor) : null;
         if (!projected) {
-          el.style.opacity = "0";
+          paintOverlay(i, el, "0");
           return;
         }
         const p = toScreen(projected);
@@ -601,11 +720,9 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
           overlayHidden.delete(i);
           placed.push(box);
           // Leaders meet the label on the side facing the card.
-          points[o.anchor] = { x: rtl ? box.left : box.right, y: box.top + dim.h / 2 };
+          points.set(o.anchor, { x: rtl ? box.left : box.right, y: box.top + dim.h / 2 });
         }
-        el.style.setProperty("--stem-x", `${(p.x - box.left).toFixed(1)}px`);
-        el.style.transform = `translate(${box.left.toFixed(1)}px, ${box.top.toFixed(1)}px)`;
-        el.style.opacity = opacity.toFixed(3);
+        paintOverlay(i, el, opacity.toFixed(3), `translate(${box.left.toFixed(1)}px, ${box.top.toFixed(1)}px)`, `${(p.x - box.left).toFixed(1)}px`);
       });
 
       const svg = leaderRef.current;
@@ -615,7 +732,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       let path = "";
       if (card && anchor) {
         // Only a visible label gets a leader.
-        const end = points[anchor];
+        const end = points.get(anchor);
         if (end) {
           const edgeX = rtl ? card.right : card.left;
           const from = { x: edgeX, y: clamp(end.y, card.top + 36, card.bottom - 36) };
@@ -652,14 +769,23 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       const realDt = last ? (time - last) / 1000 : 0.016;
       const dt = Math.min(0.1, realDt);
       last = time;
-      if (!pausedRef.current && !reduceQuery.matches) ambientT += Math.min(0.3, realDt);
+      // The ambient clock (swell, drifting boats, gulls, the lamp) always runs, unless motion is reduced.
+      const ambient = !reduceQuery.matches;
+      if (ambient) ambientT += Math.min(0.3, realDt);
       // The scroll as Lenis left it on this tick (the scroll event only arrives with the next frame).
-      if (cinematic) uTarget = linearFromScroll();
-      updateArrival();
-      // Copy, cards and overlays follow the same damped position as the scene.
+      if (cinematic) {
+        uTarget = linearFromScroll();
+        arrivalTarget = arrivalFromScroll();
+      }
+      // Copy, cards, overlays and the cobalt hero follow the same damped position as the scene.
       const stage3d = stage3dRef.current;
-      const settled = stage3d ? render3d(stage3d, dt) : renderSvg(time, dt);
-      const ambient = !pausedRef.current && !reduceQuery.matches;
+      let settled: boolean;
+      if (stage3d) {
+        settled = render3d(stage3d, dt);
+      } else {
+        updateArrival(arrivalTarget);
+        settled = renderSvg(time, dt);
+      }
       if (inView && document.visibilityState === "visible" && (!settled || ambient)) {
         raf = SmoothScroll.requestFrame(frame);
       } else {
@@ -675,6 +801,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     function onScroll() {
       if (!cinematic) return;
       uTarget = linearFromScroll();
+      arrivalTarget = arrivalFromScroll();
       if (inView) {
         kick();
         return;
@@ -689,7 +816,9 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     function onResize() {
       measure();
       paintedArrival = -1;
-      updateArrival();
+      hole.paintedR = -1;
+      arrivalTarget = arrivalFromScroll();
+      updateArrival(arrivalTarget);
       uTarget = linearFromScroll();
       uDisp = uTarget;
       snapNext = true;
@@ -769,7 +898,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
 
     const onVisibility = () => kick();
     const onMotionPref = () => onResize();
-    const onPauseToggle = () => kick();
+    const onKick = () => kick();
     /** A chapter hash typed or traversed later (back/forward) lands like a direct link, not on the deck's article. */
     const onHashChange = () => {
       const index = STEP_IDS.indexOf(window.location.hash.slice(1) as (typeof STEP_IDS)[number]);
@@ -785,7 +914,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     window.addEventListener("pointermove", onPointer, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
     reduceQuery.addEventListener("change", onMotionPref);
-    root.addEventListener("harbor:kick", onPauseToggle);
+    root.addEventListener("harbor:kick", onKick);
     document.addEventListener("click", onAnchorClick);
     document.fonts?.ready.then(() => {
       measureCards();
@@ -803,10 +932,24 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
       reduceQuery.removeEventListener("change", onMotionPref);
-      root.removeEventListener("harbor:kick", onPauseToggle);
+      root.removeEventListener("harbor:kick", onKick);
       document.removeEventListener("click", onAnchorClick);
-      if(heroNode) { heroNode.inert=false; heroNode.removeAttribute("aria-hidden"); heroNode.removeAttribute("data-dissolved"); }
-      if(deckNode) deckNode.inert=false;
+      if (heroNode) {
+        heroNode.inert = false;
+        heroNode.removeAttribute("aria-hidden");
+        heroNode.removeAttribute("data-dissolved");
+        heroNode.style.opacity = "";
+        heroNode.style.maskImage = "";
+      }
+      for (const el of [heroParts.copy, heroParts.cards]) {
+        if (!el) continue;
+        el.style.opacity = "";
+        el.style.transform = "";
+      }
+      if (deckNode) {
+        deckNode.inert = false;
+        deckNode.style.opacity = "";
+      }
     };
   }, [rtl, hero]);
 
@@ -815,6 +958,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     const root = rootRef.current;
     if (load3d !== "vignette" || !root) return;
     const live = root.querySelector<HTMLElement>(".hs-vignette--opening");
+    const reduceQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let raf = 0;
     let last = 0;
     let t = 0;
@@ -880,7 +1024,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       raf = 0;
       const dt = last ? Math.min(0.1, (time - last) / 1000) : 0.016;
       last = time;
-      const ambient = !pausedRef.current;
+      const ambient = !reduceQuery.matches;
       if (ambient) t += dt;
       if (!renderLive()) return;
       if (!stillsStarted) {
@@ -912,12 +1056,6 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     };
   }, [load3d]);
 
-  const togglePause = () => {
-    setPaused((p) => !p);
-    // Let the loop restart (or settle) under the new preference.
-    requestAnimationFrame(() => rootRef.current?.dispatchEvent(new Event("harbor:kick")));
-  };
-
   const jumpTo = (event: React.MouseEvent<HTMLAnchorElement>, index: number) => {
     if (!jumpRef.current(index, true)) return; // stacked layout: native anchor jump
     event.preventDefault();
@@ -931,60 +1069,34 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     if (Number.isFinite(index) && index !== beatRef.current.step) jumpRef.current(index, false);
   };
 
-  const chapters = t.raw("story.chapters") as string[];
-  const activeChapter = CHAPTER_STEPS.reduce((acc, step, i) => (beat.step >= step ? i : acc), -1);
-  const initial = sceneAt(0, 0);
-  const areas = t.raw("ask.areas") as string[];
-  const overlayText: Record<string, string> = {
-    boat: t("ask.boat"),
-    area0: areas[0],
-    area1: areas[1],
-    area2: areas[2],
-    f01: `F01 · ${(t.raw("report.findings") as { title: string }[])[0].title}`,
-    crate: t("dock.crate"),
-    client: t("measure.client"),
-    next: t("measure.next")
-  };
-  const hintId = `hs-motion-hint-${useId().replace(/:/g, "")}`;
-
-  const nav = (
-    <nav ref={navRef} className="hs-nav" aria-label={t("story.navLabel")}>
-      <ol>
-        {chapters.map((label, i) => (
-          <li key={label}>
-            <a
-              href={`#${STEP_IDS[CHAPTER_STEPS[i]]}`}
-              className={i === activeChapter ? "is-active" : undefined}
-              aria-current={i === activeChapter ? "step" : undefined}
-              onClick={(e) => jumpTo(e, CHAPTER_STEPS[i])}
-            >
-              <span className="hs-nav__num">{i + 1}</span>
-              <span className="hs-nav__label">{label}</span>
-            </a>
-          </li>
-        ))}
-      </ol>
-      <button
-        type="button"
-        className="hs-nav__pause"
-        aria-pressed={paused}
-        aria-describedby={hintId}
-        title={t("story.motionHint")}
-        onClick={togglePause}
-      >
-        <span className={`hs-nav__glyph${paused ? " is-play" : ""}`} aria-hidden />
-        {paused ? t("story.play") : t("story.pause")}
-      </button>
-      <span id={hintId} className="sr-only">
-        {t("story.motionHint")}
-      </span>
-    </nav>
+  const overlayText = useMemo<Record<string, string>>(() => {
+    const areas = t.raw("ask.areas") as string[];
+    return {
+      boat: t("ask.boat"),
+      area0: areas[0],
+      area1: areas[1],
+      area2: areas[2],
+      f01: `F01 · ${(t.raw("report.findings") as { title: string }[])[0].title}`,
+      crate: t("dock.crate"),
+      client: t("measure.client"),
+      next: t("measure.next")
+    };
+  }, [t]);
+  /** The phones' live opening view (stable while the 3D view mode is unchanged, so the opening vignette stays memoised). */
+  const liveOpening = useMemo(
+    () =>
+      load3d === "vignette" ? (
+        <div className="hs-vignette__live">
+          <HarborScene3D layout="vignette" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
+        </div>
+      ) : null,
+    [load3d, rtl, onStage3d, onReady3d, onError3d]
   );
 
   return (
     <section
       ref={rootRef}
-      className={`hs${hero ? " hs--cobalt-arrival" : ""}${paused ? " is-still" : ""}`}
+      className={`hs${hero ? " hs--cobalt-arrival" : ""}`}
       data-story-root
       style={{ "--hs-steps": STEP_IDS.length } as CSSProperties}
     >
@@ -993,11 +1105,11 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
 
       <div ref={stageRef} className="hs-stage" aria-hidden data-harbor3d="fallback" data-step={beat.step}>
         <svg className="hs-world" width="100%" height="100%">
-          <Layers scene={initial} maskId={maskId} refs={setLayerRef} />
+          <Layers scene={INITIAL_SCENE} maskId={maskId} refs={setLayerRef} />
         </svg>
         {load3d === "stage" ? (
           <div className="hs-world3d">
-            <HarborScene3D layout="stage" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
+            <HarborScene3D layout="stage" mirror={rtl} boatCanvas={hero ? boatCanvas : null} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
           </div>
         ) : null}
         <div className="hs-grain" />
@@ -1035,7 +1147,13 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
         </div>
       </div>
 
-      {hero ? <div ref={heroRef} className="hs-cobalt-hero harbor-hero">{hero}</div> : null}
+      {hero ? (
+        <div ref={heroRef} className="hs-cobalt-hero harbor-hero">
+          {hero}
+          {/* SailTru's boat sails in across the cobalt here (drawn by the 3D harbor, from its camera). */}
+          <canvas ref={setBoatCanvas} className="hs-boat-overlay" aria-hidden />
+        </div>
+      ) : null}
 
       <div ref={deckRef} className="hs-deck" onFocus={onDeckFocus}>
         {STEP_IDS.map((id, index) => {
@@ -1132,36 +1250,19 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
                 )}
                 {!isClose ? (
                   <div className="hs-step__demo">
-                    <Vignette
-                      step={index}
-                      texts={overlayText}
-                      live={
-                        index === 0 && load3d === "vignette" ? (
-                          <div className="hs-vignette__live">
-                            <HarborScene3D layout="vignette" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
-                          </div>
-                        ) : null
-                      }
-                    />
-                    {index === 0 && load3d === "vignette" ? (
-                      <button type="button" className="hs-live-toggle" aria-pressed={paused} aria-describedby={hintId} onClick={togglePause}>
-                        <span className={`hs-nav__glyph${paused ? " is-play" : ""}`} aria-hidden />
-                        {paused ? t("story.play") : t("story.pause")}
-                      </button>
-                    ) : null}
-                    {!isHero ? <StepDemo step={index} sub={9} inline /> : null}
+                    <Vignette step={index} texts={overlayText} live={index === 0 ? liveOpening : null} />
+                    {!isHero ? <DemoComplete step={index} /> : null}
                   </div>
                 ) : null}
               </div>
             </article>
           );
-          // The chapter bar follows the opening in the tab order, before the closing doors.
-          return isHero ? [article, <div key="nav">{nav}</div>] : article;
+          return article;
         })}
       </div>
 
       <div className="hs-track" aria-hidden>
-        {hero ? <div className="hs-arrival-track" /> : null}
+        {hero ? <div className="hs-arrival-track" style={{ "--arrival-len": CobaltArrival.LENGTH } as CSSProperties} /> : null}
         {STEP_IDS.map((id, index) => (
           <div
             key={id}

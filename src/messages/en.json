@@ -835,18 +835,6 @@
     },
     "story": {
       "badge": "Illustrative example",
-      "navLabel": "Story chapters",
-      "pause": "Pause motion",
-      "play": "Play motion",
-      "motionHint": "Pauses the moving water, boats and birds. Scrolling still moves the story.",
-      "chapters": [
-        "Find",
-        "Evidence",
-        "Report",
-        "Build",
-        "Systems",
-        "Review"
-      ],
       "find": {
         "label": "Find",
         "title": "Your next customer is looking.",

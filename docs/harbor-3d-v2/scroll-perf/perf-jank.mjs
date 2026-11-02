@@ -13,7 +13,7 @@
 //            workflow chapter's settled position (the whole build chapter: crane lift, slew, lower).
 //   mobile:  from 300px above the #build article, 8 swipes of 560px over 200ms.
 //  buildJump (a jump to #build):
-//   desktop: from the find chapter, a click on the chapter bar's #build link (story jump: Lenis
+//   desktop: from the find chapter, a click on an in-page #build link (story jump: Lenis
 //            scrollTo when it runs, native smooth scrolling otherwise).
 //   mobile:  from the top of the story, a click on an in-page <a href="#build"> (same-page anchor).
 // Each segment is measured over its scroll window plus 1.5 s settle:
@@ -204,7 +204,7 @@ if (!mobile) {
   await settleAt(await centre(1));
   t0 = Date.now();
   await startSegment();
-  await p.click('.hs-nav a[href="#build"]');
+  await p.evaluate((h) => { const a = document.createElement("a"); a.href = h; document.body.append(a); a.click(); a.remove(); }, "#build");
 } else {
   await settleAt(await p.evaluate(() => Math.round(document.querySelector("[data-story-root]").getBoundingClientRect().top + scrollY)));
   await p.evaluate(() => {

@@ -133,9 +133,8 @@ html.lenis.lenis-stopped {
   top: 0;
   z-index: 50;
   height: var(--header-h);
+  /* Opaque paper: no backdrop blur, which would re-blur the moving harbor under it every frame. */
   background: var(--paper);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--rule);
 }
 
@@ -621,8 +620,7 @@ html.lenis.lenis-stopped {
 /* Story — stacked layout (default: mobile, reduced motion, no JS)     */
 /* ------------------------------------------------------------------ */
 
-.hs-stage,
-.hs-nav {
+.hs-stage {
   display: none;
 }
 
@@ -707,24 +705,6 @@ html.lenis.lenis-stopped {
 
 .hs-step__demo {
   position: relative;
-}
-
-.hs-live-toggle {
-  position: absolute;
-  top: 10px;
-  inset-inline-end: 10px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 34px;
-  padding: 0 12px;
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
-  background: var(--card);
-  font: 600 12px/1 var(--sans);
-  color: var(--ink);
-  cursor: pointer;
 }
 
 /* Context labels and platform badges: short labels attached to boats, buoys and the harbor by a stem. */
@@ -1033,7 +1013,7 @@ html.lenis.lenis-stopped {
     background:
       radial-gradient(ellipse 80% 70% at 55% 48%, transparent 62%, rgba(34, 37, 43, 0.07) 100%),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0 0.32 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
-    mix-blend-mode: multiply;
+    /* Plain alpha over the canvas (no blend mode, so the compositor never re-blends the moving harbor). */
     transition: opacity 0.8s ease;
   }
 
@@ -1169,7 +1149,7 @@ html.lenis.lenis-stopped {
     pointer-events: auto;
   }
 
-  /* The opening copy stays above the chapter bar, also when the actions wrap (Hebrew). */
+  /* The opening copy keeps clear of the bottom edge, also when the actions wrap (Hebrew). */
   .hs-step--opening .hs-step__pin {
     padding-bottom: 92px;
   }
@@ -1262,17 +1242,6 @@ html.lenis.lenis-stopped {
     background: var(--cobalt);
   }
 
-  /* Pause stops motion everywhere: states change at once. */
-  .hs.is-still .hs-step__pin,
-  .hs.is-still .hs-word,
-  .hs.is-still .hs-line,
-  .hs.is-still .hs-slot,
-  .hs.is-still .hx-card * {
-    transition-duration: 0s !important;
-    transition-delay: 0s !important;
-    animation: none !important;
-  }
-
   /* The stage carries the demonstrations; the complete versions stay available to assistive tech. */
   .hs-step__demo {
     position: absolute;
@@ -1360,104 +1329,6 @@ html.lenis.lenis-stopped {
     animation-delay: calc(520ms + var(--i) * 30ms);
   }
 
-  .hs-nav {
-    position: absolute;
-    bottom: 20px;
-    inset-inline-start: var(--gutter);
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: max-content;
-    padding: 5px;
-    border: 1.5px solid var(--ink);
-    border-radius: 999px;
-    background: var(--card);
-    box-shadow: 4px 4px 0 var(--ink);
-    pointer-events: auto;
-  }
-
-  [dir="rtl"] .hs-nav {
-    box-shadow: -4px 4px 0 var(--ink);
-  }
-
-  .hs-nav ol {
-    display: flex;
-    gap: 2px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .hs-nav a,
-  .hs-nav__pause {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    min-height: 36px;
-    padding: 0 11px;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
-    font: 500 13px/1 var(--sans);
-    color: var(--ink-2);
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .hs-nav a:hover,
-  .hs-nav__pause:hover {
-    color: var(--ink);
-    background: rgba(34, 37, 43, 0.06);
-  }
-
-  .hs-nav a.is-active {
-    background: var(--ink);
-    color: var(--paper);
-  }
-
-  .hs-nav__num {
-    font-family: var(--font-mono), ui-monospace, monospace;
-    font-size: 12px;
-  }
-
-  .hs-nav__pause {
-    margin-inline-start: 2px;
-    border-inline-start: 1px solid var(--rule);
-    border-radius: 0 999px 999px 0;
-  }
-
-  [dir="rtl"] .hs-nav__pause {
-    border-radius: 999px 0 0 999px;
-  }
-
-  .hs-nav__pause[aria-pressed="true"] {
-    color: var(--ink);
-    font-weight: 600;
-  }
-}
-
-/* Pause / play glyph (two bars, or a triangle once paused). */
-.hs-nav__glyph {
-  display: inline-block;
-  flex: none;
-  width: 10px;
-  height: 11px;
-  border-inline: 3px solid currentColor;
-  box-sizing: border-box;
-}
-
-.hs-nav__glyph.is-play {
-  width: 0;
-  height: 0;
-  border-inline-end: 0;
-  border-inline-start: 9px solid currentColor;
-  border-block: 6px solid transparent;
-}
-
-[dir="rtl"] .hs-nav__glyph.is-play {
-  border-inline-start: 9px solid currentColor;
-  transform: scaleX(-1);
 }
 
 @keyframes hx-type {
@@ -1509,7 +1380,7 @@ html.lenis.lenis-stopped {
     min-height: 48px;
   }
 
-  /* The closing doors stay clear of the header and the chapter bar on short screens. */
+  /* The closing doors stay clear of the header on short screens. */
   .hs-step--close .hs-step__title {
     margin-bottom: 10px;
   }
@@ -1537,7 +1408,7 @@ html.lenis.lenis-stopped {
     margin-top: 4px;
   }
 
-  /* The chapter bar at the bottom is the scroll cue on short screens. */
+  /* Short screens give the opening's room to its copy; scrolling is cue enough. */
   .hs-cue {
     display: none;
   }
@@ -3158,30 +3029,24 @@ html.lenis.lenis-stopped {
   scroll-margin-top: var(--header-h);
 }
 
-/* The story's sticky step nav stays out of the cobalt hero's viewport. */
-.hs-nav {
-  transition: opacity 0.25s ease, visibility 0s;
-}
-
-body:has(.harbor-hero)[data-cobalt-hero] .hs-nav {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.25s ease, visibility 0s 0.25s;
-}
-
-/* Cobalt opens on the same sticky stage and scroll clock as the 3D story. */
+/*
+ * The cobalt entrance (CobaltArrival in story-model.ts): the hero sits on the same
+ * sticky stage and scroll clock as the 3D story. The story loop writes the fades,
+ * the hole that opens around the boat and the deck's fade-in straight onto these
+ * elements; the rules here are the state at the top of the page.
+ */
 .hs-cobalt-hero { position:relative; z-index:4; }
-.hs--cobalt-arrival { --arrival-copy:1; --arrival-cards:1; --arrival-hero:1; --arrival-story:0; --arrival-radius:0vmax; }
 .hs--cobalt-arrival .hs-cobalt-hero .field-hero { color:white; }
+/* SailTru's boat sails in over the cobalt on this canvas (only on the cinematic stage, once the 3D harbor is up). */
+.hs-boat-overlay { display:none; }
 @media (min-width:960px) and (min-height:600px) and (prefers-reduced-motion:no-preference) {
-  .hs-cobalt-hero { position:sticky; top:0; height:100svh; margin-top:-100svh; pointer-events:auto; opacity:var(--arrival-hero); mask-image:radial-gradient(circle at 23% 68%,transparent calc(var(--arrival-radius) - 8vmax),#000 var(--arrival-radius)); }
+  .hs-cobalt-hero { position:sticky; top:0; height:100svh; margin-top:-100svh; pointer-events:auto; }
   .hs-cobalt-hero .home-cobalt-field,.hs-cobalt-hero .field-hero { min-height:100svh; }
-  .hs-cobalt-hero .field-main { opacity:var(--arrival-copy); transform:translateY(calc((1 - var(--arrival-copy))*-30px)); will-change:opacity,transform; }
-  .hs-cobalt-hero .hsw__diagram--hero { opacity:var(--arrival-cards); transform:translateY(calc((1 - var(--arrival-cards))*-45px)); will-change:opacity,transform; }
+  .hs-cobalt-hero .field-main,.hs-cobalt-hero .hsw__diagram--hero { will-change:opacity,transform; }
   .hs-cobalt-hero[aria-hidden=true] { pointer-events:none; }
-  .hs--cobalt-arrival .hs-deck { opacity:var(--arrival-story); }
-  .hs--cobalt-arrival .hs-arrival-track { height:180svh; }
+  .hs--cobalt-arrival .hs-deck { opacity:0; }
+  .hs--cobalt-arrival .hs-arrival-track { height:calc(var(--arrival-len) * 100svh); }
   .hs--cobalt-arrival[data-arriving=true] .hs-stage__veil { opacity:0; }
-  .hs--cobalt-arrival[data-arriving=true] .hs-nav { visibility:hidden; }
+  .hs-stage[data-harbor3d="ready"] ~ .hs-cobalt-hero .hs-boat-overlay { display:block; position:absolute; inset:0; z-index:6; width:100%; height:100%; pointer-events:none; }
+  [dir="rtl"] .hs-boat-overlay { transform:scaleX(-1); }
 }

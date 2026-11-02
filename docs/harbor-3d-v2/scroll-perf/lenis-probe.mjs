@@ -49,7 +49,6 @@ const st = (p) => p.evaluate(() => {
     cinematic,
     step: document.querySelector(".hs-step.is-current")?.dataset.step ?? null,
     line: document.querySelector(".hs-step.is-current .hs-line.is-on")?.textContent?.slice(0, 50) ?? null,
-    nav: document.querySelector(".hs-nav a.is-active")?.getAttribute("href") ?? null,
     stageStep: document.querySelector(".hs-stage")?.dataset.step ?? null,
     buildArticleTop: art ? Math.round(art.getBoundingClientRect().top) : null,
     buildSectionTop: sec ? Math.round(sec.getBoundingClientRect().top) : null,
@@ -93,12 +92,12 @@ const shot = (p, name) => p.screenshot({ path: path.join(out, `${name}.png`) });
   for (let i = 0; i < 10; i++) { wheel.push(await y(p)); await p.waitForTimeout(50); }
   await settle(p);
   res.wheel = { samples: wheel, end: await y(p) };
-  // Past the arrival so the chapter bar and header are showing.
+  // Past the arrival so the header is showing.
   const find = await p.evaluate(() => { const m = document.querySelectorAll(".hs-mark")[1]; const r = m.getBoundingClientRect(); return Math.round(r.top + scrollY + (r.height - innerHeight) / 2); });
   await p.evaluate((v) => window.scrollTo(0, v), find); await settle(p); await p.waitForTimeout(800);
-  // Chapter bar -> #build.
+  // Same-page link -> #build (routed through the story like any chapter link).
   const t0 = Date.now();
-  await p.click('.hs-nav a[href="#build"]');
+  await p.evaluate((h) => { const a = document.createElement("a"); a.href = h; document.body.append(a); a.click(); a.remove(); }, "#build");
   const flight = [];
   for (let i = 0; i < 8; i++) { flight.push(await y(p)); await p.waitForTimeout(120); }
   await settle(p); await p.waitForTimeout(1200);
@@ -122,7 +121,7 @@ const shot = (p, name) => p.screenshot({ path: path.join(out, `${name}.png`) });
   res.wheelInBuildExamples = await st(p);
   for (const key of ["End", "Home"]) { const y0 = await y(p); await p.keyboard.press(key); await settle(p); keys[key] = [y0, await y(p)]; }
   // Back/forward: go to the build chapter, open /contact, come back.
-  await p.click('.hs-nav a[href="#build"]', { force: true }).catch(() => {});
+  await p.evaluate((h) => { const a = document.createElement("a"); a.href = h; document.body.append(a); a.click(); a.remove(); }, "#build");
   await p.evaluate(() => { const m = document.querySelectorAll(".hs-mark")[4]; const r = m.getBoundingClientRect(); window.scrollTo(0, Math.round(r.top + scrollY + (r.height - innerHeight) / 2)); });
   await settle(p); await p.waitForTimeout(800);
   const before = await st(p);

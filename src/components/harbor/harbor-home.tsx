@@ -34,7 +34,7 @@ export function HarborHome({ skipLabel, hero, scene3d = false }: { skipLabel: st
         )}
         <noscript>
           {/* Without JavaScript the story keeps its stacked, fully readable layout. */}
-          <style>{`.hs-stage,.hs-nav,.hs-track{display:none!important}.hs-deck{position:static!important;height:auto!important;margin-top:0!important}.hs-step{position:static!important;min-height:auto!important;padding:56px var(--gutter)!important}.hs-step__pin{position:static!important;height:auto!important;width:auto!important;opacity:1!important;transform:none!important;padding:0!important}.hs-word,.hs-line{opacity:1!important;transform:none!important}.hs-step__demo{position:static!important;width:auto!important;height:auto!important;margin:28px 0 0!important;clip:auto!important;overflow:visible!important;white-space:normal!important}`}</style>
+          <style>{`.hs-stage,.hs-track{display:none!important}.hs-deck{position:static!important;height:auto!important;margin-top:0!important}.hs-step{position:static!important;min-height:auto!important;padding:56px var(--gutter)!important}.hs-step__pin{position:static!important;height:auto!important;width:auto!important;opacity:1!important;transform:none!important;padding:0!important}.hs-word,.hs-line{opacity:1!important;transform:none!important}.hs-step__demo{position:static!important;width:auto!important;height:auto!important;margin:28px 0 0!important;clip:auto!important;overflow:visible!important;white-space:normal!important}`}</style>
         </noscript>
         <HarborHeader afterHero={hero ? HERO_SELECTOR : undefined} />
         <main id="main-content" className="harbor-main">

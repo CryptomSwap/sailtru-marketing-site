@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
-import { HeaderReveal } from "./story-model";
+import { CobaltArrival, HeaderReveal } from "./story-model";
 
 /**
  * `afterHero` is a selector for a hero above the story. While that hero (which
@@ -35,18 +35,34 @@ export function HarborHeader({ afterHero }: { afterHero?: string }) {
     if (!afterHero) return;
     const hero = document.querySelector(afterHero);
     if (!hero) return;
-    const update = () => {
+    const story = hero.closest<HTMLElement>(".hs--cobalt-arrival");
+    const stage = story?.querySelector<HTMLElement>(".hs-stage") ?? null;
+    /** The scroll position from which the header shows, measured on resize (scrolling never reads layout). */
+    let revealAt = 0;
+    const measure = () => {
       const bar = document.querySelector(".hh__bar")?.getBoundingClientRect().height ?? 64;
-      const story=hero.closest<HTMLElement>(".hs--cobalt-arrival");
-      const cinematic=story&&getComputedStyle(story.querySelector(".hs-stage")!).display!=="none";
-      setShown(cinematic ? -story.getBoundingClientRect().top > innerHeight*1.62 : HeaderReveal.isRevealed(hero.getBoundingClientRect().bottom, bar));
+      const cinematic = Boolean(stage) && getComputedStyle(stage!).display !== "none";
+      if (cinematic) {
+        // On the cinematic stage the cobalt hero dissolves in place: the header shows once it is gone.
+        revealAt = story!.getBoundingClientRect().top + window.scrollY + window.innerHeight * CobaltArrival.LENGTH * CobaltArrival.HERO[1];
+      } else {
+        // Stacked: once the hero has scrolled up behind the header.
+        const bottom = hero.getBoundingClientRect().bottom + window.scrollY;
+        revealAt = bottom - bar;
+      }
+      update();
     };
-    update();
+    const update = () => setShown(HeaderReveal.isRevealed(revealAt - window.scrollY, 0));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(hero);
+    if (story) ro.observe(story);
     window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("resize", measure);
     return () => {
+      ro.disconnect();
       window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      window.removeEventListener("resize", measure);
     };
   }, [afterHero]);
 

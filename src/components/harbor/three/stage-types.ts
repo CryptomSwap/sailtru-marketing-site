@@ -16,6 +16,8 @@ export type HarborAnchor =
   | "crate"
   | "workshop"
   | "boat"
+  /** SailTru's hull at the waterline (the cobalt entrance opens around it). */
+  | "hull"
   /** Mastheads of the provider boats (ChatGPT, Google, Perplexity). */
   | "provider0"
   | "provider1"
@@ -29,7 +31,7 @@ export type ScreenPoint = { x: number; y: number };
 
 /** Everything the 3D scene needs for one frame. Scroll, pointer and time stay separate inputs. */
 export type HarborFrame = {
-  /** Cobalt entrance, before the existing story clock starts. */
+  /** Cobalt entrance (CobaltArrival), 0..1 before the story's opening step; absent without the cobalt hero. */
   arrival?: number;
   /** Eased story position (camera, boat). */
   s: number;
@@ -52,7 +54,7 @@ export type HarborFrame = {
  * in useFrame) and reports the damped state back.
  */
 export type HarborFrameInput = {
-  /** Cobalt entrance, before the existing story clock starts. */
+  /** Cobalt entrance target (CobaltArrival), read from the scroll like uTarget; absent without the cobalt hero. */
   arrival?: number;
   /** Linear story position read from the (Lenis-smoothed) scroll. */
   uTarget: number;
@@ -72,8 +74,8 @@ export type HarborFrameInput = {
   snap?: boolean;
 };
 
-/** The damped state after a frame, for the HTML overlays and the loop's settle check. */
-export type HarborFrameResult = { u: number; s: number; scene: SceneState; settled: boolean };
+/** The damped state after a frame, for the HTML overlays, the cobalt hero and the loop's settle check. */
+export type HarborFrameResult = { u: number; s: number; arrival: number; scene: SceneState; settled: boolean };
 
 /** The 3D scene's handle, driven from the harbor story's single animation loop. */
 export interface HarborStage {

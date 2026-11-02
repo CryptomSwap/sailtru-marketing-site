@@ -61,8 +61,8 @@ if (!mobile) {
   const evidence = await centre(2);
   while ((await p.evaluate(() => scrollY)) < evidence - 60) await wheel(1, 100, 90);
   await p.waitForTimeout(1200);
-  await mark("chapter bar: jump to #report");
-  await p.click('.hs-nav a[href="#report"]');
+  await mark("link: jump to #report");
+  await p.evaluate((h) => { const a = document.createElement("a"); a.href = h; document.body.append(a); a.click(); a.remove(); }, "#report");
   await p.waitForTimeout(2600);
   await mark("keyboard: PageDown, ArrowDown x4, PageUp");
   await p.evaluate(() => document.activeElement?.blur());
@@ -70,8 +70,8 @@ if (!mobile) {
   for (let i = 0; i < 4; i++) { await p.keyboard.press("ArrowDown"); await p.waitForTimeout(350); }
   await p.waitForTimeout(800);
   await p.keyboard.press("PageUp"); await p.waitForTimeout(1600);
-  await mark("chapter bar: jump to #build");
-  await p.click('.hs-nav a[href="#build"]');
+  await mark("link: jump to #build");
+  await p.evaluate((h) => { const a = document.createElement("a"); a.href = h; document.body.append(a); a.click(); a.remove(); }, "#build");
   await p.waitForTimeout(2600);
   await mark("wheel: through #build (crane) and back");
   await wheel(10, 100, 110);
@@ -79,7 +79,7 @@ if (!mobile) {
   await wheel(10, -100, 110);
   await p.waitForTimeout(900);
   await mark("hold on #build");
-  await p.click('.hs-nav a[href="#build"]');
+  await p.evaluate((h) => { const a = document.createElement("a"); a.href = h; document.body.append(a); a.click(); a.remove(); }, "#build");
   await p.waitForTimeout(3500);
 } else {
   const cdp = await ctx.newCDPSession(p);

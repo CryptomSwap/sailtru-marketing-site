@@ -16,9 +16,11 @@ type Gsap = (typeof import("gsap"))["gsap"];
  *   keyboard and focus scrolling stay native too; Lenis follows them.
  *   Programmatic jumps (chapter bar, same-page anchors) go through scrollTo.
  * - Lenis scrolls the window itself, so everything that reads window.scrollY
- *   (the story's progress, camera and cards) reads the smoothed scroll.
- *   ScrollTrigger is updated on every Lenis scroll, and requestFrame runs the
- *   story's loop on the same GSAP tick, right after Lenis has moved.
+ *   (the story's progress, the cobalt entrance, camera and cards) reads the
+ *   smoothed scroll: one source of scroll truth. Nothing else animates from
+ *   the scroll (no ScrollTrigger on this page); requestFrame runs the story's
+ *   loop on the same GSAP tick, right after Lenis has moved, and the 3D scene
+ *   only damps what that loop hands it.
  * - Elements marked data-lenis-prevent (open nav sheets) keep native wheel
  *   scrolling, and an open nav sheet keeps the page locked.
  */
@@ -37,6 +39,8 @@ export class SmoothScroll {
   private static generation = 0;
 
   private static frames = new Map<number, FrameRequestCallback>();
+  /** The callbacks running on the current tick (swapped with `frames`, so a tick allocates nothing). */
+  private static running = new Map<number, FrameRequestCallback>();
   private static nextFrame = -1;
 
   /** Run the scene after Lenis has advanced, on the same GSAP tick. */
@@ -121,13 +125,8 @@ export class SmoothScroll {
   private static async start() {
     if (SmoothScroll.lenis) return;
     const generation = ++SmoothScroll.generation;
-    const [{ default: LenisClass }, { gsap }, { ScrollTrigger }] = await Promise.all([
-      import("lenis"),
-      import("gsap"),
-      import("gsap/ScrollTrigger")
-    ]);
+    const [{ default: LenisClass }, { gsap }] = await Promise.all([import("lenis"), import("gsap")]);
     if (generation !== SmoothScroll.generation || SmoothScroll.mounts === 0 || !SmoothScroll.wanted || SmoothScroll.lenis) return;
-    gsap.registerPlugin(ScrollTrigger);
     const lenis = new LenisClass({
       autoRaf: false,
       smoothWheel: true,
@@ -138,13 +137,15 @@ export class SmoothScroll {
       // An open nav sheet locks the page (body.nav-open { overflow: hidden }); the wheel stays native there too.
       prevent: () => document.body.classList.contains("nav-open")
     });
-    lenis.on("scroll", ScrollTrigger.update);
     const tick = (time: number) => {
       lenis.raf(time * 1000);
-      const callbacks = [...SmoothScroll.frames.values()];
-      SmoothScroll.frames.clear();
+      // Callbacks queued while these run wait for the next tick.
+      const running = SmoothScroll.frames;
+      SmoothScroll.frames = SmoothScroll.running;
+      SmoothScroll.running = running;
       const now = performance.now();
-      callbacks.forEach(callback => callback(now));
+      running.forEach((callback) => callback(now));
+      running.clear();
     };
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
