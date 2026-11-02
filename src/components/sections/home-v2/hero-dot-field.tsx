@@ -37,6 +37,13 @@ export function HeroDotField() {
     let cols = 0;
     let rows = 0;
     let pixel = 1;
+    // Inside the homepage story the hero stays mounted (sticky) after the arrival has dissolved it; the
+    // story marks it data-dissolved then, and the field draws nothing until the hero comes back.
+    const host = canvas.closest<HTMLElement>(".hs-cobalt-hero");
+    let dissolved = host?.hasAttribute("data-dissolved") ?? false;
+    /** The first frame back jumps the pointer easing to where it would have settled meanwhile. */
+    let settle = false;
+    let onScreen = true;
 
     const build = (width: number) => {
       const nextCols = width < 760 ? 24 : 42;
@@ -80,7 +87,7 @@ export function HeroDotField() {
       const height = canvas.height;
       if (width < 2 || height < 2 || dots.length === 0) return;
 
-      const follow = motionQuery.matches ? 1 : 0.075;
+      const follow = motionQuery.matches || settle ? 1 : 0.075;
       smooth.x += ((pointer.inside ? pointer.x : REST_X) - smooth.x) * follow;
       smooth.y += ((pointer.inside ? pointer.y : REST_Y) - smooth.y) * follow;
 
@@ -97,7 +104,7 @@ export function HeroDotField() {
         const dx = dot.gx - smooth.x;
         const dy = dot.gy - smooth.y;
         const influence = pointer.inside && !motionQuery.matches ? Math.exp(-(dx * dx + dy * dy) * 12) : 0;
-        dot.lift += (influence - dot.lift) * (motionQuery.matches ? 1 : 0.14);
+        dot.lift += (influence - dot.lift) * (motionQuery.matches || settle ? 1 : 0.14);
 
         const push = dot.lift * 0.035;
         const flow = motionQuery.matches ? 0 : time * 0.00036;
@@ -124,6 +131,7 @@ export function HeroDotField() {
         scratch[i * 6 + 5] = crest * 0.5 + 0.5;
         order[i] = i;
       }
+      settle = false;
 
       ctx.clearRect(0, 0, width, height);
       ctx.lineCap = "butt";
@@ -223,6 +231,11 @@ export function HeroDotField() {
 
     const start = () => {
       if (raf) window.cancelAnimationFrame(raf);
+      if (dissolved) {
+        running = false;
+        raf = 0;
+        return;
+      }
       running = true;
       if (motionQuery.matches) {
         draw(0);
@@ -249,12 +262,26 @@ export function HeroDotField() {
     observer.observe(canvas);
     const view = new IntersectionObserver(
       (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) start();
+        onScreen = entries.some((entry) => entry.isIntersecting);
+        if (onScreen) start();
         else stop();
       },
       { threshold: 0 }
     );
     view.observe(canvas);
+    const dissolve = new MutationObserver(() => {
+      const next = host?.hasAttribute("data-dissolved") ?? false;
+      if (next === dissolved) return;
+      dissolved = next;
+      if (dissolved) stop();
+      else if (onScreen && document.visibilityState === "visible") {
+        // Drawn now, before this frame paints, so the returning hero never shows a stale frame.
+        settle = true;
+        running = true;
+        frame(performance.now());
+      }
+    });
+    if (host) dissolve.observe(host, { attributes: true, attributeFilter: ["data-dissolved"] });
 
     window.addEventListener("pointermove", onPointer, { passive: true });
     document.addEventListener("pointerleave", onLeave);
@@ -265,6 +292,7 @@ export function HeroDotField() {
       stop();
       observer.disconnect();
       view.disconnect();
+      dissolve.disconnect();
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);

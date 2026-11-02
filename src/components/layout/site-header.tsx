@@ -55,6 +55,7 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
         aria-label={tCommon("primaryNav")}
         className={`site-header__links${menuOpen ? " is-open" : ""}`}
         aria-hidden={!menuOpen}
+        data-lenis-prevent={menuOpen ? "" : undefined}
       >
         {navItems.map((item) => {
           const isActive =

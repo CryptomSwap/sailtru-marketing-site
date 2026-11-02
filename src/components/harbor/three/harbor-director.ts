@@ -1,0 +1,757 @@
+import * as THREE from "three";
+import { HarborTheme } from "../harbor-theme";
+import { CameraRig3D, CobaltArrival, CraneMotion3D, HarborLayout3D, StoryPath, type BoatPose3D, type CameraPose3D } from "../story-model";
+import { HarborSky, HarborWater, HarborWave, LighthouseBeam, RouteRibbon, WaterDecal } from "./harbor-effects";
+import type { HarborAnchor, HarborFrame, ScreenPoint } from "./stage-types";
+import { ToonKit } from "./toon";
+
+export type HarborModels = {
+  sailboat: THREE.Object3D;
+  boats: THREE.Object3D;
+  buoy: THREE.Object3D;
+  lighthouse: THREE.Object3D;
+  dock: THREE.Object3D;
+  terrain: THREE.Object3D;
+  props: THREE.Object3D;
+};
+
+type Floater = { group: THREE.Object3D; x: number; z: number; phase: number; amp: number; baseYaw: number };
+/** A harbour neighbour drifting a slow loop around its mooring (rx, rz metres; speed rad/s, its sign the direction). */
+type Drifter = { holder: THREE.Object3D; float: Floater; x: number; z: number; rx: number; rz: number; speed: number; phase: number };
+type Gull = { node: THREE.Object3D; wingL?: THREE.Object3D; wingR?: THREE.Object3D; cx: number; cy: number; cz: number; r: number; speed: number; phase: number };
+
+const tmp = new THREE.Vector3();
+const tmp2 = new THREE.Vector3();
+const spread = HarborLayout3D.spread;
+const REACH = HarborLayout3D.REACH;
+
+function smooth(x: number) {
+  const c = THREE.MathUtils.clamp(x, 0, 1);
+  return c * c * (3 - 2 * c);
+}
+
+/** Find a node by name in a Blender scene and clone it (materials are converted afterwards). */
+function part(source: THREE.Object3D, name: string): THREE.Object3D {
+  const node = source.getObjectByName(name);
+  if (!node) throw new Error(`harbor model is missing ${name}`);
+  const copy = node.clone(true);
+  copy.position.set(0, 0, 0);
+  copy.rotation.set(0, 0, 0);
+  copy.scale.set(1, 1, 1);
+  return copy;
+}
+
+/** True when the mesh or one of its ancestors has a name matching `re`. */
+function within(node: THREE.Object3D | null, re: RegExp): boolean {
+  for (let n = node; n; n = n.parent) if (re.test(n.name)) return true;
+  return false;
+}
+
+function lerpAngle(a: number, b: number, t: number) {
+  let d = b - a;
+  while (d > Math.PI) d -= Math.PI * 2;
+  while (d < -Math.PI) d += Math.PI * 2;
+  return a + d * t;
+}
+
+/**
+ * Builds the 3D harbor from the Blender models and updates it from the one
+ * shared story state. It owns no clock and no scroll: every frame is a pure
+ * function of the HarborFrame it is given.
+ */
+export class HarborDirector {
+  readonly root = new THREE.Group();
+  private readonly water = new HarborWater();
+  private readonly sky: HarborSky;
+  private readonly route = new RouteRibbon(HarborLayout3D.route(), { width: 0.9, dash: 1.1 });
+  private readonly nextRoute = new RouteRibbon(HarborLayout3D.nextRoute(), { width: 0.7, dash: 1.0, opacity: 0.8 });
+
+  private readonly boat = new THREE.Group();
+  private readonly boatBob = new THREE.Group();
+  private readonly boatWake: THREE.Mesh;
+  private readonly boatCrate: THREE.Object3D;
+  private readonly pennant: THREE.Object3D | undefined;
+  /** The boom (pivot at the gooseneck) and the mainsail and battens it carries. */
+  private readonly boom: THREE.Object3D | undefined;
+  private readonly mainsail: THREE.Object3D[] = [];
+
+  private readonly sources: Floater[] = [];
+  private readonly sourcePings: THREE.Mesh[] = [];
+  private readonly marker: Floater;
+  /** The marker's band turns from ink to the accent when its finding is selected. */
+  private readonly markerBand: THREE.MeshToonMaterial;
+  private readonly markerRings: THREE.Mesh[] = [];
+  private readonly nextBuoy: Floater;
+  private readonly floaters: Floater[] = [];
+
+  private readonly dock: THREE.Object3D;
+  private readonly slew: THREE.Object3D;
+  private readonly trolley: THREE.Object3D;
+  private readonly hook: THREE.Object3D;
+  private readonly hookMaterial: THREE.MeshToonMaterial;
+  private readonly crate: THREE.Object3D;
+  private readonly cable: THREE.Mesh;
+  private readonly crateRest = new THREE.Vector3();
+  private readonly deliverySocket = new THREE.Vector3();
+  private readonly windowMaterials: THREE.MeshToonMaterial[] = [];
+  private readonly windowGlows: THREE.Sprite[] = [];
+  private readonly workshopFocus: THREE.Object3D;
+
+  private readonly beam = new LighthouseBeam(18, 1.9);
+  private readonly clouds: { node: THREE.Object3D; speed: number; baseX: number }[] = [];
+  private readonly gulls: Gull[] = [];
+
+  private readonly socket: THREE.Object3D;
+
+  /** SailTru's boat alone, for the overlay that carries it across the cobalt entrance. */
+  private readonly overlay = new THREE.Scene();
+  /** On the cobalt nothing hides the keel, so the overlay is cut at the water (a little under the foam and wake). */
+  private readonly waterline = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
+  private boatSwell = 0;
+  private readonly drifters: Drifter[] = [];
+
+  /** SailTru's hull from above (boat metres, bow +x, starboard +z): where the arrival view looks past it. */
+  private static readonly HULL_OUTLINE: [number, number][] = [
+    [2.42, 0],
+    [1.7, 0.55],
+    [0, 0.95],
+    [-2.05, 0.65],
+    [-2.05, -0.65],
+    [0, -0.95],
+    [1.7, -0.55]
+  ];
+  /** The arrival view's swing off the boat, for the viewport it was worked out for. */
+  private readonly swing = { height: -1, focusX: -1, angle: 0 };
+  private readonly swingXYZ: [number, number, number] = [0, 0, 0];
+  private readonly swingPose: BoatPose3D = { x: 0, z: 0, yaw: 0, sailing: 0 };
+
+  /** Per-frame scratch: poses and colours are reused, never allocated in update(). */
+  private readonly pose: CameraPose3D = { target: [0, 0, 0], distance: 1, yaw: 0, pitch: 0 };
+  private readonly camXYZ: [number, number, number] = [0, 0, 0];
+  private readonly boatPose: BoatPose3D = { x: 0, z: 0, yaw: 0, sailing: 0 };
+  private readonly inkColor = new THREE.Color(HarborTheme.INK);
+  private readonly accentColor = new THREE.Color(HarborTheme.ACCENT);
+  private readonly glassColor = new THREE.Color(HarborTheme.INK).lerp(new THREE.Color("#5a6170"), 0.4);
+  private readonly warmColor = new THREE.Color(HarborTheme.WINDOW_LIT);
+
+  /** The live camera's damped position and look-at point, and this frame's goals. */
+  private readonly camPos = new THREE.Vector3();
+  private readonly camLook = new THREE.Vector3();
+  private readonly camGoal = new THREE.Vector3();
+  private readonly lookGoal = new THREE.Vector3();
+  private camLive = false;
+
+  /** Provider boats (neutral hulls): the platforms buyers search and ask. Their badges are HTML overlays. */
+  private readonly providers: { holder: THREE.Group; bob: THREE.Group; masthead: THREE.Object3D; phase: number }[] = [];
+  private readonly clientFocus = new THREE.Object3D();
+
+  constructor(models: HarborModels) {
+    const sun = new THREE.Vector3(-0.55, 0.32, -0.77);
+    this.sky = new HarborSky(sun);
+    this.root.add(this.sky.mesh, this.water.mesh, this.route.mesh, this.nextRoute.mesh);
+
+    const hemi = new THREE.HemisphereLight("#fff8ec", "#c3cbc6", 1.55);
+    const key = new THREE.DirectionalLight("#fff3df", 1.95);
+    key.position.set(-30, 40, 28);
+    this.root.add(hemi, key, key.target);
+    // The overlay is lit like the harbor, so the boat on the cobalt is the boat in the harbor.
+    const overlayKey = key.clone();
+    this.overlay.add(hemi.clone(), overlayKey, overlayKey.target);
+
+    const accent = ToonKit.toon(HarborTheme.ACCENT);
+    const ink = ToonKit.toon(HarborTheme.INK);
+
+    // SailTru's boat: the investigation and delivery journey.
+    const sailboat = models.sailboat.clone(true);
+    ToonKit.prepare(sailboat, { pick: (name) => (name === "pal_cobalt" ? accent : undefined) });
+    this.pennant = sailboat.getObjectByName("Pennant");
+    this.boom = sailboat.getObjectByName("Boom");
+    for (const name of ["Mainsail", "Battens"]) {
+      const node = sailboat.getObjectByName(name);
+      if (node) this.mainsail.push(node);
+    }
+    this.boatBob.add(sailboat);
+    this.boat.add(WaterDecal.shadow(6.8, 2.8, 0.5));
+    const foam = WaterDecal.foam(6.4, 2.6, 0.85);
+    this.boat.add(foam);
+    // The wake spreads astern from the transom, so it reads from behind the boat as well as from the side.
+    this.boatWake = WaterDecal.wake(6.5, 3.4, 0);
+    this.boatWake.position.x = -1.9;
+    this.boat.add(this.boatWake, this.boatBob);
+    this.root.add(this.boat);
+
+    // The built change, carried by the crane and then by the boat.
+    const crateSource = models.dock.getObjectByName("CraneCrate")!;
+    this.boatCrate = crateSource.clone(true);
+    this.boatCrate.position.set(0, 0, 0);
+    ToonKit.prepare(this.boatCrate, { pick: (name) => (name === "pal_cobalt" ? accent : undefined) });
+    this.socket = sailboat.getObjectByName("CrateSocket") ?? sailboat;
+    this.socket.add(this.boatCrate);
+    // Fixed berth target, independent of the boat's later sailing or entrance.
+    this.boat.updateMatrixWorld(true);
+    this.socket.getWorldPosition(this.deliverySocket);
+    this.boat.worldToLocal(this.deliverySocket);
+    this.deliverySocket.add(new THREE.Vector3(HarborLayout3D.BERTH.x, 0, HarborLayout3D.BERTH.z));
+    this.boatCrate.visible = false;
+
+    // Evidence sources and the selected finding.
+    HarborLayout3D.SOURCE_BUOYS.forEach((p, i) => {
+      const f = this.buoy(models.buoy, p.x, p.z, ink, 1.05);
+      f.phase = i * 1.7;
+      this.sources.push(f);
+      const ping = this.ring(1.0, 1.25, HarborTheme.ACCENT);
+      this.root.add(ping);
+      this.sourcePings.push(ping);
+    });
+    this.markerBand = ink.clone();
+    this.marker = this.buoy(models.buoy, HarborLayout3D.MARKER.x, HarborLayout3D.MARKER.z, this.markerBand, 1.2);
+    for (const [inner, outer] of [
+      [1.2, 1.42],
+      [1.9, 2.02]
+    ]) {
+      const ring = this.ring(inner, outer, HarborTheme.ACCENT);
+      ring.position.set(HarborLayout3D.MARKER.x, 0.07, HarborLayout3D.MARKER.z);
+      this.root.add(ring);
+      this.markerRings.push(ring);
+    }
+    this.nextBuoy = this.buoy(models.buoy, HarborLayout3D.NEXT_BUOY.x, HarborLayout3D.NEXT_BUOY.z, ink, 1.1);
+
+    // The working dock.
+    this.dock = models.dock.clone(true);
+    this.dock.position.set(HarborLayout3D.DOCK.x, 0, HarborLayout3D.DOCK.z);
+    this.hookMaterial = ink.clone();
+    ToonKit.prepare(this.dock, {
+      pick: (name, mesh) => {
+        if (name === "pal_cobalt") return accent;
+        if (name === "pal_glass" && within(mesh, /^WorkshopWindow/)) {
+          const m = new THREE.MeshToonMaterial({ color: this.glassColor.clone(), gradientMap: ToonKit.gradientMap() });
+          this.windowMaterials.push(m);
+          return m;
+        }
+        if (name === "pal_ink" && within(mesh, /^CraneHook/)) return this.hookMaterial;
+        return undefined;
+      }
+    });
+    this.root.add(this.dock);
+    this.slew = this.dock.getObjectByName("CraneSlew")!;
+    this.trolley = this.dock.getObjectByName("CraneTrolley")!;
+    this.hook = this.dock.getObjectByName("CraneHook")!;
+    this.crate = this.dock.getObjectByName("CraneCrate")!;
+    this.crateRest.copy(this.crate.position);
+    this.workshopFocus = this.dock.getObjectByName("WorkshopFocus") ?? this.dock;
+    this.cable = new THREE.Mesh(new THREE.BoxGeometry(0.035, 1, 0.035), ToonKit.glow(HarborTheme.INK));
+    this.dock.add(this.cable);
+    for (const name of ["WorkshopWindow_0", "WorkshopWindow_1"]) {
+      const node = this.dock.getObjectByName(name);
+      if (!node) continue;
+      const glow = WaterDecal.glow(3.2, 0);
+      glow.position.copy(node.position).add(new THREE.Vector3(0, 0, 0.5));
+      this.dock.add(glow);
+      this.windowGlows.push(glow);
+    }
+    const quayLamp = this.dock.getObjectByName("QuayLamp");
+    if (quayLamp) {
+      const g = WaterDecal.glow(1.4, 0.55);
+      quayLamp.getWorldPosition(g.position);
+      this.dock.worldToLocal(g.position);
+      g.position.y += 3.86;
+      this.dock.add(g);
+    }
+
+    // Lighthouse with a turning lamp.
+    const lighthouse = models.lighthouse.clone(true);
+    ToonKit.prepare(lighthouse);
+    lighthouse.position.set(spread(9), 0, -24);
+    lighthouse.scale.setScalar(1.25);
+    const lamp = lighthouse.getObjectByName("LighthouseLamp");
+    if (lamp) {
+      lamp.add(this.beam.group);
+      const g = WaterDecal.glow(3.4, 0.7);
+      lamp.add(g);
+    }
+    this.root.add(lighthouse);
+
+    // Land: headland, town, the far ridge, islets, reef, rocks and palms.
+    const terrain = models.terrain;
+    const place = (node: THREE.Object3D, x: number, y: number, z: number, s = 1, yaw = 0) => {
+      ToonKit.prepare(node);
+      node.position.set(x, y, z);
+      node.scale.setScalar(s);
+      node.rotation.y = yaw;
+      this.root.add(node);
+      return node;
+    };
+    place(part(terrain, "Headland"), spread(-47, REACH.opening), 0, -13, 1.15, 0.1);
+    place(part(terrain, "TownHill"), spread(37, REACH.town), 0, -25, 1.1);
+    // The far ridge stretches with the coast it backs.
+    const ridge = place(part(terrain, "FarRidge"), spread(6), -0.3, -100, 2.2);
+    ridge.scale.x *= StoryPath.SPREAD;
+    ridge.scale.y = 0.9;
+    place(part(terrain, "Islet_A"), spread(-27), 0, -15, 1.2);
+    place(part(terrain, "Islet_B"), spread(50, REACH.town), 0, -7, 1.3);
+    place(part(terrain, "Reef"), HarborLayout3D.REEF.x, 0, HarborLayout3D.REEF.z, 1.3);
+    const props = models.props;
+    // A rock and palm on the headland point, behind the boat's way in on the cobalt entrance.
+    const point = spread(-47.2, REACH.opening);
+    place(part(props, "Rock_C"), point, 0, -3.2, 1.3, 0.4);
+    place(part(props, "Palm_B"), point + 0.3, 0.55, -3.5, 1.2, 0.8);
+    place(part(props, "Palm_A"), spread(-26.4, -27), 1.0, -14.7, 1.1, 1.2);
+    place(part(props, "Palm_B"), spread(-28.2, -27), 0.8, -14.1, 0.9, 2.1);
+    // Foreground rocks: the near layer of the opening composition.
+    place(part(props, "Rock_A"), spread(-27.5, REACH.opening), 0, 10.5, 1.0, 0.7);
+    place(part(props, "Rock_B"), spread(-26, REACH.opening), 0, 11.6, 0.7, 2.4);
+    place(part(props, "Rock_A"), spread(-27), 0, -4.5, 1.0, 1.1);
+    place(part(props, "Rock_B"), spread(14.5), 0, -5.2, 1.1);
+    place(part(props, "Rock_A"), spread(47, REACH.town), 0, 1.2, 0.9, 2.2);
+    place(part(props, "Palm_A"), spread(49.6, REACH.town), 1.1, -7.2, 1.25, 0.6);
+    for (const [x, z, w, d] of [
+      [point, -3.2, 6, 3.2],
+      [spread(-27), -4.5, 3.4, 2.2],
+      [spread(-27, REACH.opening), 11, 4.6, 3.2],
+      [spread(14.5), -5.2, 3.2, 2.2],
+      [HarborLayout3D.REEF.x, HarborLayout3D.REEF.z, 6.8, 3.4]
+    ]) {
+      const f = WaterDecal.foam(w, d, 0.75);
+      f.position.set(x, 0.05, z);
+      this.root.add(f);
+    }
+
+    // Harbour neighbours: never cobalt. They bob, and drift slow loops around their moorings.
+    const boats = models.boats;
+    const neighbour = (name: string, x: number, z: number, loop: { rx: number; rz: number; speed: number; phase: number }, s = 1) => {
+      const node = part(boats, name);
+      ToonKit.prepare(node);
+      node.scale.setScalar(s);
+      const g = new THREE.Group();
+      g.add(node);
+      const shadow = WaterDecal.shadow(4.6 * s, 2 * s, 0.4);
+      const holder = new THREE.Group();
+      holder.add(shadow, g);
+      holder.position.set(x, 0, z);
+      this.root.add(holder);
+      const float = { group: g, x, z, phase: x * 0.37, amp: 1, baseYaw: 0 };
+      this.floaters.push(float);
+      this.drifters.push({ holder, float, x, z, ...loop });
+    };
+    // Provider boats: the same neutral sloop, sailing into the Find view. Never cobalt.
+    HarborLayout3D.PROVIDERS.forEach((p, i) => {
+      const node = part(boats, "SmallSloop");
+      ToonKit.prepare(node);
+      node.scale.setScalar(p.scale);
+      const bob = new THREE.Group();
+      bob.add(node);
+      const holder = new THREE.Group();
+      holder.add(WaterDecal.shadow(4.6 * p.scale, 2 * p.scale, 0.4), WaterDecal.foam(4.4 * p.scale, 1.9 * p.scale, 0.7), bob);
+      this.root.add(holder);
+      const masthead = node.getObjectByName("SmallPennant") ?? node;
+      this.providers.push({ holder, bob, masthead, phase: 0.8 + i * 1.3 });
+    });
+
+    // The client's harbor: Example Studio's town on the hill behind the quay.
+    this.clientFocus.position.set(HarborLayout3D.CLIENT.x, HarborLayout3D.CLIENT.y, HarborLayout3D.CLIENT.z);
+    this.root.add(this.clientFocus);
+
+    neighbour("SmallSloop", spread(5.5), -11.5, { rx: 3.2, rz: 1.4, speed: 0.045, phase: 0.4 });
+    // Off to the side of the berth as the Build view sees it, so it never sails in behind SailTru's mast.
+    neighbour("SmallSloop", spread(12), -14, { rx: 2.6, rz: 1.2, speed: -0.05, phase: 2.1 }, 0.9);
+    neighbour("FishingBoat", spread(35.6, REACH.town), -3.1, { rx: 2.4, rz: 0.9, speed: 0.04, phase: 4.2 });
+    neighbour("Dinghy", spread(16.6), -1.7, { rx: 1.6, rz: 0.7, speed: -0.06, phase: 1.3 });
+
+    // Clouds and gulls.
+    // Clouds stay paper-white: no fog, a soft toon band and their own ink line.
+    const cloudMaterial = new THREE.MeshToonMaterial({ color: new THREE.Color("#fffaf0"), gradientMap: ToonKit.gradientMap(), fog: false });
+    const cloudNames = ["Cloud_A", "Cloud_B", "Cloud_C", "Cloud_A", "Cloud_C", "Cloud_B"];
+    cloudNames.forEach((name, i) => {
+      const c = part(props, name);
+      ToonKit.prepare(c, { pick: () => cloudMaterial });
+      c.position.set(-70 + i * 30, 15 + (i % 3) * 3.5, -120 - (i % 2) * 20);
+      c.scale.set(5 + (i % 3), 4.2 + (i % 3), 5);
+      this.root.add(c);
+      this.clouds.push({ node: c, speed: 0.35 + (i % 3) * 0.12, baseX: c.position.x });
+    });
+    const gullSpots: [number, number, number, number][] = [
+      [spread(-30), 9.5, -2, 6],
+      [spread(-12), 11, -6, 8],
+      [spread(22), 12.5, -5, 7],
+      [spread(38), 10, -1, 5]
+    ];
+    gullSpots.forEach(([cx, cy, cz, r], i) => {
+      const node = part(props, "Gull");
+      ToonKit.prepare(node);
+      node.scale.setScalar(1.25);
+      this.root.add(node);
+      this.gulls.push({
+        node,
+        wingL: node.getObjectByName("WingL"),
+        wingR: node.getObjectByName("WingR"),
+        cx,
+        cy,
+        cz,
+        r,
+        speed: 0.22 + i * 0.03,
+        phase: i * 1.9
+      });
+    });
+  }
+
+  private buoy(source: THREE.Object3D, x: number, z: number, band: THREE.Material, scale: number): Floater {
+    const node = source.clone(true);
+    ToonKit.prepare(node, { pick: (name) => (name === "pal_band" ? band : undefined) });
+    node.scale.setScalar(scale);
+    const g = new THREE.Group();
+    g.add(node);
+    const holder = new THREE.Group();
+    holder.add(WaterDecal.shadow(2.2 * scale, 2.2 * scale, 0.35), WaterDecal.foam(2.1 * scale, 2.1 * scale, 0.8), g);
+    holder.position.set(x, 0, z);
+    this.root.add(holder);
+    const f = { group: g, x, z, phase: x, amp: 1.4, baseYaw: 0 };
+    this.floaters.push(f);
+    return f;
+  }
+
+  private ring(inner: number, outer: number, color: string) {
+    const geometry = new THREE.RingGeometry(inner, outer, 48);
+    geometry.rotateX(-Math.PI / 2);
+    const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false }));
+    mesh.renderOrder = 2;
+    return mesh;
+  }
+
+  /**
+   * Update everything for one frame and place the camera. With `damp`, the
+   * camera eases toward the pose (frame-rate independent) and the remaining
+   * distance is returned; without it (first frame, stills) the camera is placed
+   * exactly and the live camera's damping state is left untouched.
+   */
+  update(
+    frame: HarborFrame,
+    camera: THREE.PerspectiveCamera,
+    width: number,
+    height: number,
+    poses: CameraPose3D[],
+    mirror: boolean,
+    damp?: { dt: number; lambda: number; snap?: boolean }
+  ): number {
+    const t = frame.ambient;
+    const { scene } = frame;
+    const arrival = frame.arrival ?? 1;
+    const standBack = CameraRig3D.distanceScale(frame.freeWidth, height);
+
+    // Camera: the step's pose and the viewport's framing (rising from the low arrival view during the
+    // cobalt entrance, which needs no stand-back: it is framed on the boat), then a restrained pointer offset.
+    const pose = CameraRig3D.poseAt(frame.s, poses, this.pose);
+    pose.distance *= standBack;
+    const opened = arrival < 1 ? CobaltArrival.ease(arrival, CobaltArrival.CAMERA) : 1;
+    if (arrival < 1) CameraRig3D.blend(CameraRig3D.ARRIVAL, pose, opened, pose);
+    this.lookGoal.set(pose.target[0], pose.target[1], pose.target[2]);
+    pose.yaw += frame.pointer.x * (mirror ? -1.6 : 1.6);
+    pose.pitch -= frame.pointer.y * 0.8;
+    this.camGoal.fromArray(CameraRig3D.position(pose, this.camXYZ));
+    const fov = THREE.MathUtils.lerp(CameraRig3D.ARRIVAL_FOV, CameraRig3D.FOV, opened);
+    if (arrival < 1) {
+      // At the top of the page the view is swung off the boat (right, and up a little); the first
+      // scroll swings it back, so the boat comes in over the bottom-left corner, close and large.
+      const swing = (1 - CobaltArrival.ease(arrival, CobaltArrival.ENTER)) * this.entrySwing(height, frame.focus.x);
+      if (swing > 0) this.swingLook(swing, swing * 0.5);
+    }
+    let rest = 0;
+    if (damp && this.camLive && !damp.snap) {
+      this.dampTo(this.camPos, this.camGoal, damp.lambda, damp.dt);
+      this.dampTo(this.camLook, this.lookGoal, damp.lambda, damp.dt);
+      rest = Math.max(this.camPos.distanceTo(this.camGoal), this.camLook.distanceTo(this.lookGoal));
+      if (rest < 0.002) {
+        this.camPos.copy(this.camGoal);
+        this.camLook.copy(this.lookGoal);
+      }
+      camera.position.copy(this.camPos);
+      camera.lookAt(this.camLook);
+    } else {
+      if (damp) {
+        // A live frame that snaps (first frame, resize, jump without motion) restarts the damping from the pose.
+        this.camPos.copy(this.camGoal);
+        this.camLook.copy(this.lookGoal);
+        this.camLive = true;
+      }
+      camera.position.copy(this.camGoal);
+      camera.lookAt(this.lookGoal);
+    }
+    camera.fov = fov;
+    camera.aspect = width / Math.max(1, height);
+    camera.setViewOffset(width, height, width / 2 - frame.focus.x, height / 2 - frame.focus.y, width, height);
+    camera.updateProjectionMatrix();
+
+    this.sky.update(camera);
+    this.water.update(t, camera);
+
+    // The boat sails the story (on the entrance, its way in to the opening stop); the swell and the wind are ambient.
+    const b = arrival < 1 ? HarborLayout3D.entryAt(arrival, this.boatPose) : HarborLayout3D.boatAt(frame.s, this.boatPose);
+    const swell = HarborWave.height(b.x, b.z, t);
+    this.boatSwell = swell;
+    this.boat.position.set(b.x, 0, b.z);
+    this.boat.rotation.y = b.yaw;
+    this.boatBob.position.y = swell * 0.9 + Math.sin(t * 1.3) * 0.035;
+    this.boatBob.rotation.x = Math.sin(t * 0.9) * 0.035 - b.sailing * 0.07;
+    this.boatBob.rotation.z = Math.sin(t * 1.1 + 1) * 0.022;
+    (this.boatWake.material as THREE.MeshBasicMaterial).opacity = b.sailing * 0.9;
+    if (this.pennant) this.pennant.rotation.y = Math.sin(t * 5.2) * 0.22 + Math.sin(t * 8.1) * 0.08;
+    this.updateRig(scene.mainDown, scene.boomOut);
+
+    // Harbour neighbours drift their loops on the ambient clock alone, so scrolling never moves them.
+    for (const n of this.drifters) {
+      const a = t * n.speed + n.phase;
+      const x = n.x + Math.cos(a) * n.rx;
+      const z = n.z + Math.sin(a) * n.rz;
+      n.holder.position.set(x, 0, z);
+      // Bow along the loop's tangent.
+      n.holder.rotation.y = Math.atan2(-Math.cos(a) * n.rz * n.speed, -Math.sin(a) * n.rx * n.speed);
+      n.float.x = x;
+      n.float.z = z;
+    }
+    for (const f of this.floaters) {
+      f.group.position.y = HarborWave.height(f.x, f.z, t) * 0.9;
+      f.group.rotation.x = Math.sin(t * 1.2 + f.phase) * 0.05 * f.amp;
+      f.group.rotation.z = Math.sin(t * 0.95 + f.phase * 1.3) * 0.045 * f.amp;
+    }
+
+    // Evidence: cobalt pings spread from each source while the chart is being charted.
+    this.sourcePings.forEach((ping, i) => {
+      const src = HarborLayout3D.SOURCE_BUOYS[i];
+      const cycle = (t * 0.45 + i * 0.33) % 1;
+      ping.position.set(src.x, 0.08, src.z);
+      ping.scale.setScalar(0.8 + cycle * 1.6);
+      (ping.material as THREE.MeshBasicMaterial).opacity = scene.sources * (1 - cycle) * 0.85;
+      ping.visible = scene.sources > 0.01;
+    });
+    // Provider boats sail in on Find, then lie off their moorings, swinging slowly on the ambient clock.
+    HarborLayout3D.PROVIDERS.forEach((p, i) => {
+      const b = this.providers[i];
+      const k = scene.providers;
+      const e = k * k * (3 - 2 * k);
+      const swing = t * 0.09 + b.phase;
+      const x = p.from.x + (p.x - p.from.x) * e + Math.cos(swing) * 1.3;
+      const z = p.from.z + (p.z - p.from.z) * e + Math.sin(swing * 0.8) * 0.6;
+      b.holder.position.set(x, 0, z);
+      b.holder.rotation.y = p.yaw + Math.sin(swing * 0.6) * 0.08;
+      b.bob.position.y = HarborWave.height(x, z, t) * 0.9;
+      b.bob.rotation.x = Math.sin(t * 1.05 + b.phase) * 0.04 - (1 - e) * e * 0.18;
+      b.bob.rotation.z = Math.sin(t * 0.9 + b.phase * 1.4) * 0.03;
+    });
+
+    // Once located (Evidence, second line) the finding F01 stays cobalt.
+    this.markerBand.color.copy(this.inkColor).lerp(this.accentColor, scene.selected);
+    this.markerRings.forEach((ring, i) => {
+      const pulse = i === 1 ? 1 + ((t * 0.6) % 1) * 0.35 : 1;
+      ring.scale.setScalar(pulse);
+      (ring.material as THREE.MeshBasicMaterial).opacity = scene.marker * (i === 0 ? 0.9 : 0.5 * (1 - ((t * 0.6) % 1)));
+      ring.visible = scene.marker > 0.01;
+    });
+
+    this.route.update(t, scene.route);
+    this.nextRoute.update(t, scene.nextRoute, 0.85);
+    this.nextBuoy.group.scale.setScalar(Math.max(0.001, scene.nextRoute));
+
+    this.updateCrane(scene.crane, scene.hook);
+
+    // Workshop windows warm up while we build.
+    const lit = scene.workshop;
+    for (const m of this.windowMaterials) m.color.copy(this.glassColor).lerp(this.warmColor, lit);
+    for (const g of this.windowGlows) g.material.opacity = lit * 0.75;
+
+    this.beam.group.rotation.y = t * 0.55;
+    // Clouds drift slowly and wrap around the camera's stretch of coast.
+    for (const c of this.clouds) {
+      const span = 240;
+      const x = (((c.baseX + t * c.speed + span / 2) % span) + span) % span - span / 2;
+      c.node.position.x = x + camera.position.x * 0.7;
+    }
+    for (const g of this.gulls) {
+      const a = t * g.speed + g.phase;
+      g.node.position.set(g.cx + Math.cos(a) * g.r, g.cy + Math.sin(a * 2.1) * 0.6, g.cz + Math.sin(a) * g.r * 0.55);
+      g.node.rotation.y = Math.atan2(Math.cos(a) * g.r * 0.55, Math.sin(a) * g.r) + Math.PI;
+      g.node.rotation.z = Math.sin(a * 2.1) * 0.12;
+      const flap = Math.sin(t * 7 + g.phase) * 0.55 * (0.4 + 0.6 * Math.max(0, Math.sin(t * 0.7 + g.phase)));
+      if (g.wingL) g.wingL.rotation.x = -flap;
+      if (g.wingR) g.wingR.rotation.x = flap;
+    }
+    return rest;
+  }
+
+  private dampTo(a: THREE.Vector3, b: THREE.Vector3, lambda: number, dt: number) {
+    a.set(THREE.MathUtils.damp(a.x, b.x, lambda, dt), THREE.MathUtils.damp(a.y, b.y, lambda, dt), THREE.MathUtils.damp(a.z, b.z, lambda, dt));
+  }
+
+  /**
+   * How far (radians) the arrival view starts swung off the boat: just enough that
+   * the boat's first pose lies beyond the frame's left edge (wide frames need more),
+   * with room for the pointer's sway, so at the top of the page the cobalt hero is clear.
+   */
+  private entrySwing(height: number, focusX: number): number {
+    if (height === this.swing.height && focusX === this.swing.focusX) return this.swing.angle;
+    const pose = CameraRig3D.ARRIVAL;
+    const cam = CameraRig3D.position(pose, this.swingXYZ);
+    const look = Math.atan2(pose.target[0] - cam[0], pose.target[2] - cam[2]);
+    const b = HarborLayout3D.entryAt(0, this.swingPose);
+    const cos = Math.cos(b.yaw);
+    const sin = Math.sin(b.yaw);
+    // Bearing (left of the view's axis) of the hull's rightmost point as seen from the camera.
+    let nearest = Infinity;
+    for (const [x, z] of HarborDirector.HULL_OUTLINE) {
+      const bearing = Math.atan2(b.x + x * cos + z * sin - cam[0], b.z - x * sin + z * cos - cam[2]) - look;
+      nearest = Math.min(nearest, Math.atan2(Math.sin(bearing), Math.cos(bearing)));
+    }
+    const edge = Math.atan((focusX / Math.max(1, height / 2)) * Math.tan(THREE.MathUtils.degToRad(CameraRig3D.ARRIVAL_FOV / 2)));
+    this.swing.height = height;
+    this.swing.focusX = focusX;
+    this.swing.angle = Math.max(0, edge - nearest + THREE.MathUtils.degToRad(5));
+    return this.swing.angle;
+  }
+
+  /** Turn the camera's look-at goal about the camera: `right` and `up` radians. */
+  private swingLook(right: number, up: number) {
+    const look = tmp.subVectors(this.lookGoal, this.camGoal);
+    const length = look.length();
+    const azimuth = Math.atan2(look.x, look.z) - right;
+    const elevation = Math.asin(THREE.MathUtils.clamp(look.y / length, -1, 1)) + up;
+    this.lookGoal.set(
+      this.camGoal.x + Math.sin(azimuth) * Math.cos(elevation) * length,
+      this.camGoal.y + Math.sin(elevation) * length,
+      this.camGoal.z + Math.cos(azimuth) * Math.cos(elevation) * length
+    );
+  }
+
+  /** Draw SailTru's boat alone (its shadow, foam and wake too) from the harbor camera, for the cobalt overlay. */
+  renderBoat(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
+    this.waterline[0].constant = -Math.min(this.boatSwell, 0.02);
+    renderer.clippingPlanes = this.waterline;
+    this.overlay.add(this.boat);
+    try {
+      renderer.render(this.overlay, camera);
+    } finally {
+      this.root.add(this.boat);
+    }
+  }
+
+  /**
+   * Lower the mainsail onto the boom (it folds down to its foot, 0.07 m above the
+   * boom's pivot) and swing the boom out over the water, away from the quay.
+   */
+  private updateRig(down: number, out: number) {
+    const k = 1 - 0.95 * smooth(down);
+    const foot = 1.52;
+    const pivot = 1.45;
+    for (const node of this.mainsail) {
+      node.scale.y = k;
+      // Sail vertices are in boat space under a node offset of -pivot: keep the foot fixed while scaling.
+      node.position.y = foot - pivot - foot * k;
+    }
+    if (this.boom) this.boom.rotation.y = smooth(out) * 1.15;
+  }
+
+  private updateCrane(value: number, release: number) {
+    const { lift, slew, lower } = CraneMotion3D.phases(value);
+    const pivot = this.slew.position;
+    // Boat socket in dock space (the boat is at its berth while the crane works).
+    tmp.copy(this.deliverySocket);
+    this.dock.updateWorldMatrix(true, false);
+    this.dock.worldToLocal(tmp);
+    const restAngle = Math.atan2(-(this.crateRest.z - pivot.z), this.crateRest.x - pivot.x);
+    const restR = Math.hypot(this.crateRest.x - pivot.x, this.crateRest.z - pivot.z);
+    const boatAngle = Math.atan2(-(tmp.z - pivot.z), tmp.x - pivot.x);
+    const boatR = Math.hypot(tmp.x - pivot.x, tmp.z - pivot.z);
+    const angle = lerpAngle(restAngle, boatAngle, slew);
+    const r = THREE.MathUtils.clamp(restR + (boatR - restR) * slew, .4, 6.0);
+    this.slew.rotation.y = angle;
+    this.trolley.position.x = r;
+
+    const sling = 1.26;
+    const groundY = this.crateRest.y + sling;
+    const highY = pivot.y - 2.6;
+    const deckY = tmp.y + sling;
+    const landed = value >= 0.999;
+    // Once the crate is aboard, the empty hook rises clear of the mast and sails.
+    const up = release * release * (3 - 2 * release);
+    const y = landed ? deckY + (highY - deckY) * up : lower > 0 ? highY + (deckY - highY) * lower : groundY + (highY - groundY) * lift;
+    const hx = pivot.x + Math.cos(angle) * r;
+    const hz = pivot.z - Math.sin(angle) * r;
+    this.hook.position.set(hx, y, hz);
+    this.crate.position.set(hx, y - sling, hz);
+
+    this.crate.visible = !landed;
+    this.boatCrate.visible = landed;
+
+    // The cable starts at the actual trolley, including its authored height.
+    this.trolley.updateWorldMatrix(true,false);
+    this.trolley.getWorldPosition(tmp2);
+    this.dock.worldToLocal(tmp2);
+    const top = tmp2.y;
+    const bottom = y + 0.3;
+    this.cable.position.set(tmp2.x, (top + bottom) / 2, tmp2.z);
+    this.cable.scale.y = Math.max(0.01, top - bottom);
+
+    const active = value > 0.001 && value < 0.999;
+    this.hookMaterial.color.set(active ? HarborTheme.ACCENT : HarborTheme.INK);
+  }
+
+  /** World position of a named overlay anchor. */
+  anchorWorld(anchor: HarborAnchor, out: THREE.Vector3): THREE.Vector3 | null {
+    switch (anchor) {
+      case "tag0":
+      case "tag1":
+      case "tag2":
+      case "source0":
+      case "source1":
+      case "source2": {
+        const i = Number(anchor.slice(-1));
+        const f = this.sources[i];
+        f.group.getWorldPosition(out);
+        // Labels meet the buoy's top mark; their stems differ in length so neighbours never collide.
+        out.y += 2.2;
+        return out;
+      }
+      case "marker":
+        this.marker.group.getWorldPosition(out);
+        out.y += 2.3;
+        return out;
+      case "route":
+        this.route.pointAt(0.42, out);
+        out.y += 0.1;
+        return out;
+      case "crate":
+        (this.crate.visible ? this.crate : this.boatCrate).getWorldPosition(out);
+        out.y += 0.7;
+        return out;
+      case "workshop":
+        return this.workshopFocus.getWorldPosition(out);
+      case "boat":
+        this.boat.getWorldPosition(out);
+        out.y += 6.5;
+        return out;
+      case "landfall":
+        return out.set(HarborLayout3D.LANDFALL.x, 1.2, HarborLayout3D.LANDFALL.z);
+      case "provider0":
+      case "provider1":
+      case "provider2": {
+        const b = this.providers[Number(anchor.slice(-1))];
+        b.masthead.getWorldPosition(out);
+        out.y += 0.55;
+        return out;
+      }
+      case "client":
+        return this.clientFocus.getWorldPosition(out);
+      case "nextBuoy":
+        this.nextBuoy.group.getWorldPosition(out);
+        out.y += 2.6;
+        return out;
+      default:
+        return null;
+    }
+  }
+
+  project(anchor: HarborAnchor, camera: THREE.Camera, width: number, height: number): ScreenPoint | null {
+    const p = this.anchorWorld(anchor, tmp2);
+    if (!p) return null;
+    p.project(camera);
+    if (p.z > 1 || p.z < -1) return null;
+    return { x: ((p.x + 1) / 2) * width, y: ((1 - p.y) / 2) * height };
+  }
+}
