@@ -367,25 +367,36 @@ export class HeaderReveal {
 
 /**
  * The cobalt entrance on the cinematic stage: the first LENGTH viewport heights
- * of the story, before the opening step. As it scrolls, SailTru's boat sails in
- * across the cobalt from beyond the reading-start edge, the cobalt opens around
- * the boat onto the harbor, and the boat comes to rest at the opening stop,
- * where the story path continues. Every phase is a fraction of the entrance.
+ * of the story, before the opening step. As it scrolls, SailTru's boat comes in
+ * over the bottom-left corner close to the viewer, seen from astern, and sails
+ * away into a hole that opens in the cobalt onto the harbor, coming to rest at
+ * the opening stop, where the story path continues. Every phase is a fraction
+ * of the entrance.
  */
 export class CobaltArrival {
   /** Scroll length in viewport heights (the arrival track is sized from it). */
   static readonly LENGTH = 2.4;
   /** The hero copy, then the hero cards, fade away. */
-  static readonly COPY: [number, number] = [0.03, 0.28];
-  static readonly CARDS: [number, number] = [0.2, 0.55];
-  /** The cobalt opens around the boat (by then it has passed into the open frame). */
-  static readonly OPEN: [number, number] = [0.3, 0.86];
+  static readonly COPY: [number, number] = [0.02, 0.16];
+  static readonly CARDS: [number, number] = [0.12, 0.45];
+  /** The view swings from the empty cobalt onto the boat, close by, as it pulls away. */
+  static readonly ENTER: [number, number] = [0, 0.14];
+  /** The cobalt opens ahead of the boat, where it is sailing, and the boat sails into the opening. */
+  static readonly OPEN: [number, number] = [0.12, 0.86];
+  /** Radius of the opening at the end of OPEN (vmax; past the corners of any screen). */
+  static readonly OPEN_RADIUS = 105;
   /** The rest of the cobalt fades; from its end the hero is gone. */
   static readonly HERO: [number, number] = [0.62, 0.92];
   /** The opening copy comes in. */
   static readonly STORY: [number, number] = [0.84, 1];
-  /** The camera turns from the arrival view to the opening view. */
-  static readonly CAMERA: [number, number] = [0.45, 1];
+  /** The camera rises from low astern of the boat to the opening view. */
+  static readonly CAMERA: [number, number] = [0.08, 1];
+
+  /** The opening's radius (vmax): it grows slowly at first, so the boat is seen sailing into it. */
+  static opening(a: number): number {
+    const [from, to] = CobaltArrival.OPEN;
+    return CobaltArrival.OPEN_RADIUS * Math.pow(clamp((a - from) / (to - from)), 1.2);
+  }
 
   /** Smoothstep of `a` through a phase. */
   static ease(a: number, [from, to]: [number, number]): number {
@@ -393,10 +404,9 @@ export class CobaltArrival {
     return x * x * (3 - 2 * x);
   }
 
-  /** How far along its entry path the boat is: quick off the edge, slowing to rest at the opening stop. */
+  /** How far along its entry path the boat is: under way from the first scroll, slowing to rest at the opening stop. */
   static boat(a: number): number {
-    const r = 1 - clamp(a);
-    return 1 - r * r * r;
+    return 1 - Math.pow(1 - clamp(a), 1.7);
   }
 
   /** The boat's way on (0 at rest), continuous with the story path's `sailing` at the opening stop. */
@@ -505,45 +515,44 @@ export class HarborLayout3D {
   static readonly NEXT_BUOY: XZ = { x: spread(42.4, REACH.town), z: 3.4 };
 
   /**
-   * The cobalt entrance (CobaltArrival): the boat crosses the arrival view from
-   * beyond its left edge to the opening stop. The view looks at the opening
-   * stop from the +z side (CameraRig3D.ARRIVAL), so "across" is its screen-right
-   * axis; the boat starts a little nearer the camera and bears away as it comes in.
-   * The last point before the stop is fixed, so entry and story path meet in one curve.
+   * The cobalt entrance (CobaltArrival): the boat sails away from the viewer to
+   * the opening stop, along the opening view (whose camera already sees it from
+   * astern). Points are metres [back, left] of the stop along that view's course.
+   * The first lies some nine metres ahead of the low arrival camera and a little
+   * to its left (CameraRig3D.ARRIVAL), so the boat starts large, showing its stern
+   * and a little of its starboard side, and settles onto the stop's heading as it
+   * comes to rest. The last point before the stop also starts the story path's
+   * first passage, so entry and story path are one curve.
    */
-  static readonly ENTRY_LAST = { across: 11, near: 1 };
-  /** Yaw (degrees) of the arrival view the entry crosses (CameraRig3D.ARRIVAL). */
-  static readonly ENTRY_VIEW_YAW = 20;
+  static readonly ENTRY: [number, number][] = [
+    [12.5, 0.6],
+    [8, 0.3],
+    [3.5, 0.15]
+  ];
+  /** Yaw (degrees) of the view the entry runs along: the opening view's (CameraRig3D.DESKTOP[0]). */
+  static readonly ENTRY_VIEW_YAW = -68.9;
 
-  /** Entry path points (filled into `out`): beyond the left edge `offscreen` metres across, to the opening stop. */
-  static entry(offscreen: number, out: XZ[]): XZ[] {
+  /** A point `back` metres behind the opening stop along the entry's course and `left` metres to its left. */
+  static astern(back: number, left: number): XZ {
     const s0 = HarborLayout3D.STATIONS[0];
     const yaw = (HarborLayout3D.ENTRY_VIEW_YAW * Math.PI) / 180;
-    // Screen-right (across) and toward-the-camera (near) directions of the arrival view.
-    const ax = Math.cos(yaw);
-    const az = -Math.sin(yaw);
-    const nx = Math.sin(yaw);
-    const nz = Math.cos(yaw);
-    const last = HarborLayout3D.ENTRY_LAST;
-    const points: [number, number][] = [
-      [offscreen, 6],
-      [(offscreen + last.across) / 2, 3.2],
-      [last.across, last.near]
-    ];
-    points.forEach(([across, near], i) => {
-      const p = out[i] ?? (out[i] = { x: 0, z: 0 });
-      p.x = s0.x - across * ax + near * nx;
-      p.z = s0.z - across * az + near * nz;
-    });
-    const end = out[3] ?? (out[3] = { x: 0, z: 0 });
-    end.x = s0.x;
-    end.z = s0.z;
-    out.length = 4;
-    return out;
+    // The course (forward) on the water; its left is (fz, -fx).
+    const fx = -Math.sin(yaw);
+    const fz = -Math.cos(yaw);
+    return { x: s0.x - back * fx + left * fz, z: s0.z - back * fz - left * fx };
   }
 
+  /** Where the cobalt opens on the entrance: a little beyond the opening stop, so the boat sails up into the opening. */
+  static readonly LANDFALL: XZ = HarborLayout3D.astern(-6, 0);
+
+  /** The entry path, from ahead of the arrival camera to the opening stop. */
+  static entry(): XZ[] {
+    return [...HarborLayout3D.ENTRY.map(([back, left]) => HarborLayout3D.astern(back, left)), HarborLayout3D.astern(0, 0)];
+  }
+
+  private static readonly entryPoints: XZ[] = HarborLayout3D.entry();
   /** The fixed last entry point (the story path's first passage curves away from it). */
-  private static readonly entryLast: XZ = HarborLayout3D.entry(0, [])[2];
+  private static readonly entryLast: XZ = HarborLayout3D.entryPoints[HarborLayout3D.entryPoints.length - 2];
 
   /** The recommended route: from the report station to the berth (the boat sails it in step 3 → 4). */
   static route(): XZ[] {
@@ -610,20 +619,12 @@ export class HarborLayout3D {
     return out;
   }
 
-  private static readonly entryPoints: XZ[] = [];
-  private static entryOffscreen = NaN;
-
   /**
-   * Boat pose on the cobalt entrance at arrival `a` (0 = beyond the left edge,
-   * 1 = at rest at the opening stop, exactly boatAt(0)). `offscreen` is how far
-   * across the start lies, so the boat is out of frame at 0 on any viewport.
+   * Boat pose on the cobalt entrance at arrival `a` (0 = close astern of the
+   * arrival camera, 1 = at rest at the opening stop, exactly boatAt(0)).
    */
-  static entryAt(a: number, offscreen: number, out: BoatPose3D = { x: 0, z: 0, yaw: 0, sailing: 0 }): BoatPose3D {
+  static entryAt(a: number, out: BoatPose3D = { x: 0, z: 0, yaw: 0, sailing: 0 }): BoatPose3D {
     const points = HarborLayout3D.entryPoints;
-    if (offscreen !== HarborLayout3D.entryOffscreen) {
-      HarborLayout3D.entry(offscreen, points);
-      HarborLayout3D.entryOffscreen = offscreen;
-    }
     // Past the opening stop the curve heads for the first passage, as the story path does.
     const after = HarborLayout3D.PASSAGES[0][0];
     const p = CobaltArrival.boat(a);
@@ -663,7 +664,8 @@ export class CameraRig3D {
   static readonly DESKTOP: CameraPose3D[] = [
     // Opening: a long view down the harbor — the boat in profile in front, the evidence
     // buoys, the lighthouse and the working dock with its crane across the water.
-    { target: [spread(-28, REACH.opening), 2.2, 2.2], distance: 30.3, yaw: -68.9, pitch: 8.2 },
+    // (The cobalt entrance runs along this view: HarborLayout3D.ENTRY_VIEW_YAW.)
+    { target: [spread(-28, REACH.opening), 2.2, 2.2], distance: 30.3, yaw: HarborLayout3D.ENTRY_VIEW_YAW, pitch: 8.2 },
     { target: [spread(-18.8, REACH.find), 1.7, 0.2], distance: 30, yaw: -17, pitch: 10 },
     { target: [spread(-3.4, REACH.evidence), 1.7, 1.6], distance: 27, yaw: -6, pitch: 9 },
     // Report: high and wide over the whole recommended route, from the chart out to the shipyard.
@@ -693,16 +695,27 @@ export class CameraRig3D {
   ];
 
   /**
-   * The cobalt entrance's view: the opening stop seen from the +z side, far
-   * enough back that the boat crossing the cobalt reads whole. The camera turns
-   * from here to the opening pose (CobaltArrival.CAMERA).
+   * The cobalt entrance's view: low, a few metres astern and to starboard of the
+   * boat's first entry point, looking along its course just to the right of the
+   * opening stop, with a wider lens, so the boat sits large in the bottom-left in
+   * real perspective. The camera rises and pulls back from here to the opening
+   * pose (CobaltArrival.CAMERA) while the boat sails away from it.
    */
-  static readonly ARRIVAL: CameraPose3D = {
-    target: [HarborLayout3D.STATIONS[0].x, 2.2, HarborLayout3D.STATIONS[0].z],
-    distance: 44,
-    yaw: HarborLayout3D.ENTRY_VIEW_YAW,
-    pitch: 7
-  };
+  static readonly ARRIVAL: CameraPose3D = CameraRig3D.standing(HarborLayout3D.astern(21.5, -1.6), 3, HarborLayout3D.ENTRY_VIEW_YAW - 12, 2, 22);
+  /** The arrival view's vertical field of view (degrees); it narrows to FOV by the opening stop. */
+  static readonly ARRIVAL_FOV = 42;
+
+  /** The pose of a camera standing at `at`, `height` metres up, looking along `yaw` and `pitch` at a target `distance` ahead. */
+  static standing(at: XZ, height: number, yaw: number, pitch: number, distance: number): CameraPose3D {
+    const y = (yaw * Math.PI) / 180;
+    const p = (pitch * Math.PI) / 180;
+    return {
+      target: [at.x - Math.sin(y) * Math.cos(p) * distance, height - Math.sin(p) * distance, at.z - Math.cos(y) * Math.cos(p) * distance],
+      distance,
+      yaw,
+      pitch
+    };
+  }
 
   static poseAt(s: number, poses: CameraPose3D[], out?: CameraPose3D): CameraPose3D {
     const max = poses.length - 1;

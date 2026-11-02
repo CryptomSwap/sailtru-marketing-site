@@ -110,7 +110,7 @@ const SVG_ANCHORS: Record<HarborAnchor, { x: number; y: number }> = {
   crate: { x: SvgReach.x(3022, SvgReach.SHIPYARD), y: 700 },
   workshop: { x: SvgReach.x(3594, SvgReach.SHIPYARD), y: 676 },
   boat: { x: SvgReach.x(1040, SvgReach.FIND), y: 420 },
-  hull: { x: 640, y: 720 },
+  landfall: { x: 640, y: 720 },
   provider0: { x: SvgReach.x(1555, SvgReach.FIND), y: 562 },
   provider1: { x: SvgReach.x(1416, SvgReach.FIND), y: 558 },
   provider2: { x: SvgReach.x(1486, SvgReach.FIND), y: 560 },
@@ -545,11 +545,11 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       if (deck && deck.inert !== (on && arrival < gone)) deck.inert = on && arrival < gone;
     }
 
-    /** The cobalt opens around the boat: a soft-edged hole centred on its hull (or where it comes to rest, without the 3D boat). */
+    /** The cobalt opens ahead of the boat: a soft-edged hole centred where it comes to rest (a fixed spot without the 3D boat). */
     function paintHole(arrival: number) {
       const heroEl = heroRef.current;
       if (!heroEl) return;
-      const r = CobaltArrival.ease(arrival, CobaltArrival.OPEN) * 155;
+      const r = CobaltArrival.opening(arrival);
       const x = hole.x >= 0 ? hole.x : size.w * 0.23;
       const y = hole.y >= 0 ? hole.y : size.h * 0.68;
       if (r === hole.paintedR && (r === 0 || (Math.abs(x - hole.paintedX) < 0.5 && Math.abs(y - hole.paintedY) < 0.5))) return;
@@ -582,8 +582,8 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       snapNext = false;
       uDisp = out.u;
       if (hero && cinematic && out.arrival < CobaltArrival.HERO[1]) {
-        // The hole in the cobalt follows the boat as it sails in.
-        const p = stage3d.project("hull");
+        // The hole in the cobalt opens where the boat is sailing: the opening stop, as the view moves.
+        const p = stage3d.project("landfall");
         if (p) {
           hole.x = rtl ? size.w - p.x : p.x;
           hole.y = p.y;

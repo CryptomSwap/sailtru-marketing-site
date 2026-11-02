@@ -110,6 +110,21 @@ export class HarborDirector {
   private boatSwell = 0;
   private readonly drifters: Drifter[] = [];
 
+  /** SailTru's hull from above (boat metres, bow +x, starboard +z): where the arrival view looks past it. */
+  private static readonly HULL_OUTLINE: [number, number][] = [
+    [2.42, 0],
+    [1.7, 0.55],
+    [0, 0.95],
+    [-2.05, 0.65],
+    [-2.05, -0.65],
+    [0, -0.95],
+    [1.7, -0.55]
+  ];
+  /** The arrival view's swing off the boat, for the viewport it was worked out for. */
+  private readonly swing = { height: -1, focusX: -1, angle: 0 };
+  private readonly swingXYZ: [number, number, number] = [0, 0, 0];
+  private readonly swingPose: BoatPose3D = { x: 0, z: 0, yaw: 0, sailing: 0 };
+
   /** Per-frame scratch: poses and colours are reused, never allocated in update(). */
   private readonly pose: CameraPose3D = { target: [0, 0, 0], distance: 1, yaw: 0, pitch: 0 };
   private readonly camXYZ: [number, number, number] = [0, 0, 0];
@@ -159,8 +174,9 @@ export class HarborDirector {
     this.boat.add(WaterDecal.shadow(6.8, 2.8, 0.5));
     const foam = WaterDecal.foam(6.4, 2.6, 0.85);
     this.boat.add(foam);
-    this.boatWake = WaterDecal.foam(7, 1.6, 0);
-    this.boatWake.position.x = -4.2;
+    // The wake spreads astern from the transom, so it reads from behind the boat as well as from the side.
+    this.boatWake = WaterDecal.wake(6.5, 3.4, 0);
+    this.boatWake.position.x = -1.9;
     this.boat.add(this.boatWake, this.boatBob);
     this.root.add(this.boat);
 
@@ -421,15 +437,23 @@ export class HarborDirector {
     const arrival = frame.arrival ?? 1;
     const standBack = CameraRig3D.distanceScale(frame.freeWidth, height);
 
-    // Camera: the step's pose (turning in from the arrival view during the cobalt entrance),
-    // the viewport's framing, then a restrained pointer offset.
+    // Camera: the step's pose and the viewport's framing (rising from the low arrival view during the
+    // cobalt entrance, which needs no stand-back: it is framed on the boat), then a restrained pointer offset.
     const pose = CameraRig3D.poseAt(frame.s, poses, this.pose);
-    if (arrival < 1) CameraRig3D.blend(CameraRig3D.ARRIVAL, pose, CobaltArrival.ease(arrival, CobaltArrival.CAMERA), pose);
-    this.lookGoal.set(pose.target[0], pose.target[1], pose.target[2]);
     pose.distance *= standBack;
+    const opened = arrival < 1 ? CobaltArrival.ease(arrival, CobaltArrival.CAMERA) : 1;
+    if (arrival < 1) CameraRig3D.blend(CameraRig3D.ARRIVAL, pose, opened, pose);
+    this.lookGoal.set(pose.target[0], pose.target[1], pose.target[2]);
     pose.yaw += frame.pointer.x * (mirror ? -1.6 : 1.6);
     pose.pitch -= frame.pointer.y * 0.8;
     this.camGoal.fromArray(CameraRig3D.position(pose, this.camXYZ));
+    const fov = THREE.MathUtils.lerp(CameraRig3D.ARRIVAL_FOV, CameraRig3D.FOV, opened);
+    if (arrival < 1) {
+      // At the top of the page the view is swung off the boat (right, and up a little); the first
+      // scroll swings it back, so the boat comes in over the bottom-left corner, close and large.
+      const swing = (1 - CobaltArrival.ease(arrival, CobaltArrival.ENTER)) * this.entrySwing(height, frame.focus.x);
+      if (swing > 0) this.swingLook(swing, swing * 0.5);
+    }
     let rest = 0;
     if (damp && this.camLive && !damp.snap) {
       this.dampTo(this.camPos, this.camGoal, damp.lambda, damp.dt);
@@ -451,7 +475,7 @@ export class HarborDirector {
       camera.position.copy(this.camGoal);
       camera.lookAt(this.lookGoal);
     }
-    camera.fov = CameraRig3D.FOV;
+    camera.fov = fov;
     camera.aspect = width / Math.max(1, height);
     camera.setViewOffset(width, height, width / 2 - frame.focus.x, height / 2 - frame.focus.y, width, height);
     camera.updateProjectionMatrix();
@@ -460,10 +484,7 @@ export class HarborDirector {
     this.water.update(t, camera);
 
     // The boat sails the story (on the entrance, its way in to the opening stop); the swell and the wind are ambient.
-    const b =
-      arrival < 1
-        ? HarborLayout3D.entryAt(arrival, this.entryOffscreen(width, height, frame.focus.x, standBack), this.boatPose)
-        : HarborLayout3D.boatAt(frame.s, this.boatPose);
+    const b = arrival < 1 ? HarborLayout3D.entryAt(arrival, this.boatPose) : HarborLayout3D.boatAt(frame.s, this.boatPose);
     const swell = HarborWave.height(b.x, b.z, t);
     this.boatSwell = swell;
     this.boat.position.set(b.x, 0, b.z);
@@ -560,14 +581,42 @@ export class HarborDirector {
   }
 
   /**
-   * How far across the arrival view the boat starts: just beyond the frame's left
-   * edge (the frame is wider on wide screens), so at the top of the page the
-   * cobalt hero is clear and the bow shows with the first scroll.
+   * How far (radians) the arrival view starts swung off the boat: just enough that
+   * the boat's first pose lies beyond the frame's left edge (wide frames need more),
+   * with room for the pointer's sway, so at the top of the page the cobalt hero is clear.
    */
-  private entryOffscreen(width: number, height: number, focusX: number, standBack: number) {
-    const halfTan = Math.tan(THREE.MathUtils.degToRad(CameraRig3D.FOV / 2));
-    const leftTan = (2 * (width / Math.max(1, height)) * halfTan * focusX) / Math.max(1, width);
-    return CameraRig3D.ARRIVAL.distance * standBack * leftTan + 3.8;
+  private entrySwing(height: number, focusX: number): number {
+    if (height === this.swing.height && focusX === this.swing.focusX) return this.swing.angle;
+    const pose = CameraRig3D.ARRIVAL;
+    const cam = CameraRig3D.position(pose, this.swingXYZ);
+    const look = Math.atan2(pose.target[0] - cam[0], pose.target[2] - cam[2]);
+    const b = HarborLayout3D.entryAt(0, this.swingPose);
+    const cos = Math.cos(b.yaw);
+    const sin = Math.sin(b.yaw);
+    // Bearing (left of the view's axis) of the hull's rightmost point as seen from the camera.
+    let nearest = Infinity;
+    for (const [x, z] of HarborDirector.HULL_OUTLINE) {
+      const bearing = Math.atan2(b.x + x * cos + z * sin - cam[0], b.z - x * sin + z * cos - cam[2]) - look;
+      nearest = Math.min(nearest, Math.atan2(Math.sin(bearing), Math.cos(bearing)));
+    }
+    const edge = Math.atan((focusX / Math.max(1, height / 2)) * Math.tan(THREE.MathUtils.degToRad(CameraRig3D.ARRIVAL_FOV / 2)));
+    this.swing.height = height;
+    this.swing.focusX = focusX;
+    this.swing.angle = Math.max(0, edge - nearest + THREE.MathUtils.degToRad(5));
+    return this.swing.angle;
+  }
+
+  /** Turn the camera's look-at goal about the camera: `right` and `up` radians. */
+  private swingLook(right: number, up: number) {
+    const look = tmp.subVectors(this.lookGoal, this.camGoal);
+    const length = look.length();
+    const azimuth = Math.atan2(look.x, look.z) - right;
+    const elevation = Math.asin(THREE.MathUtils.clamp(look.y / length, -1, 1)) + up;
+    this.lookGoal.set(
+      this.camGoal.x + Math.sin(azimuth) * Math.cos(elevation) * length,
+      this.camGoal.y + Math.sin(elevation) * length,
+      this.camGoal.z + Math.cos(azimuth) * Math.cos(elevation) * length
+    );
   }
 
   /** Draw SailTru's boat alone (its shadow, foam and wake too) from the harbor camera, for the cobalt overlay. */
@@ -677,10 +726,8 @@ export class HarborDirector {
         this.boat.getWorldPosition(out);
         out.y += 6.5;
         return out;
-      case "hull":
-        this.boat.getWorldPosition(out);
-        out.y += 1.6;
-        return out;
+      case "landfall":
+        return out.set(HarborLayout3D.LANDFALL.x, 1.2, HarborLayout3D.LANDFALL.z);
       case "provider0":
       case "provider1":
       case "provider2": {

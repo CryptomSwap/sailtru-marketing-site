@@ -16,8 +16,8 @@ export type HarborAnchor =
   | "crate"
   | "workshop"
   | "boat"
-  /** SailTru's hull at the waterline (the cobalt entrance opens around it). */
-  | "hull"
+  /** Where SailTru's boat is sailing on the cobalt entrance, just beyond the opening stop (the cobalt opens around it). */
+  | "landfall"
   /** Mastheads of the provider boats (ChatGPT, Google, Perplexity). */
   | "provider0"
   | "provider1"
