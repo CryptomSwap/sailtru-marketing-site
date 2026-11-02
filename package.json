@@ -5,7 +5,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:heading": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/boat-heading.test.ts"
   },
   "keywords": [],
   "author": "",

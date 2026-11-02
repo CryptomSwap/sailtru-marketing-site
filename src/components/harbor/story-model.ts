@@ -438,12 +438,33 @@ function spread(x: number, anchor: number = x): number {
 
 const NO_PASSAGE: XZ[] = [];
 
-/** Uniform Catmull-Rom through p1 → p2 at f, with p0 and p3 as neighbours. */
+/** A curve's tangent at a point may be at most this many times as long as the shorter stretch it joins. */
+const TANGENT_LIMIT = 2;
+
+/**
+ * How much of the uniform Catmull-Rom tangent at `b` (between `a` and `c`) to keep. Beside a much
+ * longer stretch (a stop a few metres before its passage point) the full tangent makes the curve run
+ * back on itself before it goes on, and the boat turns round on it; shortened, the curve only moves forward.
+ */
+function tangentScale(a: XZ, b: XZ, c: XZ): number {
+  const half = Math.hypot(c.x - a.x, c.z - a.z) / 2;
+  // A repeated end point has no stretch on that side.
+  const shortest = Math.min(Math.hypot(b.x - a.x, b.z - a.z) || Infinity, Math.hypot(c.x - b.x, c.z - b.z) || Infinity);
+  return half > TANGENT_LIMIT * shortest ? (TANGENT_LIMIT * shortest) / half : 1;
+}
+
+/** Catmull-Rom through p1 → p2 at f, with p0 and p3 as neighbours (uniform, with tangents limited by tangentScale). */
 function catmull(p0: XZ, p1: XZ, p2: XZ, p3: XZ, f: number, out: XZ): XZ {
-  const cr = (a: number, b: number, c: number, d: number) =>
-    0.5 * (2 * b + (-a + c) * f + (2 * a - 5 * b + 4 * c - d) * f * f + (-a + 3 * b - 3 * c + d) * f * f * f);
-  out.x = cr(p0.x, p1.x, p2.x, p3.x);
-  out.z = cr(p0.z, p1.z, p2.z, p3.z);
+  const k1 = 0.5 * tangentScale(p0, p1, p2);
+  const k2 = 0.5 * tangentScale(p1, p2, p3);
+  const f2 = f * f;
+  const f3 = f2 * f;
+  const h00 = 2 * f3 - 3 * f2 + 1;
+  const h10 = f3 - 2 * f2 + f;
+  const h01 = 3 * f2 - 2 * f3;
+  const h11 = f3 - f2;
+  out.x = h00 * p1.x + h10 * k1 * (p2.x - p0.x) + h01 * p2.x + h11 * k2 * (p3.x - p1.x);
+  out.z = h00 * p1.z + h10 * k1 * (p2.z - p0.z) + h01 * p2.z + h11 * k2 * (p3.z - p1.z);
   return out;
 }
 
@@ -583,6 +604,16 @@ export class HarborLayout3D {
     return catmull(p0, points[i], points[i + 1], p3, ct - i, out);
   }
 
+  /** An angle (radians) brought into (-π, π]. */
+  static wrapAngle(a: number): number {
+    return Math.atan2(Math.sin(a), Math.cos(a));
+  }
+
+  /** From angle `a` toward angle `b` (radians) by `t`, the short way round. */
+  static lerpAngle(a: number, b: number, t: number): number {
+    return a + HarborLayout3D.wrapAngle(b - a) * t;
+  }
+
   private static readonly path: XZ[] = [];
   private static readonly ahead: XZ = { x: 0, z: 0 };
   private static readonly behind: XZ = { x: 0, z: 0 };
@@ -611,10 +642,10 @@ export class HarborLayout3D {
     const q = HarborLayout3D.along(path, Math.min(1, t + 0.01), HarborLayout3D.ahead, before);
     const r = HarborLayout3D.along(path, Math.max(0, t - 0.01), HarborLayout3D.behind, before);
     const travel = Math.atan2(-(q.z - r.z), q.x - r.x);
-    const rest = lerp(a.yaw, b.yaw, t);
+    const rest = HarborLayout3D.lerpAngle(a.yaw, b.yaw, t);
     // Bow follows the course mid-passage and settles to the station's heading at each end.
     const sailing = Math.sin(t * Math.PI);
-    out.yaw = lerp(rest, travel, Math.min(1, sailing * 1.6));
+    out.yaw = HarborLayout3D.lerpAngle(rest, travel, Math.min(1, sailing * 1.6));
     out.sailing = sailing;
     return out;
   }
@@ -634,7 +665,7 @@ export class HarborLayout3D {
     const travel = Math.atan2(-(q.z - r.z), q.x - r.x);
     const sailing = CobaltArrival.sailing(a);
     // The bow follows the course and settles to the opening stop's heading as the boat comes to rest.
-    out.yaw = lerp(HarborLayout3D.STATIONS[0].yaw, travel, Math.min(1, sailing * 1.6));
+    out.yaw = HarborLayout3D.lerpAngle(HarborLayout3D.STATIONS[0].yaw, travel, Math.min(1, sailing * 1.6));
     out.sailing = sailing;
     return out;
   }
