@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import { HarborTheme } from "./harbor-theme";
-import { BOAT_DOCKED, SOURCE_BUOYS, type SceneState } from "./story-model";
+import { BOAT_DOCKED, SOURCE_BUOYS, SvgReach, type SceneState } from "./story-model";
 
 /**
  * The SailTru harbor, drawn as layered vector illustration.
  * Layer content is authored in layer space (x = worldX × depth).
- * Meanings stay fixed: boat = the client's business, buoys = evidence
- * sources, cobalt route = the recommended next action, dock = implementation.
+ * Meanings stay fixed: the cobalt boat = SailTru's investigation and delivery,
+ * the town and quay = the client's business, provider boats = the platforms
+ * buyers search and ask, buoys = investigation areas and findings, cobalt
+ * route = the recommended next action, dock = implementation.
  */
 
 export const INK = HarborTheme.INK;
@@ -25,6 +27,28 @@ export type LayerName = keyof typeof LAYER_DEPTHS;
 /** Rounded so server and client engines serialise identical attributes. */
 const r = (v: number) => Math.round(v * 100) / 100;
 
+/**
+ * How far each stretch of coast has moved along the longer path (main-layer
+ * world units; SvgReach). The dock, its crane and the town behind it are drawn
+ * in their own coordinates and moved as a whole.
+ */
+export const DOCK_SHIFT = SvgReach.shift(SvgReach.SHIPYARD);
+const LIGHTHOUSE_SHIFT = SvgReach.shift(2680);
+const REVIEW_SHIFT = SvgReach.shift(SvgReach.REVIEW);
+const EVIDENCE_SHIFT = SvgReach.shift(SvgReach.EVIDENCE);
+
+/** The recommended route, from the report station's chart to the berth, drawn over the stretched water between them. */
+const ROUTE = (() => {
+  const from = SvgReach.x(2200, SvgReach.REPORT);
+  const to = SvgReach.x(3110, SvgReach.SHIPYARD);
+  const x = (authored: number) => r(from + ((authored - 2200) / 910) * (to - from));
+  return {
+    d: `M${x(2200)} 772 C${x(2460)} 838 ${x(2760)} 832 ${x(3000)} 790 C${x(3060)} 780 ${x(3090)} 774 ${x(3110)} 772`,
+    from,
+    to
+  };
+})();
+
 /** Deterministic pseudo-random sequence so server and client markup match. */
 function seeded(seed: number) {
   let s = seed;
@@ -35,8 +59,8 @@ function seeded(seed: number) {
 }
 
 const r1 = seeded(7);
-const WAVES_MAIN = Array.from({ length: 70 }, () => ({
-  x: r(-600 + r1() * 5600),
+const WAVES_MAIN = Array.from({ length: 96 }, () => ({
+  x: r(-600 + r1() * 7600),
   y: r(640 + Math.pow(r1(), 1.4) * 520),
   w: r(30 + r1() * 70)
 }));
@@ -95,7 +119,7 @@ export function HarborDefs() {
 /* Boat                                                                */
 /* ------------------------------------------------------------------ */
 
-/** The client's business: a sloop with a cobalt hull, drawn bow toward +x. */
+/** SailTru's boat: a sloop with a cobalt hull, drawn bow toward +x. */
 export function Boat() {
   return (
     <g className="hw-boat-art">
@@ -183,7 +207,36 @@ export function Boat() {
   );
 }
 
-/** The built improvement, carried from the dock to the business. */
+/** Where the provider boats lie in the illustrated harbor (waterline centre, scale); bows toward the SailTru boat. */
+export const PROVIDER_BOATS = [
+  { x: SvgReach.x(1560, SvgReach.FIND), y: 735, s: 0.5 },
+  { x: SvgReach.x(1420, SvgReach.FIND), y: 690, s: 0.38 },
+  { x: SvgReach.x(1490, SvgReach.FIND), y: 676, s: 0.34 }
+];
+
+/** A provider boat: a small neutral sloop. Its platform badge is an HTML overlay at the masthead. */
+function ProviderBoat({ x, y, s }: { x: number; y: number; s: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${-s} ${s})`}>
+      <ellipse cx="4" cy="18" rx="140" ry="12" fill={INK} opacity="0.1" />
+      <line x1="10" y1="-30" x2="10" y2="-318" stroke={INK} strokeWidth="5" strokeLinecap="round" />
+      <line x1="10" y1="-314" x2="134" y2="-46" stroke={INK} strokeWidth="1.6" />
+      <path d="M14 -308 C-6 -232 -52 -132 -112 -66 L14 -62 Z" fill="#f7f2e7" stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+      <path d="M18 -282 C58 -200 100 -118 128 -52 L32 -66 C38 -130 32 -210 18 -282 Z" fill="#f7f2e7" stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+      <line x1="12" y1="-60" x2="-114" y2="-62" stroke={INK} strokeWidth="5" strokeLinecap="round" />
+      <path
+        d="M-126 -32 C-64 -20 40 -22 140 -48 C130 -20 112 4 76 14 C28 24 -40 24 -92 14 C-112 8 -122 -6 -126 -32 Z"
+        fill="#e7e1d3"
+        stroke={INK}
+        strokeWidth="3.2"
+        strokeLinejoin="round"
+      />
+      <path d="M-125 -30 C-64 -18 40 -20 139 -46 L136 -38 C40 -10 -64 -8 -122 -20 Z" fill={INK} opacity="0.7" />
+    </g>
+  );
+}
+
+/** The built improvement (F01), carried from the dock to the client's harbor. */
 function Crate({ x, y }: { x: number; y: number }) {
   return (
     <g transform={`translate(${x} ${y}) scale(0.76)`}>
@@ -202,8 +255,8 @@ function Crate({ x, y }: { x: number; y: number }) {
 export function SkyLayer() {
   return (
     <g>
-      <rect x="-5000" y="-3000" width="10000" height="3600" fill="url(#hw-sky)" />
-      <rect x="-5000" y="600" width="10000" height="3000" fill="url(#hw-sea)" />
+      <rect x="-5000" y="-3000" width="13000" height="3600" fill="url(#hw-sky)" />
+      <rect x="-5000" y="600" width="13000" height="3000" fill="url(#hw-sea)" />
       {/* sun, drawn as a ring of ink rays */}
       <g transform="translate(260 300)" opacity="0.7">
         <circle r="62" fill="#f8f1e1" stroke={INK} strokeOpacity="0.35" strokeWidth="1.5" />
@@ -223,7 +276,7 @@ export function SkyLayer() {
           );
         })}
       </g>
-      <line x1="-5000" y1="600" x2="5000" y2="600" stroke={INK} strokeOpacity="0.28" strokeWidth="1.2" />
+      <line x1="-5000" y1="600" x2="8000" y2="600" stroke={INK} strokeOpacity="0.28" strokeWidth="1.2" />
     </g>
   );
 }
@@ -300,8 +353,8 @@ export function MidLayer() {
       <Tree x={-420} y={470} s={1.2} />
       <House x={-330} y={510} w={54} h={36} />
 
-      {/* lighthouse island (world x ≈ 2680) */}
-      <g transform="translate(1474 0)">
+      {/* lighthouse island (world x ≈ 2680, moved along the longer coast) */}
+      <g transform={`translate(${r(1474 + LIGHTHOUSE_SHIFT * LAYER_DEPTHS.mid)} 0)`}>
         <path
           d="M-180 604 C-150 572 -100 548 -40 540 C10 534 60 544 100 560 C140 576 170 590 190 604 Z"
           fill="#d8cdb6"
@@ -327,7 +380,8 @@ export function MidLayer() {
         <House x={44} y={548} w={42} h={26} />
       </g>
 
-      {/* far shore and harbor town behind the dock (world x ≈ 3300–4600) */}
+      {/* far shore and harbor town behind the dock (world x ≈ 3300–4600), moved with the shipyard */}
+      <g transform={`translate(${r(DOCK_SHIFT * LAYER_DEPTHS.mid)} 0)`}>
       <path
         d="M1680 604 C1730 560 1800 520 1880 500 C1960 480 2040 470 2140 452 C2240 434 2340 440 2440 460 C2540 480 2620 500 2700 520 L2700 604 Z"
         fill="#ddd3bf"
@@ -345,6 +399,7 @@ export function MidLayer() {
       <Tree x={2230} y={486} s={1} />
       <House x={2290} y={500} w={50} h={36} />
       <Tree x={2390} y={492} s={1.2} />
+      </g>
     </g>
   );
 }
@@ -401,15 +456,22 @@ export function MainLayer({ scene, routeMaskId }: { scene: SceneState; routeMask
         </g>
       </g>
 
+      {/* provider boats: the platforms buyers search and ask */}
+      <g data-hw="providers">
+        {PROVIDER_BOATS.map((b, i) => (
+          <ProviderBoat key={i} {...b} />
+        ))}
+      </g>
+
       {/* the reef and the selected-finding channel marker */}
-      <g transform="translate(1930 752)">
+      <g transform={`translate(${1930 + EVIDENCE_SHIFT} 752)`}>
         <path d="M-90 4 C-80 -18 -56 -30 -30 -26 C-16 -40 10 -42 26 -28 C44 -32 64 -20 74 4 Z" fill="#cfc4ad" stroke={INK} strokeWidth="2.4" strokeLinejoin="round" />
         <path d="M26 -28 C44 -32 64 -20 74 4 L30 4 C32 -8 30 -20 26 -28 Z" fill="url(#hw-hatch)" />
         <path d="M-110 10 C-60 20 40 20 100 10" fill="none" stroke={INK} strokeOpacity="0.32" strokeWidth="1.6" />
         <path d="M120 -2 C150 -10 170 -10 196 -2" fill="none" stroke={INK} strokeOpacity="0.4" strokeWidth="1.6" />
         <path d="M140 8 C160 2 176 2 192 8" fill="none" stroke={INK} strokeOpacity="0.3" strokeWidth="1.4" />
       </g>
-      <g transform="translate(2060 744)">
+      <g transform={`translate(${2060 + EVIDENCE_SHIFT} 744)`}>
         <g data-hw="marker-ring" opacity={scene.marker}>
           <ellipse cx="0" cy="4" rx="58" ry="14" fill="none" stroke={COBALT} strokeWidth="3" />
           <ellipse cx="0" cy="4" rx="80" ry="20" fill="none" stroke={COBALT} strokeWidth="1.6" strokeOpacity="0.45" />
@@ -418,10 +480,10 @@ export function MainLayer({ scene, routeMaskId }: { scene: SceneState; routeMask
       </g>
 
       {/* recommended route, revealed progressively */}
-      <mask id={routeMaskId} maskUnits="userSpaceOnUse" x="1900" y="600" width="1400" height="300">
+      <mask id={routeMaskId} maskUnits="userSpaceOnUse" x={ROUTE.from - 300} y="600" width={ROUTE.to - ROUTE.from + 500} height="300">
         <path
           data-hw="route-mask"
-          d="M2200 772 C2460 838 2760 832 3000 790 C3060 780 3090 774 3110 772"
+          d={ROUTE.d}
           fill="none"
           stroke="#fff"
           strokeWidth="40"
@@ -431,7 +493,7 @@ export function MainLayer({ scene, routeMaskId }: { scene: SceneState; routeMask
       </mask>
       <g mask={`url(#${routeMaskId})`}>
         <path
-          d="M2200 772 C2460 838 2760 832 3000 790 C3060 780 3090 774 3110 772"
+          d={ROUTE.d}
           fill="none"
           stroke={COBALT}
           strokeWidth="5"
@@ -439,7 +501,7 @@ export function MainLayer({ scene, routeMaskId }: { scene: SceneState; routeMask
           strokeDasharray="2 16"
         />
         <path
-          d="M2200 772 C2460 838 2760 832 3000 790 C3060 780 3090 774 3110 772"
+          d={ROUTE.d}
           fill="none"
           stroke={COBALT}
           strokeOpacity="0.18"
@@ -448,12 +510,13 @@ export function MainLayer({ scene, routeMaskId }: { scene: SceneState; routeMask
         />
       </g>
       <g data-hw="route-end" opacity={scene.route > 0.96 ? 1 : 0}>
-        <circle cx="3110" cy="772" r="9" fill={COBALT} stroke={INK} strokeWidth="2" />
+        <circle cx={ROUTE.to} cy="772" r="9" fill={COBALT} stroke={INK} strokeWidth="2" />
       </g>
 
       {/* onward route toward the next decision */}
       <path
         data-hw="next-route"
+        transform={`translate(${REVIEW_SHIFT} 0)`}
         d="M3650 904 C3860 944 4100 936 4316 896"
         fill="none"
         stroke={COBALT}
@@ -463,11 +526,13 @@ export function MainLayer({ scene, routeMaskId }: { scene: SceneState; routeMask
         opacity={scene.nextRoute * 0.75}
       />
       <g data-hw="next-buoy" opacity={scene.nextRoute}>
-        <Buoy x={4340} y={898} />
+        <Buoy x={4340 + REVIEW_SHIFT} y={898} />
       </g>
 
-      {/* working dock: pier, crane, workshop */}
-      <Dock scene={scene} />
+      {/* working dock: pier, crane, workshop (drawn in its own coordinates, moved with the shipyard) */}
+      <g transform={`translate(${DOCK_SHIFT} 0)`}>
+        <Dock scene={scene} />
+      </g>
 
       {/* the boat */}
       <g data-hw="boat" transform={boatTransform(scene)}>
@@ -487,13 +552,13 @@ export function boatTransform(scene: SceneState) {
   return `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${heading.toFixed(2)})`;
 }
 
-/** Crane geometry from phase 0..1: lift from the pier, traverse, lower onto the boat. */
+/** Crane geometry from phase 0..1 (dock coordinates; add DOCK_SHIFT for the world): lift from the pier, traverse, lower onto the boat. */
 export function cranePose(phase: number) {
   const lift = Math.min(1, phase / 0.3);
   const traverse = Math.min(1, Math.max(0, (phase - 0.3) / 0.4));
   const lower = Math.min(1, Math.max(0, (phase - 0.7) / 0.3));
   const startX = 3150;
-  const endX = BOAT_DOCKED.x - 112;
+  const endX = BOAT_DOCKED.x - DOCK_SHIFT - 112;
   const restY = 736;
   const topY = 560;
   const deckY = BOAT_DOCKED.y - 56 + 10;
@@ -626,8 +691,8 @@ export function ForeLayer() {
           <path d="M-226 26 C-236 0 -240 -20 -246 -40" />
         </g>
       </g>
-      {/* mooring posts in front of the dock (world x ≈ 2960) */}
-      <g transform="translate(3880 980)">
+      {/* mooring posts in front of the dock (world x ≈ 2985, moved with the shipyard) */}
+      <g transform={`translate(${r(3880 + DOCK_SHIFT * LAYER_DEPTHS.fore)} 980)`}>
         {[0, 70, 150].map((dx, i) => (
           <g key={i} transform={`translate(${dx} ${i * 10})`}>
             <rect x="-12" y="-110" width="24" height="170" fill="#8c7a62" stroke={INK} strokeWidth="3" />

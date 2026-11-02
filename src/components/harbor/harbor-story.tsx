@@ -2,16 +2,9 @@
 
 import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
-import {
-  ChartArtifact,
-  DockArtifact,
-  MeasureArtifact,
-  ReportArtifact,
-  SiteArtifact,
-  WorkflowArtifact
-} from "./artifacts";
+import { ProviderMark, StepDemo } from "./artifacts";
 import {
   ForeLayer,
   FarLayer,
@@ -20,17 +13,22 @@ import {
   MainLayer,
   MidLayer,
   SkyLayer,
+  DOCK_SHIFT,
   boatTransform,
   cranePose,
   type LayerName
 } from "./harbor-world";
+import type { ProviderId } from "./providers";
 import {
+  CobaltArrival,
   DESKTOP_POSES,
   MOBILE_POSES,
   SOURCE_BUOYS,
+  STEP_BEATS,
   STEP_IDS,
   STEP_LENGTH,
-  beatAt,
+  StoryCues,
+  SvgReach,
   cameraAt,
   clamp,
   layerTransform,
@@ -42,44 +40,102 @@ import {
   type Beat,
   type SceneState
 } from "./story-model";
-import type { Harbor3DState, HarborAnchor, HarborStage, ScreenPoint } from "./three/stage-types";
+import type { Harbor3DState, HarborAnchor, HarborFrameInput, HarborStage, ScreenPoint } from "./three/stage-types";
 import { WebGLSupport } from "./three/webgl-support";
+import { SmoothScroll } from "./smooth-scroll";
 
 /** The 3D harbor loads on demand, after the page is interactive; the SVG harbor is server-rendered first. */
 const HarborScene3D = dynamic(() => import("./three/harbor-scene"), { ssr: false, loading: () => null });
 
 const LAYERS: LayerName[] = ["sky", "far", "mid", "main", "fore"];
 
-/** Harbor anchors the leader lines point at, per step. */
-const LEADER_ANCHORS: Record<number, HarborAnchor[]> = {
-  1: ["source0", "source1", "source2"],
-  2: ["marker"],
-  3: ["route"],
-  4: ["crate"],
-  5: ["workshop"]
+/** Steps 1–6 are the chapters with a narrative card, lines and a demonstration. */
+const CHAPTER_STEPS = [1, 2, 3, 4, 5, 6];
+
+/** The illustrated harbor as server-rendered; the loop moves it from there imperatively. */
+const INITIAL_SCENE = sceneAt(0, 0);
+
+type OverlaySpec = {
+  key: string;
+  anchor: HarborAnchor;
+  kind: "badge" | "label";
+  provider?: ProviderId;
+  /** Accent (cobalt) for the active finding F01 only. */
+  accent?: boolean;
+  /** The active provider's badge is larger than the supporting ones. */
+  lead?: boolean;
+  /** Opacity on the cinematic stage for a beat and scene. */
+  show: (b: Beat, scene: SceneState) => number;
+  /** Phone and reduced-motion stills that carry this overlay. */
+  stills?: number[];
+  /** Stem length in px (a longer stem lifts a label above its neighbours). */
+  stem?: number;
 };
 
-const TAG_ANCHORS: HarborAnchor[] = ["tag0", "tag1", "tag2"];
+/**
+ * Context labels and platform badges attached to things in the harbor. They
+ * follow their anchors as the camera and the boats move; a label that would
+ * cover a card, the header or another label is hidden instead.
+ */
+const OVERLAYS: OverlaySpec[] = [
+  { key: "provider0", anchor: "provider0", kind: "badge", provider: "chatgpt", lead: true, show: (b, s) => (b.step === 1 ? s.providers : 0), stills: [1] },
+  { key: "provider1", anchor: "provider1", kind: "badge", provider: "google", show: (b, s) => (b.step === 1 && b.sub < 2 ? s.providers * 0.92 : 0) },
+  { key: "provider2", anchor: "provider2", kind: "badge", provider: "perplexity", show: (b, s) => (b.step === 1 && b.sub < 2 ? s.providers * 0.92 : 0) },
+  { key: "boat", anchor: "boat", kind: "label", show: (b) => (b.step === 1 && b.sub < 2 ? 1 : 0) },
+  { key: "area0", anchor: "tag0", kind: "label", show: (b, s) => (b.step === 1 ? s.sources : 0) },
+  { key: "area1", anchor: "tag1", kind: "label", stem: 22, show: (b, s) => (b.step === 1 ? s.sources : 0) },
+  { key: "area2", anchor: "tag2", kind: "label", stem: 92, show: (b, s) => (b.step === 1 ? s.sources : 0) },
+  { key: "f01", anchor: "marker", kind: "label", accent: true, show: (b) => (b.step === 2 && b.sub >= 1 ? 1 : 0), stills: [2] },
+  { key: "crate", anchor: "crate", kind: "label", accent: true, show: (b) => (b.step === 4 ? 1 : 0), stills: [4] },
+  { key: "client", anchor: "client", kind: "label", show: (b) => (b.step === 6 ? 1 : 0), stills: [6] },
+  { key: "next", anchor: "nextBuoy", kind: "label", show: (b, s) => (b.step === 6 ? s.nextRoute : 0) }
+];
 
-/** The same anchors in the illustrated (SVG) harbor's world units. */
+/** Demonstration-card leaders: from the card to the thing it is about. */
+const LEADERS: Record<number, (b: Beat) => HarborAnchor | null> = {
+  1: () => "provider0",
+  2: (b) => (b.sub >= 1 ? "marker" : null)
+};
+
+/** The same anchors in the illustrated (SVG) harbor's main-layer world units. */
 const SVG_ANCHORS: Record<HarborAnchor, { x: number; y: number }> = {
-  tag0: { x: SOURCE_BUOYS[0].x, y: SOURCE_BUOYS[0].y - 120 },
-  tag1: { x: SOURCE_BUOYS[1].x, y: SOURCE_BUOYS[1].y - 120 },
-  tag2: { x: SOURCE_BUOYS[2].x, y: SOURCE_BUOYS[2].y - 120 },
+  tag0: { x: SOURCE_BUOYS[0].x, y: SOURCE_BUOYS[0].y - 96 },
+  tag1: { x: SOURCE_BUOYS[1].x, y: SOURCE_BUOYS[1].y - 96 },
+  tag2: { x: SOURCE_BUOYS[2].x, y: SOURCE_BUOYS[2].y - 96 },
   source0: { x: SOURCE_BUOYS[0].x, y: SOURCE_BUOYS[0].y - 96 },
   source1: { x: SOURCE_BUOYS[1].x, y: SOURCE_BUOYS[1].y - 96 },
   source2: { x: SOURCE_BUOYS[2].x, y: SOURCE_BUOYS[2].y - 96 },
-  marker: { x: 2060, y: 650 },
-  route: { x: 2700, y: 822 },
-  crate: { x: 3022, y: 732 },
-  workshop: { x: 3594, y: 676 },
-  boat: { x: 2140, y: 600 }
+  marker: { x: SvgReach.x(2060, SvgReach.EVIDENCE), y: 640 },
+  route: { x: SvgReach.x(2700, SvgReach.REPORT) + (SvgReach.shift(SvgReach.SHIPYARD) - SvgReach.shift(SvgReach.REPORT)) * 0.55, y: 822 },
+  crate: { x: SvgReach.x(3022, SvgReach.SHIPYARD), y: 700 },
+  workshop: { x: SvgReach.x(3594, SvgReach.SHIPYARD), y: 676 },
+  boat: { x: SvgReach.x(1040, SvgReach.FIND), y: 420 },
+  hull: { x: 640, y: 720 },
+  provider0: { x: SvgReach.x(1555, SvgReach.FIND), y: 562 },
+  provider1: { x: SvgReach.x(1416, SvgReach.FIND), y: 558 },
+  provider2: { x: SvgReach.x(1486, SvgReach.FIND), y: 560 },
+  client: { x: SvgReach.x(3690, SvgReach.SHIPYARD), y: 560 },
+  nextBuoy: { x: SvgReach.x(4340, SvgReach.REVIEW), y: 790 }
 };
 
 /** Vignette framing (portrait-friendly stills for mobile and reduced motion). */
 const VIGNETTE = { w: 600, h: 380 };
 
-function Layers({ scene, maskId, refs }: { scene: SceneState; maskId: string; refs?: (name: LayerName) => (el: SVGGElement | null) => void }) {
+type Rect = { left: number; top: number; right: number; bottom: number };
+
+function overlaps(a: Rect, b: Rect, pad = 0) {
+  return a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom + pad && a.bottom > b.top - pad;
+}
+
+/** Which line a step shows: its own line while current, its last line once passed, its first line before. */
+function lineFor(step: number, beat: Beat) {
+  if (step < beat.step) return STEP_BEATS[STEP_IDS[step]] - 1;
+  if (step > beat.step) return 0;
+  return beat.sub;
+}
+
+/** The stage's illustrated harbor. Memoised: a new beat re-renders the story, never these layers (the loop moves them). */
+const Layers = memo(function Layers({ scene, maskId, refs }: { scene: SceneState; maskId: string; refs?: (name: LayerName) => (el: SVGGElement | null) => void }) {
   const content: Record<LayerName, ReactNode> = {
     sky: <SkyLayer />,
     far: <FarLayer />,
@@ -96,16 +152,28 @@ function Layers({ scene, maskId, refs }: { scene: SceneState; maskId: string; re
       ))}
     </>
   );
+});
+
+/** The visible content of one context label or badge. */
+function OverlayBody({ spec, text }: { spec: OverlaySpec; text: string }) {
+  if (spec.kind === "badge" && spec.provider) {
+    return <ProviderMark id={spec.provider} size={spec.lead ? 30 : 22} />;
+  }
+  return (
+    <>
+      {spec.accent ? <span className="hs-ctx__dot" aria-hidden /> : null}
+      {text}
+    </>
+  );
 }
 
-/** A static still of the harbor for one step. */
-function Vignette({ step, live }: { step: number; live?: ReactNode }) {
-  const t = useTranslations("harbor.chart");
+/** A static still of the harbor for one step. Memoised: it depends on the step, the language and the live view only. */
+const Vignette = memo(function Vignette({ step, live, texts }: { step: number; live?: ReactNode; texts: Record<string, string> }) {
   const maskId = `hw-route-${useId().replace(/:/g, "")}`;
   const scene = sceneForStep(step);
   const cam = MOBILE_POSES[step];
   const focus = { x: VIGNETTE.w / 2, y: VIGNETTE.h * 0.58 };
-  const sources = t.raw("sources") as { label: string }[];
+  const overlays = OVERLAYS.filter((o) => o.stills?.includes(step));
   return (
     <div className={`hs-vignette hs-vignette--${STEP_IDS[step]}`} data-step={step} aria-hidden>
       <svg viewBox={`0 0 ${VIGNETTE.w} ${VIGNETTE.h}`} preserveAspectRatio="xMidYMid slice" className="hs-vignette__svg">
@@ -123,63 +191,64 @@ function Vignette({ step, live }: { step: number; live?: ReactNode }) {
         })}
       </svg>
       {live}
-      {step === 1
-        ? SOURCE_BUOYS.map((b, i) => {
-            // The middle tag sits below its buoy so neighbouring labels never collide.
-            const p = projectMain(cam, focus, b.x, i === 1 ? b.y + 46 : b.y - 110);
-            return (
-              <span
-                key={i}
-                className={`hs-tag hs-tag--vignette${i === 1 ? " hs-tag--below" : ""}`}
-                style={{ "--x": `${(p.x / VIGNETTE.w) * 100}%`, "--y": `${(p.y / VIGNETTE.h) * 100}%` } as CSSProperties}
-              >
-                {sources[i].label}
-              </span>
-            );
-          })
-        : null}
+      {overlays.map((o) => {
+        const a = SVG_ANCHORS[o.anchor];
+        const p = projectMain(cam, focus, a.x, a.y);
+        return (
+          <span
+            key={o.key}
+            data-anchor={o.anchor}
+            className={`hs-ctx hs-ctx--${o.kind} hs-ctx--still${o.accent ? " hs-ctx--accent" : ""}${o.lead ? " hs-ctx--lead" : ""}`}
+            style={{ "--x": `${(p.x / VIGNETTE.w) * 100}%`, "--y": `${(p.y / VIGNETTE.h) * 100}%` } as CSSProperties}
+          >
+            <OverlayBody spec={o} text={texts[o.key] ?? ""} />
+          </span>
+        );
+      })}
     </div>
+  );
+});
+
+/** A chapter's complete demonstration (stacked layout and assistive tech); it never changes with the beat. */
+const DemoComplete = memo(function DemoComplete({ step }: { step: number }) {
+  return <StepDemo step={step} sub={9} inline />;
+});
+
+/** A headline whose words rise into place when its chapter arrives. */
+function Words({ text }: { text: string }) {
+  const words = text.split(" ");
+  return (
+    <>
+      {words.map((w, i) => (
+        <span key={i}>
+          {i > 0 ? " " : null}
+          <span className="hs-word" style={{ "--i": i } as CSSProperties}>
+            {w}
+          </span>
+        </span>
+      ))}
+    </>
   );
 }
 
-function StepArtifact({ step, sub, inline }: { step: number; sub: number; inline?: boolean }) {
-  switch (STEP_IDS[step]) {
-    case "opening":
-    case "find":
-      return <ChartArtifact sub={step === 0 ? 0 : sub + 1} inline={inline} />;
-    case "evidence":
-      return <SiteArtifact sub={sub} inline={inline} />;
-    case "report":
-      return <ReportArtifact sub={sub} inline={inline} />;
-    case "build":
-      return <DockArtifact sub={sub} inline={inline} />;
-    case "workflow":
-      return <WorkflowArtifact sub={sub} inline={inline} />;
-    case "review":
-      return <MeasureArtifact sub={sub} inline={inline} />;
-    default:
-      return null;
-  }
-}
-
-/** Which stage artifact slot a step uses (opening and find share the chart). */
-function slotFor(step: number) {
-  return step <= 1 ? 1 : step;
-}
-
-export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?: boolean; scene3d?: boolean } = {}) {
+export function HarborStory({ belowHero = false, scene3d = false, hero }: { belowHero?: boolean; scene3d?: boolean; hero?: ReactNode } = {}) {
   const t = useTranslations("harbor");
   const locale = useLocale();
   const rtl = locale === "he";
   const maskId = `hw-route-stage-${useId().replace(/:/g, "")}`;
 
+  const heroRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const layerRefs = useRef<Partial<Record<LayerName, SVGGElement | null>>>({});
   const leaderRef = useRef<SVGSVGElement>(null);
-  const tagRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const stepRefs = useRef<(HTMLElement | null)[]>([]);
+  const overlayRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const markRefs = useRef<(HTMLElement | null)[]>([]);
   const slotRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const deckRef = useRef<HTMLDivElement>(null);
+  /** The transparent canvas over the cobalt hero that SailTru's boat sails in on. */
+  const [boatCanvas, setBoatCanvas] = useState<HTMLCanvasElement | null>(null);
+  const jumpRef = useRef<(index: number, smooth: boolean) => boolean>(() => false);
 
   const [beat, setBeat] = useState<Beat>({ step: 0, sub: 0 });
   /** Which 3D view is loaded: the sticky stage (desktop) or the phone vignettes. */
@@ -233,8 +302,12 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       (window.cancelIdleCallback ?? window.clearTimeout)(idle);
     };
   }, [scene3d, setHarbor3d]);
-  const [paused, setPaused] = useState(false);
-  const pausedRef = useRef(false);
+  // Smooth wheel scrolling for the 3D story page (Lenis on gsap.ticker; off under reduced motion).
+  useEffect(() => {
+    if (!scene3d) return;
+    return SmoothScroll.mount();
+  }, [scene3d]);
+
   const beatRef = useRef<Beat>({ step: 0, sub: 0 });
 
   const setLayerRef = useCallback(
@@ -245,11 +318,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
   );
 
   useEffect(() => {
-    pausedRef.current = paused;
-  }, [paused]);
-
-  useEffect(() => {
     const root = rootRef.current;
+    const heroNode = heroRef.current, deckNode = deckRef.current;
     const stage = stageRef.current;
     if (!root || !stage) return;
 
@@ -258,6 +328,17 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     let size = { w: 0, h: 0, col: 0 };
     let cinematic = false;
     let uTarget = 0;
+    /** The cobalt entrance read from the scroll, and as last painted (with the hole it opens around the boat). */
+    let arrivalTarget = hero ? 0 : 1;
+    let paintedArrival = -1;
+    let paintedOn = false;
+    let arrivalStart = 0;
+    let arrivalLength = 1;
+    const hole = { x: -1, y: -1, paintedX: -1, paintedY: -1, paintedR: -1 };
+    const heroParts = {
+      copy: heroNode?.querySelector<HTMLElement>(".field-main") ?? null,
+      cards: heroNode?.querySelector<HTMLElement>(".hsw__diagram--hero") ?? null
+    };
     let uDisp = -1;
     let pointer = { x: 0, y: 0 };
     let pointerTarget = { x: 0, y: 0 };
@@ -265,21 +346,31 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     let last = 0;
     let inView = true;
     let cardRects: Record<number, DOMRect | null> = {};
-    let rowRects: DOMRect[] = [];
+    let blockers: Rect[] = [];
+    let overlaySizes: { w: number; h: number; stem: number }[] = [];
+    const overlayHidden = new Set<number>();
+    /** What each overlay last had written, so unchanged styles are never written again. */
+    const overlayPainted = OVERLAYS.map(() => ({ opacity: "", transform: "", stem: "" }));
+    const placed: Rect[] = [];
+    const points = new Map<HarborAnchor, { x: number; y: number }>();
+    const frameInput: HarborFrameInput = {
+      uTarget: 0,
+      pointerTarget: { x: 0, y: 0 },
+      focusTarget: { x: 0, y: 0 },
+      freeWidth: 1,
+      ambient: 0
+    };
+    /** The illustrated harbor's scene, updated in place each frame. */
+    const svgScene = sceneAt(0, 0);
     let measureTimer = 0;
     let ambientT = 0;
-    // Slow devices (software WebGL, old phones): once the story is settled, ambient-only
-    // frames are throttled so text, cards and controls keep the main thread.
-    let frameEma = 0;
-    let frameCount = 0;
-    let lowPower = false;
-    let idleTimer = 0;
-    let focus3d = { x: -1, y: 0 };
+    /** The next 3D frame jumps straight to its targets (resize, instant jumps). */
+    let snapNext = true;
 
     const q = <T extends Element>(sel: string) => stage.querySelector<T>(sel);
     const nodes = {
-      boat: q<SVGGElement>('[data-hw="boat"]'),
       bob: q<SVGGElement>('[data-hw="boat-bob"]'),
+      boat: q<SVGGElement>('[data-hw="boat"]'),
       boatCrate: q<SVGGElement>('[data-hw="boat-crate"]'),
       routeMask: q<SVGPathElement>('[data-hw="route-mask"]'),
       routeEnd: q<SVGGElement>('[data-hw="route-end"]'),
@@ -287,6 +378,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       nextBuoy: q<SVGGElement>('[data-hw="next-buoy"]'),
       pings: q<SVGGElement>('[data-hw="source-pings"]'),
       marker: q<SVGGElement>('[data-hw="marker-ring"]'),
+      providers: q<SVGGElement>('[data-hw="providers"]'),
       craneLoad: q<SVGGElement>('[data-hw="crane-load"]'),
       trolley: q<SVGRectElement>('[data-hw="crane-trolley"]'),
       cable: q<SVGLineElement>('[data-hw="crane-cable"]'),
@@ -303,33 +395,61 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       size = { w: rect.width, h: rect.height, col };
       const scrollY = window.scrollY;
       const vh = window.innerHeight;
-      anchors = stepRefs.current.map((el) => {
+      anchors = markRefs.current.map((el) => {
         if (!el) return 0;
         const r = el.getBoundingClientRect();
         return r.top + scrollY + (r.height - vh) / 2;
       });
       if (anchors.length) anchors[0] = StoryScroll.firstAnchor(anchors[0], root!.getBoundingClientRect().top + scrollY);
+      arrivalStart = root!.getBoundingClientRect().top + scrollY;
+      arrivalLength = vh * CobaltArrival.LENGTH;
+      if (hero && cinematic) anchors[0] = arrivalStart + arrivalLength;
       measureCards();
     }
 
-    /** Card and row rectangles, relative to the stage, so leaders need no per-frame layout reads. */
+    /**
+     * Card, chapter-bar and overlay sizes relative to the stage, so overlays
+     * and leaders need no per-frame layout reads.
+     */
     function measureCards() {
       const origin = stage!.getBoundingClientRect();
       const rel = (r: DOMRect) => new DOMRect(r.left - origin.left, r.top - origin.top, r.width, r.height);
       const room = stage!.querySelector<HTMLElement>(".hs-artifacts")?.clientHeight ?? 0;
       cardRects = {};
-      for (const key of Object.keys(slotRefs.current)) {
-        const el = slotRefs.current[Number(key)]?.firstElementChild as HTMLElement | null;
-        if (el && room) {
-          // A card taller than the stage scales down to stay whole on short screens.
-          const fit = Math.max(0.78, Math.min(1, room / el.offsetHeight));
-          el.style.transform = fit < 1 ? `scale(${fit.toFixed(3)})` : "";
-          el.style.transformOrigin = rtl ? "top left" : "top right";
-        }
-        cardRects[Number(key)] = el ? rel(el.getBoundingClientRect()) : null;
+      const keys = Object.keys(slotRefs.current).map(Number);
+      const cards = keys.map((key) => slotRefs.current[key]?.firstElementChild as HTMLElement | null);
+      // Reads, then writes, then reads: one layout for the fit and one for the rects, never one per card.
+      const heights = cards.map((el) => el?.offsetHeight ?? 0);
+      cards.forEach((el, i) => {
+        if (!el || !room || !heights[i]) return;
+        // A card taller than the stage scales down to stay whole on short screens.
+        const fit = Math.max(0.8, Math.min(1, room / heights[i]));
+        el.style.transform = fit < 1 ? `scale(${fit.toFixed(3)})` : "";
+        el.style.transformOrigin = rtl ? "top left" : "top right";
+      });
+      cards.forEach((el, i) => {
+        cardRects[keys[i]] = el ? rel(el.getBoundingClientRect()) : null;
+      });
+      const step = beatRef.current.step;
+      blockers = [];
+      const card = cardRects[step];
+      if (card) blockers.push({ left: card.left, top: card.top, right: card.right, bottom: card.bottom });
+      const narr = deckRef.current?.querySelector<HTMLElement>(`.hs-step[data-step="${step}"] .hs-step__copy`);
+      if (narr) {
+        const r = rel(narr.getBoundingClientRect());
+        blockers.push({ left: r.left, top: r.top, right: r.right + 8, bottom: r.bottom + 8 });
       }
-      const rows = stage!.querySelectorAll<HTMLElement>(".hs-slot--1 .hx-chart__source");
-      rowRects = Array.from(rows).map((r) => rel(r.getBoundingClientRect()));
+      const header = document.querySelector<HTMLElement>(".hh");
+      blockers.push({ left: 0, top: 0, right: size.w, bottom: (header?.getBoundingClientRect().bottom ?? 64) + 4 });
+      overlaySizes = OVERLAYS.map((o, i) => {
+        const el = overlayRefs.current[i];
+        return { w: el?.offsetWidth ?? 0, h: el?.offsetHeight ?? 0, stem: o.stem ?? (o.kind === "badge" ? 12 : 16) };
+      });
+    }
+
+    /** The cobalt entrance from the scroll: 0 at the top of the story, 1 once its track has passed. */
+    function arrivalFromScroll() {
+      return hero && cinematic ? clamp((window.scrollY - arrivalStart) / arrivalLength, 0, 1) : 1;
     }
 
     function linearFromScroll() {
@@ -358,34 +478,137 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     /** Where the 3D subject sits: the middle of the free area between the copy column and the active card. */
     function focusTarget3d() {
       const step = beatRef.current.step;
-      const card = step > 0 && step < STEP_IDS.length - 1 ? cardRects[slotFor(step)] : null;
+      const card = step > 0 && step < STEP_IDS.length - 1 ? cardRects[step] : null;
       const edge = card ? (rtl ? size.w - card.right : card.left) - 24 : size.w * 0.94;
       const free = Math.max(160, edge - size.col);
       return { x: size.col + free * 0.5, y: size.h * 0.57, free };
     }
 
-    function render(time: number, dt: number) {
-      const ambient = !pausedRef.current && !reduceQuery.matches;
-      const s = storyFromLinear(uDisp);
-      const scene = sceneAt(s, uDisp);
-      const stage3d = stage3dRef.current;
-      if (stage3d) {
-        const target = focusTarget3d();
-        if (focus3d.x < 0) focus3d = { x: target.x, y: target.y };
-        const k = 1 - Math.exp(-dt * 5);
-        focus3d = { x: focus3d.x + (target.x - focus3d.x) * k, y: focus3d.y + (target.y - focus3d.y) * k };
-        stage3d.frame({
-          s,
-          u: uDisp,
-          scene,
-          ambient: ambientT,
-          pointer,
-          focus: focus3d,
-          freeWidth: target.free
-        });
-        drawLeaders(scene, (a) => stage3d.project(a));
-        return;
+    /**
+     * The cobalt entrance as painted: the hero's copy and cards fade, the cobalt
+     * opens around the boat and fades, and the opening copy comes in. Styles are
+     * written to the elements that show them (never custom properties on the
+     * story root, which would restyle the whole story every frame), and only when
+     * the entrance or the hole around the boat has moved.
+     */
+    function updateArrival(a: number) {
+      const on = Boolean(hero) && cinematic;
+      const arrival = on ? a : 1;
+      const heroEl = heroRef.current;
+      const deck = deckRef.current;
+      if (on !== paintedOn) {
+        paintedOn = on;
+        paintedArrival = -1;
+        hole.paintedR = -1;
+        if (!on) {
+          // The stacked layout: the hero and the deck are plain page content again.
+          for (const el of [heroEl, heroParts.copy, heroParts.cards, deck]) {
+            if (!el) continue;
+            el.style.opacity = "";
+            el.style.transform = "";
+            el.style.maskImage = "";
+          }
+        }
       }
+      if (on) paintHole(arrival);
+      if (arrival === paintedArrival) return;
+      paintedArrival = arrival;
+      const E = CobaltArrival;
+      if (on) {
+        const copy = E.ease(arrival, E.COPY);
+        const cards = E.ease(arrival, E.CARDS);
+        if (heroParts.copy) {
+          heroParts.copy.style.opacity = (1 - copy).toFixed(4);
+          heroParts.copy.style.transform = copy > 0 ? `translateY(${(-30 * copy).toFixed(2)}px)` : "";
+        }
+        if (heroParts.cards) {
+          heroParts.cards.style.opacity = (1 - cards).toFixed(4);
+          heroParts.cards.style.transform = cards > 0 ? `translateY(${(-45 * cards).toFixed(2)}px)` : "";
+        }
+        if (heroEl) heroEl.style.opacity = (1 - E.ease(arrival, E.HERO)).toFixed(4);
+        if (deck) deck.style.opacity = E.ease(arrival, E.STORY).toFixed(4);
+      }
+      // Attributes change only when they flip (a write on the story root restyles all of it).
+      const gone = E.HERO[1];
+      const arriving = String(on && arrival < gone);
+      if (root!.dataset.arriving !== arriving) root!.dataset.arriving = arriving;
+      if (heroEl) {
+        const away = on && arrival > E.CARDS[1];
+        if (heroEl.inert !== away) {
+          heroEl.inert = away;
+          heroEl.setAttribute("aria-hidden", String(away));
+        }
+        // Once the hero is gone its dot field stops drawing.
+        const dissolved = on && arrival >= gone;
+        if (heroEl.hasAttribute("data-dissolved") !== dissolved) heroEl.toggleAttribute("data-dissolved", dissolved);
+      }
+      if (deck && deck.inert !== (on && arrival < gone)) deck.inert = on && arrival < gone;
+    }
+
+    /** The cobalt opens around the boat: a soft-edged hole centred on its hull (or where it comes to rest, without the 3D boat). */
+    function paintHole(arrival: number) {
+      const heroEl = heroRef.current;
+      if (!heroEl) return;
+      const r = CobaltArrival.ease(arrival, CobaltArrival.OPEN) * 155;
+      const x = hole.x >= 0 ? hole.x : size.w * 0.23;
+      const y = hole.y >= 0 ? hole.y : size.h * 0.68;
+      if (r === hole.paintedR && (r === 0 || (Math.abs(x - hole.paintedX) < 0.5 && Math.abs(y - hole.paintedY) < 0.5))) return;
+      hole.paintedR = r;
+      hole.paintedX = x;
+      hole.paintedY = y;
+      heroEl.style.maskImage =
+        r > 0 ? `radial-gradient(circle at ${x.toFixed(1)}px ${y.toFixed(1)}px, transparent ${(r - 8).toFixed(2)}vmax, #000 ${r.toFixed(2)}vmax)` : "";
+    }
+
+    /**
+     * The 3D harbor: hand the scene this frame's targets; it damps progress,
+     * the entrance, pointer, framing and camera in useFrame and reports the
+     * damped state, which the copy, cards, overlays and the cobalt hero then follow.
+     */
+    function render3d(stage3d: HarborStage, dt: number) {
+      const target = focusTarget3d();
+      const input = frameInput;
+      input.uTarget = uTarget;
+      input.arrival = hero ? arrivalTarget : undefined;
+      input.pointerTarget.x = pointerTarget.x;
+      input.pointerTarget.y = pointerTarget.y;
+      input.focusTarget.x = target.x;
+      input.focusTarget.y = target.y;
+      input.freeWidth = target.free;
+      input.ambient = ambientT;
+      input.dt = dt;
+      input.snap = snapNext;
+      const out = stage3d.frame(input);
+      snapNext = false;
+      uDisp = out.u;
+      if (hero && cinematic && out.arrival < CobaltArrival.HERO[1]) {
+        // The hole in the cobalt follows the boat as it sails in.
+        const p = stage3d.project("hull");
+        if (p) {
+          hole.x = rtl ? size.w - p.x : p.x;
+          hole.y = p.y;
+        }
+      }
+      updateArrival(out.arrival);
+      updateBeat(uDisp);
+      drawOverlays(out.scene, (a) => stage3d.project(a));
+      return out.settled;
+    }
+
+    /** The illustrated harbor (no WebGL): the same progression, damped here. */
+    function renderSvg(time: number, dt: number) {
+      const k = 1 - Math.exp(-dt * 9);
+      if (uDisp < 0) uDisp = uTarget;
+      uDisp += (uTarget - uDisp) * k;
+      if (Math.abs(uTarget - uDisp) < 0.0004) uDisp = uTarget;
+      pointer = {
+        x: pointer.x + (pointerTarget.x - pointer.x) * k * 0.6,
+        y: pointer.y + (pointerTarget.y - pointer.y) * k * 0.6
+      };
+      updateBeat(uDisp);
+      const ambient = !reduceQuery.matches && (!hero || arrivalTarget > 0.01);
+      const s = storyFromLinear(uDisp);
+      const scene = sceneAt(s, uDisp, svgScene);
       const baseCam = cameraAt(s, DESKTOP_POSES);
       const cam = { ...baseCam, zoom: baseCam.zoom * zoomScale() };
       const focus = focusPoint();
@@ -412,6 +635,8 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       nodes.nextBuoy?.setAttribute("opacity", scene.nextRoute.toFixed(3));
       nodes.pings?.setAttribute("opacity", scene.sources.toFixed(3));
       nodes.marker?.setAttribute("opacity", scene.marker.toFixed(3));
+      nodes.providers?.setAttribute("transform", `translate(${((1 - scene.providers) * 160).toFixed(1)} 0)`);
+      nodes.providers?.setAttribute("opacity", (0.35 + scene.providers * 0.65).toFixed(3));
       nodes.glow?.setAttribute("opacity", scene.workshop.toFixed(3));
       const landed = scene.crane >= 0.999;
       nodes.boatCrate?.setAttribute("opacity", landed ? "1" : "0");
@@ -425,65 +650,108 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       }
       nodes.crate?.setAttribute("transform", `translate(${crane.x.toFixed(1)} ${crane.y.toFixed(1)})`);
 
-      drawLeaders(scene, (a) => projectMain(cam, focus, SVG_ANCHORS[a].x, SVG_ANCHORS[a].y));
+      drawOverlays(scene, (a) => {
+        if (a === "crate") return projectMain(cam, focus, crane.x + DOCK_SHIFT + 22, crane.y - 26);
+        if (a === "boat") return projectMain(cam, focus, scene.boat.x, scene.boat.y - 330);
+        return projectMain(cam, focus, SVG_ANCHORS[a].x, SVG_ANCHORS[a].y);
+      });
+      return uDisp === uTarget && Math.abs(pointer.x - pointerTarget.x) < 0.002 && Math.abs(pointer.y - pointerTarget.y) < 0.002;
     }
 
     function toScreen(p: { x: number; y: number }) {
       return { x: rtl ? size.w - p.x : p.x, y: p.y };
     }
 
-    function drawLeaders(scene: SceneState, project: (anchor: HarborAnchor) => ScreenPoint | null) {
-      const svg = leaderRef.current;
-      if (!svg) return;
-      const b = beatRef.current;
-      const lines: string[] = [];
-      const anchors = LEADER_ANCHORS[b.step] ?? [];
-      const card = b.step > 0 ? cardRects[slotFor(b.step)] : null;
+    /** Write an overlay's styles, skipping any that haven't changed since the last frame. */
+    function paintOverlay(i: number, el: HTMLElement, opacity: string, transform?: string, stem?: string) {
+      const painted = overlayPainted[i];
+      if (painted.opacity !== opacity) {
+        painted.opacity = opacity;
+        el.style.opacity = opacity;
+      }
+      if (transform !== undefined && painted.transform !== transform) {
+        painted.transform = transform;
+        el.style.transform = transform;
+      }
+      if (stem !== undefined && painted.stem !== stem) {
+        painted.stem = stem;
+        el.style.setProperty("--stem-x", stem);
+      }
+    }
 
-      // Buoy tags follow their buoys in every step where they are on screen.
-      TAG_ANCHORS.forEach((name, i) => {
-        const tag = tagRefs.current[i];
-        if (!tag) return;
-        const projected = project(name);
+    /** Context labels and badges follow their anchors; leaders tie the active card to its subject. */
+    function drawOverlays(scene: SceneState, project: (anchor: HarborAnchor) => ScreenPoint | null) {
+      const b = beatRef.current;
+      placed.length = 0;
+      points.clear();
+      OVERLAYS.forEach((o, i) => {
+        const el = overlayRefs.current[i];
+        if (!el) return;
+        let opacity = o.show(b, scene);
+        const projected = opacity > 0.01 ? project(o.anchor) : null;
         if (!projected) {
-          tag.style.opacity = "0";
+          paintOverlay(i, el, "0");
           return;
         }
         const p = toScreen(projected);
-        // Tags never sit over the copy column or under the artifact card.
-        const clear = rtl ? p.x < size.w - size.col - 80 : p.x > size.col + 80;
-        const underCard = card ? p.x > card.left - 60 && p.x < card.right + 60 && p.y > card.top && p.y < card.bottom + 30 : false;
-        const visible = scene.sources > 0.05 && clear && !underCard;
-        tag.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px) translate(-50%, -100%)`;
-        tag.style.opacity = visible ? String(Math.min(1, scene.sources * 1.4)) : "0";
+        const dim = overlaySizes[i] ?? { w: 0, h: 0, stem: 16 };
+        const box = { left: p.x - dim.w / 2, top: p.y - dim.stem - dim.h, right: p.x + dim.w / 2, bottom: p.y };
+        // Hysteresis: a label hidden by a collision needs a little clearance before it returns.
+        const pad = overlayHidden.has(i) ? 10 : 0;
+        const hits = (r: Rect) => blockers.some((x) => overlaps(r, x, pad)) || placed.some((x) => overlaps(r, x, 4 + pad));
+        // A label may slide sideways along its stem (never off it) to clear a card or another label.
+        if (hits(box) && o.kind === "label") {
+          const room = Math.max(0, dim.w / 2 - 14);
+          for (const dx of [-room * 0.5, room * 0.5, -room, room]) {
+            const moved = { ...box, left: box.left + dx, right: box.right + dx };
+            if (!hits(moved)) {
+              box.left = moved.left;
+              box.right = moved.right;
+              break;
+            }
+          }
+        }
+        const offStage = box.left < 4 || box.right > size.w - 4 || box.top < 0 || box.bottom > size.h;
+        const blocked = offStage || hits(box);
+        if (blocked) {
+          overlayHidden.add(i);
+          opacity = 0;
+        } else {
+          overlayHidden.delete(i);
+          placed.push(box);
+          // Leaders meet the label on the side facing the card.
+          points.set(o.anchor, { x: rtl ? box.left : box.right, y: box.top + dim.h / 2 });
+        }
+        paintOverlay(i, el, opacity.toFixed(3), `translate(${box.left.toFixed(1)}px, ${box.top.toFixed(1)}px)`, `${(p.x - box.left).toFixed(1)}px`);
       });
 
-      if (card && anchors.length) {
-        anchors.forEach((a, i) => {
-          if (b.step === 1 && i >= b.sub + 1) return;
-          const projected = project(a);
-          if (!projected) return;
-          const p = toScreen(projected);
-          let from: { x: number; y: number };
-          if (b.step === 1 && rowRects[i]) {
-            const row = rowRects[i];
-            from = { x: rtl ? row.right : row.left, y: row.top + row.height / 2 };
-          } else {
-            const edgeX = rtl ? card.right : card.left;
-            from = { x: edgeX, y: clamp(p.y, card.top + 40, card.bottom - 40) };
+      const svg = leaderRef.current;
+      if (!svg) return;
+      const card = cardRects[b.step];
+      const anchor = LEADERS[b.step]?.(b) ?? null;
+      let path = "";
+      if (card && anchor) {
+        // Only a visible label gets a leader.
+        const end = points.get(anchor);
+        if (end) {
+          const edgeX = rtl ? card.right : card.left;
+          const from = { x: edgeX, y: clamp(end.y, card.top + 36, card.bottom - 36) };
+          if (Math.abs(from.x - end.x) > 24 && (rtl ? end.x > from.x : end.x < from.x)) {
+            const mx = (from.x + end.x) / 2;
+            path =
+              `<path d="M${from.x.toFixed(1)} ${from.y.toFixed(1)} C${mx.toFixed(1)} ${from.y.toFixed(1)} ${mx.toFixed(1)} ${end.y.toFixed(1)} ${end.x.toFixed(1)} ${end.y.toFixed(1)}" />` +
+              `<circle cx="${from.x.toFixed(1)}" cy="${from.y.toFixed(1)}" r="3.5" />`;
           }
-          if (Math.abs(from.x - p.x) < 24) return;
-          lines.push(
-            `<path d="M${from.x.toFixed(1)} ${from.y.toFixed(1)} C${((from.x + p.x) / 2).toFixed(1)} ${from.y.toFixed(1)} ${((from.x + p.x) / 2).toFixed(1)} ${p.y.toFixed(1)} ${p.x.toFixed(1)} ${p.y.toFixed(1)}" />` +
-              `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4.5" />`
-          );
-        });
+        }
       }
-      svg.innerHTML = lines.join("");
+      if (svg.dataset.d !== path) {
+        svg.dataset.d = path;
+        svg.innerHTML = path;
+      }
     }
 
-    function updateBeat() {
-      const next = beatAt(uTarget);
+    function updateBeat(u: number) {
+      const next = StoryCues.beatAt(u);
       const prev = beatRef.current;
       if (next.step !== prev.step || next.sub !== prev.sub) {
         beatRef.current = next;
@@ -492,7 +760,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
         measureTimer = window.setTimeout(() => {
           measureCards();
           kick();
-        }, 480);
+        }, 420);
       }
     }
 
@@ -501,33 +769,25 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       const realDt = last ? (time - last) / 1000 : 0.016;
       const dt = Math.min(0.1, realDt);
       last = time;
-      if (stage3dRef.current && !lowPower) {
-        frameCount += 1;
-        frameEma = frameCount === 1 ? realDt : frameEma * 0.9 + realDt * 0.1;
-        if (frameCount > 24 && frameEma > 0.045) lowPower = true;
+      // The ambient clock (swell, drifting boats, gulls, the lamp) always runs, unless motion is reduced.
+      const ambient = !reduceQuery.matches;
+      if (ambient) ambientT += Math.min(0.3, realDt);
+      // The scroll as Lenis left it on this tick (the scroll event only arrives with the next frame).
+      if (cinematic) {
+        uTarget = linearFromScroll();
+        arrivalTarget = arrivalFromScroll();
       }
-      const k = 1 - Math.exp(-dt * 9);
-      if (uDisp < 0) uDisp = uTarget;
-      uDisp += (uTarget - uDisp) * k;
-      if (Math.abs(uTarget - uDisp) < 0.0004) uDisp = uTarget;
-      if (!pausedRef.current && !reduceQuery.matches) ambientT += Math.min(0.3, realDt);
-      pointer = {
-        x: pointer.x + (pointerTarget.x - pointer.x) * k * 0.6,
-        y: pointer.y + (pointerTarget.y - pointer.y) * k * 0.6
-      };
-      render(time, dt);
-      const settled =
-        uDisp === uTarget && Math.abs(pointer.x - pointerTarget.x) < 0.002 && Math.abs(pointer.y - pointerTarget.y) < 0.002;
-      const ambient = !pausedRef.current && !reduceQuery.matches;
+      // Copy, cards, overlays and the cobalt hero follow the same damped position as the scene.
+      const stage3d = stage3dRef.current;
+      let settled: boolean;
+      if (stage3d) {
+        settled = render3d(stage3d, dt);
+      } else {
+        updateArrival(arrivalTarget);
+        settled = renderSvg(time, dt);
+      }
       if (inView && document.visibilityState === "visible" && (!settled || ambient)) {
-        if (settled && lowPower) {
-          idleTimer = window.setTimeout(() => {
-            idleTimer = 0;
-            kick();
-          }, 220);
-        } else {
-          raf = requestAnimationFrame(frame);
-        }
+        raf = SmoothScroll.requestFrame(frame);
       } else {
         last = 0;
       }
@@ -535,23 +795,34 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
 
     function kick() {
       if (!cinematic || raf) return;
-      window.clearTimeout(idleTimer);
-      idleTimer = 0;
-      raf = requestAnimationFrame(frame);
+      raf = SmoothScroll.requestFrame(frame);
     }
 
     function onScroll() {
       if (!cinematic) return;
       uTarget = linearFromScroll();
-      updateBeat();
-      kick();
+      arrivalTarget = arrivalFromScroll();
+      if (inView) {
+        kick();
+        return;
+      }
+      // Below the story (the report, #build-examples, proof...) scrolling renders no 3D frames; the
+      // state still follows the scroll, and the first frame back lands on it without catching up.
+      uDisp = uTarget;
+      snapNext = true;
+      updateBeat(uTarget);
     }
 
     function onResize() {
       measure();
+      paintedArrival = -1;
+      hole.paintedR = -1;
+      arrivalTarget = arrivalFromScroll();
+      updateArrival(arrivalTarget);
       uTarget = linearFromScroll();
       uDisp = uTarget;
-      updateBeat();
+      snapNext = true;
+      updateBeat(uDisp);
       kick();
     }
 
@@ -563,6 +834,18 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       };
       kick();
     }
+
+    /** Scroll to a step's centre, so every jump lands on the same settled state. */
+    jumpRef.current = (index: number, smooth: boolean) => {
+      if (!cinematic) return false;
+      const el = markRefs.current[index];
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      const top = index === 0 ? anchors[0] : r.top + window.scrollY + (r.height - window.innerHeight) / 2;
+      // Lenis when it runs (a timed, eased jump), native otherwise; instant when motion is reduced.
+      SmoothScroll.scrollTo(top, { smooth: smooth && !reduceQuery.matches });
+      return true;
+    };
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -576,7 +859,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     const ro = new ResizeObserver(() => onResize());
     ro.observe(root);
 
-    // Cards change height as their beats play (the report expands, the workflow grows).
+    // Cards and labels change size with the language and fonts.
     const cardRo = new ResizeObserver(() => {
       measureCards();
       kick();
@@ -585,38 +868,97 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       const card = slot?.firstElementChild;
       if (card) cardRo.observe(card);
     }
+    overlayRefs.current.forEach((el) => el && cardRo.observe(el));
+
+    /**
+     * Same-page anchors: a chapter id lands on that chapter's settled state (the
+     * chapters' articles sit in the sticky deck, so a native jump would miss);
+     * other targets scroll with Lenis when it runs and take focus, like a native
+     * anchor jump. The skip link jumps at once.
+     */
+    function onAnchorClick(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element | null)?.closest?.<HTMLAnchorElement>('a[href^="#"]');
+      const id = link ? decodeURIComponent(link.getAttribute("href")!.slice(1)) : "";
+      if (!link || !id) return;
+      const index = id === "top" ? 0 : STEP_IDS.indexOf(id as (typeof STEP_IDS)[number]);
+      if (index >= 0 && jumpRef.current(index, true)) {
+        event.preventDefault();
+        history.replaceState(null, "", `#${id}`);
+        return;
+      }
+      const target = document.getElementById(id);
+      if (!target || !SmoothScroll.active) return;
+      event.preventDefault();
+      SmoothScroll.scrollTo(target, { smooth: !link.classList.contains("harbor-skip") });
+      if (!target.matches("a, button, input, select, textarea, summary, [tabindex]")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+      history.replaceState(null, "", `#${id}`);
+    }
 
     const onVisibility = () => kick();
     const onMotionPref = () => onResize();
-    const onPauseToggle = () => kick();
+    const onKick = () => kick();
+    /** A chapter hash typed or traversed later (back/forward) lands like a direct link, not on the deck's article. */
+    const onHashChange = () => {
+      const index = STEP_IDS.indexOf(window.location.hash.slice(1) as (typeof STEP_IDS)[number]);
+      if (index > 0) jumpRef.current(index, false);
+    };
 
     onResize();
+    // A chapter link opened directly (/#report) lands on that chapter's settled state.
+    const hashIndex = STEP_IDS.indexOf(window.location.hash.slice(1) as (typeof STEP_IDS)[number]);
+    if (hashIndex > 0) jumpRef.current(hashIndex, false);
+    window.addEventListener("hashchange", onHashChange);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointermove", onPointer, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
     reduceQuery.addEventListener("change", onMotionPref);
-    root.addEventListener("harbor:kick", onPauseToggle);
+    root.addEventListener("harbor:kick", onKick);
+    document.addEventListener("click", onAnchorClick);
+    document.fonts?.ready.then(() => {
+      measureCards();
+      kick();
+    });
 
     return () => {
-      cancelAnimationFrame(raf);
+      SmoothScroll.cancelFrame(raf);
       window.clearTimeout(measureTimer);
-      window.clearTimeout(idleTimer);
       io.disconnect();
       ro.disconnect();
       cardRo.disconnect();
+      window.removeEventListener("hashchange", onHashChange);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
       reduceQuery.removeEventListener("change", onMotionPref);
-      root.removeEventListener("harbor:kick", onPauseToggle);
+      root.removeEventListener("harbor:kick", onKick);
+      document.removeEventListener("click", onAnchorClick);
+      if (heroNode) {
+        heroNode.inert = false;
+        heroNode.removeAttribute("aria-hidden");
+        heroNode.removeAttribute("data-dissolved");
+        heroNode.style.opacity = "";
+        heroNode.style.maskImage = "";
+      }
+      for (const el of [heroParts.copy, heroParts.cards]) {
+        if (!el) continue;
+        el.style.opacity = "";
+        el.style.transform = "";
+      }
+      if (deckNode) {
+        deckNode.inert = false;
+        deckNode.style.opacity = "";
+      }
     };
-  }, [rtl]);
+  }, [rtl, hero]);
 
   // Phones: one live opening view, and 3D stills for the other chapters, from the same WebGL context.
   useEffect(() => {
     const root = rootRef.current;
     if (load3d !== "vignette" || !root) return;
     const live = root.querySelector<HTMLElement>(".hs-vignette--opening");
+    const reduceQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let raf = 0;
     let last = 0;
     let t = 0;
@@ -630,7 +972,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       if (!stage || !box) return false;
       const w = box.clientWidth;
       const h = box.clientHeight;
-      stage.frame({ s: 0, u: 0.45, scene: sceneForStep(0), ambient: t, pointer: { x: 0, y: 0 }, focus: { x: w / 2, y: h * 0.56 }, freeWidth: w });
+      stage.frame({ uTarget: 0, pointerTarget: { x: 0, y: 0 }, focusTarget: { x: w / 2, y: h * 0.56 }, freeWidth: w, ambient: t, snap: true });
       live?.classList.add("is-3d");
       return true;
     }
@@ -651,7 +993,9 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       if (!stage || !el) return;
       el.dataset.still = "1";
       const step = Number(el.dataset.step);
-      const result = stage.still(step, el.clientWidth, el.clientHeight);
+      const overlays = Array.from(el.querySelectorAll<HTMLElement>(".hs-ctx--still"));
+      const anchors = overlays.map((o) => o.dataset.anchor as HarborAnchor);
+      const result = stage.still(step, el.clientWidth, el.clientHeight, anchors);
       renderLive();
       if (result) {
         let img = el.querySelector<HTMLImageElement>(".hs-vignette__still");
@@ -663,10 +1007,12 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
         }
         img.onload = () => el.classList.add("is-3d");
         img.src = result.url;
-        el.querySelectorAll<HTMLElement>(".hs-tag--vignette").forEach((tag, i) => {
-          const p = result.tags[i];
-          if (!p) return;
-          tag.classList.remove("hs-tag--below");
+        overlays.forEach((tag, i) => {
+          const p = result.points[i];
+          if (!p) {
+            tag.style.opacity = "0";
+            return;
+          }
           tag.style.setProperty("--x", `${((p.x / el.clientWidth) * 100).toFixed(2)}%`);
           tag.style.setProperty("--y", `${((p.y / el.clientHeight) * 100).toFixed(2)}%`);
         });
@@ -678,19 +1024,19 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
       raf = 0;
       const dt = last ? Math.min(0.1, (time - last) / 1000) : 0.016;
       last = time;
-      const ambient = !pausedRef.current;
+      const ambient = !reduceQuery.matches;
       if (ambient) t += dt;
       if (!renderLive()) return;
       if (!stillsStarted) {
         stillsStarted = true;
         timer = window.setTimeout(renderStills, 60);
       }
-      if (inView && ambient && document.visibilityState === "visible") raf = requestAnimationFrame(frame);
+      if (inView && ambient && document.visibilityState === "visible") raf = SmoothScroll.requestFrame(frame);
       else last = 0;
     }
 
     function kick() {
-      if (!raf) raf = requestAnimationFrame(frame);
+      if (!raf) raf = SmoothScroll.requestFrame(frame);
     }
 
     const io = new IntersectionObserver((entries) => {
@@ -702,7 +1048,7 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     document.addEventListener("visibilitychange", kick);
     kick();
     return () => {
-      cancelAnimationFrame(raf);
+      SmoothScroll.cancelFrame(raf);
       window.clearTimeout(timer);
       io.disconnect();
       root.removeEventListener("harbor:kick", kick);
@@ -710,218 +1056,224 @@ export function HarborStory({ belowHero = false, scene3d = false }: { belowHero?
     };
   }, [load3d]);
 
-  const togglePause = () => {
-    setPaused((p) => !p);
-    // Let the loop restart (or settle) under the new preference.
-    requestAnimationFrame(() => rootRef.current?.dispatchEvent(new Event("harbor:kick")));
-  };
-
   const jumpTo = (event: React.MouseEvent<HTMLAnchorElement>, index: number) => {
-    const el = stepRefs.current[index];
-    if (!el) return;
-    const stage = stageRef.current;
-    if (!stage || getComputedStyle(stage).display === "none") return; // stacked layout: native anchor jump
+    if (!jumpRef.current(index, true)) return; // stacked layout: native anchor jump
     event.preventDefault();
-    const r = el.getBoundingClientRect();
-    const top = r.top + window.scrollY + (r.height - window.innerHeight) / 2;
-    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top, behavior: smooth ? "smooth" : "auto" });
-    history.replaceState(null, "", `#${STEP_IDS[index]}`);
+    history.replaceState(null, "", index === 0 ? "#top" : `#${STEP_IDS[index]}`);
   };
 
-  const sources = t.raw("chart.sources") as { label: string }[];
-  const chapters = t.raw("story.chapters") as string[];
-  const chapterSteps = [1, 2, 3, 4, 6];
-  const activeChapter = chapterSteps.reduce((acc, step, i) => (beat.step >= step ? i : acc), -1);
-  const initial = sceneAt(0, 0);
+  /** Keyboard focus moving into a chapter that isn't showing brings that chapter into view. */
+  const onDeckFocus = (event: React.FocusEvent<HTMLDivElement>) => {
+    const article = (event.target as HTMLElement).closest<HTMLElement>(".hs-step");
+    const index = Number(article?.dataset.step);
+    if (Number.isFinite(index) && index !== beatRef.current.step) jumpRef.current(index, false);
+  };
 
-  const copy = (id: (typeof STEP_IDS)[number]) => ({
-    label: t(`story.${id}.label`),
-    title: t(`story.${id}.title`),
-    body: t(`story.${id}.body`)
-  });
+  const overlayText = useMemo<Record<string, string>>(() => {
+    const areas = t.raw("ask.areas") as string[];
+    return {
+      boat: t("ask.boat"),
+      area0: areas[0],
+      area1: areas[1],
+      area2: areas[2],
+      f01: `F01 · ${(t.raw("report.findings") as { title: string }[])[0].title}`,
+      crate: t("dock.crate"),
+      client: t("measure.client"),
+      next: t("measure.next")
+    };
+  }, [t]);
+  /** The phones' live opening view (stable while the 3D view mode is unchanged, so the opening vignette stays memoised). */
+  const liveOpening = useMemo(
+    () =>
+      load3d === "vignette" ? (
+        <div className="hs-vignette__live">
+          <HarborScene3D layout="vignette" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
+        </div>
+      ) : null,
+    [load3d, rtl, onStage3d, onReady3d, onError3d]
+  );
 
   return (
     <section
       ref={rootRef}
-      className="hs"
+      className={`hs${hero ? " hs--cobalt-arrival" : ""}`}
       data-story-root
       style={{ "--hs-steps": STEP_IDS.length } as CSSProperties}
     >
       <HarborDefs />
       <div className="hs-colmark" aria-hidden />
 
-      <div ref={stageRef} className="hs-stage" aria-hidden data-harbor3d="fallback">
+      <div ref={stageRef} className="hs-stage" aria-hidden data-harbor3d="fallback" data-step={beat.step}>
         <svg className="hs-world" width="100%" height="100%">
-          <Layers scene={initial} maskId={maskId} refs={setLayerRef} />
+          <Layers scene={INITIAL_SCENE} maskId={maskId} refs={setLayerRef} />
         </svg>
         {load3d === "stage" ? (
           <div className="hs-world3d">
-            <HarborScene3D layout="stage" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
+            <HarborScene3D layout="stage" mirror={rtl} boatCanvas={hero ? boatCanvas : null} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
           </div>
         ) : null}
         <div className="hs-grain" />
         <div className="hs-stage__veil" />
         <svg ref={leaderRef} className="hs-leaders" width="100%" height="100%" />
-        <div className="hs-tags">
-          {sources.map((s, i) => (
+        <div className="hs-overlays">
+          {OVERLAYS.map((o, i) => (
             <span
-              key={s.label}
+              key={o.key}
               ref={(el) => {
-                tagRefs.current[i] = el;
+                overlayRefs.current[i] = el;
               }}
-              className="hs-tag"
-              style={{ opacity: 0 }}
+              className={`hs-ctx hs-ctx--${o.kind}${o.accent ? " hs-ctx--accent" : ""}${o.lead ? " hs-ctx--lead" : ""}`}
+              style={{ opacity: 0, ...(o.stem ? { "--stem": `${o.stem}px` } : null) } as CSSProperties}
             >
-              {s.label}
+              <OverlayBody spec={o} text={overlayText[o.key] ?? ""} />
             </span>
           ))}
         </div>
         <div className="hs-artifacts">
-          {[1, 2, 3, 4, 5, 6].map((slot) => {
-            // The opening keeps the scene clear; the chart arrives with the first chapter.
-            const active = slotFor(beat.step) === slot && beat.step > 0 && beat.step < STEP_IDS.length - 1;
-            const step = slot === 1 ? (beat.step === 0 ? 0 : 1) : slot;
-            const sub = beat.step === step ? beat.sub : beat.step > step ? 99 : 0;
+          {CHAPTER_STEPS.map((step) => {
+            const active = beat.step === step;
             return (
               <div
-                key={slot}
+                key={step}
                 ref={(el) => {
-                  slotRefs.current[slot] = el;
+                  slotRefs.current[step] = el;
                 }}
-                className={`hs-slot hs-slot--${slot}${active ? " is-active" : ""}${beat.step > slot && slot !== 1 ? " is-past" : ""}`}
+                className={`hs-slot hs-slot--${step}${active ? " is-active" : ""}${beat.step > step ? " is-past" : ""}`}
               >
-                <StepArtifact step={step} sub={Math.min(sub, 9)} />
+                <StepDemo step={step} sub={lineFor(step, beat)} />
               </div>
             );
           })}
         </div>
       </div>
 
-      <div className="hs-steps">
+      {hero ? (
+        <div ref={heroRef} className="hs-cobalt-hero harbor-hero">
+          {hero}
+          {/* SailTru's boat sails in across the cobalt here (drawn by the 3D harbor, from its camera). */}
+          <canvas ref={setBoatCanvas} className="hs-boat-overlay" aria-hidden />
+        </div>
+      ) : null}
+
+      <div ref={deckRef} className="hs-deck" onFocus={onDeckFocus}>
         {STEP_IDS.map((id, index) => {
           const isHero = id === "opening";
           const isClose = id === "close";
-          const style = { "--len": STEP_LENGTH[id] } as CSSProperties;
-          return (
+          const current = beat.step === index;
+          const article = (
             <article
               key={id}
               id={isHero ? "top" : id}
-              ref={(el) => {
-                stepRefs.current[index] = el;
-              }}
-              className={`hs-step hs-step--${id}`}
-              style={style}
+              data-step={index}
+              className={`hs-step hs-step--${id}${current ? " is-current" : ""}${beat.step > index ? " is-past" : ""}`}
               aria-labelledby={`hs-title-${id}`}
             >
               <div className="hs-step__pin">
-                <div className="hs-step__copy">
-                  {isHero ? (
-                    <>
-                      {/* With the cobalt hero above, that hero owns the page h1. */}
-                      {belowHero ? (
-                        <h2 id="hs-title-opening" className="hs-hero__title">
-                          <span>{t("hero.titleA")}</span> <span className="hs-hero__accent">{t("hero.titleB")}</span>
-                        </h2>
-                      ) : (
-                        <h1 id="hs-title-opening" className="hs-hero__title">
-                          <span>{t("hero.titleA")}</span> <span className="hs-hero__accent">{t("hero.titleB")}</span>
-                        </h1>
-                      )}
-                      <p className="hs-hero__support">{t("hero.support")}</p>
-                      <div className="hs-actions">
-                        <a href="#sample-report" className="hs-btn hs-btn--primary">
-                          {t("hero.primary")}
-                        </a>
-                        <Link href="/contact" className="hs-btn hs-btn--secondary">
-                          {t("hero.secondary")}
-                        </Link>
-                      </div>
-                      <p className="hs-hero__note">{t("hero.note")}</p>
-                      <a href="#find" className="hs-cue" onClick={(e) => jumpTo(e, 1)}>
-                        <span aria-hidden className="hs-cue__line" />
-                        {t("hero.cue")}
+                {isHero ? (
+                  <div className="hs-step__copy">
+                    {/* With the cobalt hero above, that hero owns the page h1. */}
+                    {belowHero ? (
+                      <h2 id="hs-title-opening" className="hs-hero__title">
+                        <span>{t("hero.titleA")}</span> <span className="hs-hero__accent">{t("hero.titleB")}</span>
+                      </h2>
+                    ) : (
+                      <h1 id="hs-title-opening" className="hs-hero__title">
+                        <span>{t("hero.titleA")}</span> <span className="hs-hero__accent">{t("hero.titleB")}</span>
+                      </h1>
+                    )}
+                    <p className="hs-hero__support">{t("hero.support")}</p>
+                    <div className="hs-actions">
+                      <a href="#sample-report" className="hs-btn hs-btn--primary">
+                        {t("hero.primary")}
                       </a>
-                    </>
-                  ) : isClose ? (
-                    <>
-                      <h2 id="hs-title-close" className="hs-step__title">
-                        {t("story.close.title")}
-                      </h2>
-                      <p className="hs-step__body">{t("story.close.body")}</p>
-                      <div className="hs-doors">
-                        <a href="#sample-report" className="hs-door hs-door--report">
-                          <span className="hs-door__title">{t("story.close.reportTitle")}</span>
-                          <span className="hs-door__body">{t("story.close.reportBody")}</span>
-                          <span className="hs-door__action">{t("hero.primary")}</span>
-                        </a>
-                        <Link href="/contact" className="hs-door hs-door--project">
-                          <span className="hs-door__title">{t("story.close.projectTitle")}</span>
-                          <span className="hs-door__body">{t("story.close.projectBody")}</span>
-                          <span className="hs-door__action">{t("hero.secondary")}</span>
-                        </Link>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="hs-step__label">{copy(id).label}</p>
-                      <h2 id={`hs-title-${id}`} className="hs-step__title">
-                        {copy(id).title}
-                      </h2>
-                      <p className="hs-step__body">{copy(id).body}</p>
-                      {id === "evidence" || id === "workflow" || id === "review" || id === "report" ? (
-                        <p className="hs-step__body hs-step__body--second">{t(`story.${id}.body2`)}</p>
-                      ) : null}
-                      {id === "find" ? <p className="hs-step__aside">{t("story.find.aside")}</p> : null}
-                    </>
-                  )}
-                </div>
+                      <Link href="/contact" className="hs-btn hs-btn--secondary">
+                        {t("hero.secondary")}
+                      </Link>
+                    </div>
+                    <p className="hs-hero__note">{t("hero.note")}</p>
+                    <a href="#find" className="hs-cue" onClick={(e) => jumpTo(e, 1)}>
+                      <span aria-hidden className="hs-cue__line" />
+                      {t("hero.cue")}
+                    </a>
+                  </div>
+                ) : isClose ? (
+                  <div className="hs-step__copy hs-narr hs-narr--close">
+                    <h2 id="hs-title-close" className="hs-step__title hs-close__title">
+                      <span className="hs-close__line">
+                        <Words text={t("story.close.titleA")} />
+                      </span>{" "}
+                      <span className="hs-close__line hs-close__line--accent">
+                        <Words text={t("story.close.titleB")} />
+                      </span>
+                    </h2>
+                    <p className="hs-close__body">{t("story.close.body")}</p>
+                    <div className="hs-doors">
+                      <a href="#sample-report" className="hs-door">
+                        <span className="hs-door__title">{t("story.close.reportTitle")}</span>
+                        <span className="hs-door__body">{t("story.close.reportBody")}</span>
+                        <span className="hs-door__action hs-btn hs-btn--primary">{t("hero.primary")}</span>
+                      </a>
+                      <Link href="/contact" className="hs-door">
+                        <span className="hs-door__title">{t("story.close.projectTitle")}</span>
+                        <span className="hs-door__body">{t("story.close.projectBody")}</span>
+                        <span className="hs-door__action hs-btn hs-btn--secondary">{t("hero.secondary")}</span>
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="hs-step__copy hs-narr">
+                    <p className="hs-narr__label">
+                      <span className="hs-narr__num" dir="ltr">
+                        {String(index).padStart(2, "0")}
+                      </span>
+                      {t(`story.${id}.label`)}
+                    </p>
+                    <h2 id={`hs-title-${id}`} className="hs-step__title">
+                      <Words text={t(`story.${id}.title`)} />
+                    </h2>
+                    <div className="hs-lines">
+                      {(t.raw(`story.${id}.lines`) as string[]).map((line, i) => {
+                        const at = lineFor(index, beat);
+                        return (
+                          <p key={i} className={`hs-line${i === at ? " is-on" : i < at ? " is-done" : ""}`}>
+                            {line}
+                          </p>
+                        );
+                      })}
+                    </div>
+                    <span className="hs-dots" aria-hidden>
+                      {Array.from({ length: STEP_BEATS[id] }, (_, i) => (
+                        <i key={i} className={i === lineFor(index, beat) ? "is-on" : i < lineFor(index, beat) ? "is-done" : undefined} />
+                      ))}
+                    </span>
+                  </div>
+                )}
                 {!isClose ? (
                   <div className="hs-step__demo">
-                    <Vignette
-                      step={index}
-                      live={
-                        index === 0 && load3d === "vignette" ? (
-                          <div className="hs-vignette__live">
-                            <HarborScene3D layout="vignette" mirror={rtl} onStage={onStage3d} onReady={onReady3d} onError={onError3d} />
-                          </div>
-                        ) : null
-                      }
-                    />
-                    {index === 0 && load3d === "vignette" ? (
-                      <button type="button" className="hs-live-toggle" aria-pressed={paused} onClick={togglePause}>
-                        {paused ? t("story.play") : t("story.pause")}
-                      </button>
-                    ) : null}
-                    {!isHero ? <StepArtifact step={index} sub={9} inline /> : null}
+                    <Vignette step={index} texts={overlayText} live={index === 0 ? liveOpening : null} />
+                    {!isHero ? <DemoComplete step={index} /> : null}
                   </div>
                 ) : null}
               </div>
             </article>
           );
+          return article;
         })}
       </div>
 
-      <nav className="hs-nav" aria-label={t("story.navLabel")}>
-        <ol>
-          {chapters.map((label, i) => (
-            <li key={label}>
-              <a
-                href={`#${STEP_IDS[chapterSteps[i]]}`}
-                className={i === activeChapter ? "is-active" : undefined}
-                aria-current={i === activeChapter ? "step" : undefined}
-                onClick={(e) => jumpTo(e, chapterSteps[i])}
-              >
-                <span className="hs-nav__num">{i + 1}</span>
-                <span className="hs-nav__label">{label}</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-        <button type="button" className="hs-nav__pause" aria-pressed={paused} onClick={togglePause}>
-          {paused ? t("story.play") : t("story.pause")}
-        </button>
-      </nav>
+      <div className="hs-track" aria-hidden>
+        {hero ? <div className="hs-arrival-track" style={{ "--arrival-len": CobaltArrival.LENGTH } as CSSProperties} /> : null}
+        {STEP_IDS.map((id, index) => (
+          <div
+            key={id}
+            ref={(el) => {
+              markRefs.current[index] = el;
+            }}
+            className="hs-mark"
+            style={{ "--len": STEP_LENGTH[id] } as CSSProperties}
+          />
+        ))}
+      </div>
     </section>
   );
 }
