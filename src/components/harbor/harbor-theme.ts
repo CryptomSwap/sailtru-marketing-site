@@ -7,7 +7,7 @@
  * --cobalt / --cobalt-deep / --cobalt-wash in harbor.css.
  */
 export class HarborTheme {
-  /** Accent: the client's boat, the selected finding, the route and the primary action. */
+  /** Accent: SailTru's boat, the active finding (F01), the route, the shipped change and the primary action. */
   static readonly ACCENT = "#2448e0";
   static readonly ACCENT_DEEP = "#1a35ad";
   static readonly INK = "#22252b";

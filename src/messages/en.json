@@ -827,7 +827,7 @@
     "hero": {
       "titleA": "Find what’s missing.",
       "titleB": "Fix what matters.",
-      "support": "SailTru analyzes your website, competitors, and visibility in search and AI answers. We turn the findings into clear priorities—and help you act with better websites, automation, and AI systems built around your business.",
+      "support": "We look at your website, your competitors, and how customers find you. Then we help you make the next move—with better websites, automation, and custom AI.",
       "primary": "See a sample report",
       "secondary": "Discuss your project",
       "note": "Already know what you need? You don’t need a report to start a project.",
@@ -835,80 +835,70 @@
     },
     "story": {
       "badge": "Illustrative example",
-      "navLabel": "Story chapters",
-      "pause": "Pause motion",
-      "play": "Play motion",
-      "chapters": [
-        "Find",
-        "Evidence",
-        "Report",
-        "Build",
-        "Review"
-      ],
       "find": {
-        "label": "01 — Find the opportunity",
-        "title": "Where could your business do better?",
-        "body": "We start from the outside, the way your customers see you: your website, the competitors they compare you with, and how you appear in search and AI answers.",
-        "aside": "Follow Example Studio, a fictional design studio, through one full cycle."
+        "label": "Find",
+        "title": "Your next customer is looking.",
+        "lines": [
+          "They search. Ask AI. Compare their options.",
+          "What do they find about you?",
+          "We check your website, your competitors, and your visibility."
+        ]
       },
       "evidence": {
-        "label": "02 — Show the evidence",
-        "title": "See what’s missing—and why it matters.",
-        "body": "Every finding points to something you can check. Example Studio’s service page explains the offer clearly, but the only way to enquire is a small link in the footer.",
-        "body2": "Someone ready to get in touch has to go looking. We can observe the layout; measuring its effect on enquiries would take analytics or user research."
+        "label": "Evidence",
+        "title": "They found your website. What happens next?",
+        "lines": [
+          "The service looks right.",
+          "But the way to enquire is buried in the footer.",
+          "We show you the gap—and where we found it."
+        ]
       },
       "report": {
-        "label": "03 — Choose the next move",
-        "title": "Know what to improve first.",
-        "body": "Findings come together in one report, in priority order. Each recommendation shows what we saw, the evidence, why it may matter, what to do—and what we couldn’t see.",
-        "body2": "The first recommendation becomes the selected route."
+        "label": "Report",
+        "title": "Know what to fix first.",
+        "lines": [
+          "Bring the findings together.",
+          "Choose the change worth making next.",
+          "See the evidence behind the recommendation."
+        ]
       },
       "build": {
-        "label": "04 — Build the solution",
-        "title": "We can help put it into practice.",
-        "body": "Use the report with your own team, or ask us to do the work. For Example Studio, we added an enquiry action beside the service details—a real interface change, not a slide."
+        "label": "Build",
+        "title": "Turn the finding into a working fix.",
+        "lines": [
+          "Put the enquiry action beside the service.",
+          "Make the next step clear.",
+          "Use your team—or ask us to build it."
+        ]
       },
       "workflow": {
-        "label": "04 — Build the solution · Custom systems",
-        "title": "Some opportunities live inside your business.",
-        "body": "A public scan can’t see how a team works. In a discovery session, Example Studio walked us through their enquiry process: every new lead meant researching the company by hand before the first call.",
-        "body2": "So we built an assistant around their process, their past projects and their CRM—with a person approving every brief."
+        "label": "Custom systems",
+        "title": "And after the enquiry arrives?",
+        "lines": [
+          "Someone still has to research the company.",
+          "Prepare the brief.",
+          "And update the CRM.",
+          "We can connect that workflow—with a person reviewing the result."
+        ]
       },
       "review": {
-        "label": "05 — Review the change",
-        "title": "See what changed. Decide what comes next.",
-        "body": "Before launch, we agree what to measure and record a baseline. After launch, we compare against it—then decide whether to keep, adjust, or move to the next finding in the report.",
-        "body2": "We don’t promise numbers before the data exists."
+        "label": "Review",
+        "title": "Did the change help?",
+        "lines": [
+          "Agree what to measure.",
+          "Compare it with the starting point.",
+          "Decide what comes next."
+        ]
       },
       "close": {
-        "title": "Start with a report—or start with your project.",
-        "body": "Want to know what to improve? Start with the analysis. Already know what you need? We can scope it directly.",
-        "reportTitle": "Understand what to improve",
-        "reportBody": "An evidence-backed report on your website, competitors, and search and AI visibility.",
+        "titleA": "Start with a report.",
+        "titleB": "Or bring us your project.",
+        "body": "Either is a good place to start. You don’t need a report before a project.",
+        "reportTitle": "See what to fix first",
+        "reportBody": "Your website, competitors, and search and AI visibility—in priority order, with the evidence.",
         "projectTitle": "Build what you already need",
-        "projectBody": "Websites, software, automation, and bespoke AI systems. No report required."
+        "projectBody": "Websites, software, automation, and custom AI. Scoped directly, no report required."
       }
-    },
-    "chart": {
-      "title": "Navigation chart",
-      "subtitle": "Example Studio · outside-in analysis",
-      "uncharted": "Not yet charted",
-      "gathering": "Gathering evidence",
-      "gathered": "Evidence gathered",
-      "sources": [
-        {
-          "label": "Your website",
-          "detail": "Service pages, enquiry paths, page structure"
-        },
-        {
-          "label": "Competitors",
-          "detail": "Three studios customers also consider"
-        },
-        {
-          "label": "Search & AI answers",
-          "detail": "How the studio appears for relevant questions"
-        }
-      ]
     },
     "site": {
       "url": "examplestudio.com/services/office-interiors",
@@ -932,12 +922,11 @@
         "Contact"
       ],
       "observed": "Observed page",
-      "findingTag": "Finding",
-      "finding": "No enquiry action near the service details. The only route is the “Contact” link in the footer.",
-      "alternative": "Clearer alternative",
-      "alternativeCta": "Ask about office interiors",
-      "alternativeNote": "An enquiry action beside the service details.",
-      "caveat": "Observed in the page layout. Effect on enquiries not measured."
+      "caveat": "Observed in the page layout. Effect on enquiries not measured.",
+      "serviceOk": "The service is clear",
+      "footerOnly": "The only way to enquire",
+      "missing": "No enquiry action here",
+      "where": "Seen on"
     },
     "report": {
       "title": "Opportunity report",
@@ -949,14 +938,11 @@
         "Search visibility",
         "AI visibility"
       ],
-      "assessed": "Assessed",
-      "findingsLabel": "Findings, in priority order",
-      "selected": "Selected",
-      "route": "Selected route: fix the enquiry path first",
       "findings": [
         {
+          "id": "F01",
           "area": "Website",
-          "title": "Service pages: enquiry link only in the footer",
+          "title": "Enquiry action only in the footer",
           "observed": "On all four service pages, the only enquiry route is a “Contact” link in the footer.",
           "evidence": "Page captures of /services/office-interiors and three other service pages. Two competitor studios place an enquiry button beside the service description.",
           "why": "A visitor who is ready to ask has to search for the next step, which may add friction at the moment of interest.",
@@ -964,6 +950,17 @@
           "uncertainty": "We can see the layout, not its effect. Analytics access would show how many visitors reach the footer and start an enquiry."
         },
         {
+          "id": "F02",
+          "area": "AI visibility",
+          "title": "AI answers call the studio residential-only",
+          "observed": "Asked for office interior designers in the studio’s city, the AI assistants we tested described Example Studio as a residential designer.",
+          "evidence": "Answers recorded from the AI assistants included in the analysis, with the prompts used and the date.",
+          "why": "If assistants repeat an outdated description, people asking about office projects may not hear about the studio.",
+          "action": "Make office work explicit on the homepage, service pages and business profiles, and publish office project case studies.",
+          "uncertainty": "AI answers vary by prompt, time and user. We report what we observed, not a guaranteed ranking."
+        },
+        {
+          "id": "F03",
           "area": "Competitors",
           "title": "Competitors explain their process; Example Studio doesn’t",
           "observed": "Two of three competitor studios describe a typical project timeline and the steps from first call to handover. Example Studio’s pages don’t describe the process.",
@@ -971,15 +968,6 @@
           "why": "Visitors comparing studios may find it easier to picture working with a competitor that explains how a project runs.",
           "action": "Add a short “How a project works” section with the typical stages and what the client provides.",
           "uncertainty": "Competitor pages show what they claim, not what they deliver. Typical timelines should come from Example Studio’s own projects."
-        },
-        {
-          "area": "AI visibility",
-          "title": "AI answers describe the studio as residential-only",
-          "observed": "Asked for office interior designers in the studio’s city, the AI assistants we tested described Example Studio as a residential designer.",
-          "evidence": "Answers recorded from the AI assistants included in the analysis, with the prompts used and the date.",
-          "why": "If assistants repeat an outdated description, people asking about office projects may not hear about the studio.",
-          "action": "Make office work explicit on the homepage, service pages and business profiles, and publish office project case studies.",
-          "uncertainty": "AI answers vary by prompt, time and user. We report what we observed, not a guaranteed ranking."
         }
       ],
       "fields": {
@@ -988,10 +976,18 @@
         "why": "Why it may matter",
         "action": "Recommended action",
         "uncertainty": "Uncertainty & access needed"
+      },
+      "priorities": "Priorities",
+      "selected": "Selected",
+      "collected": "Findings collected",
+      "full": "The full report is below the story.",
+      "brief": {
+        "observed": "Only a footer link, on all four service pages.",
+        "evidence": "Page captures. Two competitors put the button beside the service.",
+        "action": "Add an enquiry action beside each service description."
       }
     },
     "dock": {
-      "label": "Shipped change",
       "before": "Before",
       "after": "After",
       "panelTitle": "Ask about office interiors",
@@ -1002,77 +998,59 @@
         "About your space"
       ],
       "submit": "Send enquiry",
-      "caption": "Built from the report’s first recommendation."
+      "slot": "Enquiry action goes here",
+      "crate": "F01 · enquiry action",
+      "shipped": "Shipped",
+      "handover": "Built from F01. Your team can ship it, or we can."
     },
     "workflow": {
-      "discoveryLabel": "Discovery session · what the client shared",
-      "discovery": [
-        "Leads arrive by web form and email",
-        "Before each first call, someone researches the company by hand",
-        "Briefs live in Google Docs; deals in HubSpot",
-        "A studio lead approves anything that goes into the CRM"
-      ],
-      "title": "Enquiry preparation assistant",
-      "uses": "Uses",
-      "knowledge": [
-        "Example Studio’s project archive",
-        "Public company information",
-        "HubSpot CRM"
-      ],
-      "steps": [
+      "title": "Enquiry preparation",
+      "origin": "From a discovery session, with access to the studio’s tools",
+      "notScan": "A website scan can’t see this.",
+      "outputLabel": "Output",
+      "waiting": "Waiting for approval",
+      "approved": "Approved by the studio lead",
+      "flow": [
         {
-          "label": "New enquiry",
-          "io": "Input",
-          "content": "“We’re moving to a 600 m² office in March and need a design partner.” — Dana Levi, Northwind Logistics"
+          "label": "Enquiry",
+          "out": "“We’re moving to a 600 m² office in March and need a design partner.” — Dana Levi, Northwind Logistics"
         },
         {
-          "label": "Company research",
-          "io": "Finds",
-          "content": "Freight forwarder, about 120 staff, opening a second office. Sources: company website, recent news."
+          "label": "Research",
+          "out": "Northwind Logistics: freight forwarder, about 120 staff, opening a second office. Sources: company website, recent news."
         },
         {
-          "label": "Preparation brief",
-          "io": "Drafts",
-          "content": "Who they are · what they asked · two similar studio projects · questions for the call: budget range, flexibility on the move-in date."
+          "label": "Brief",
+          "out": "Who they are · what they asked · two similar studio projects · questions for the first call."
         },
         {
-          "label": "Human review",
-          "io": "Checks",
-          "content": "The studio lead edits and approves the brief. Nothing moves on without approval."
+          "label": "Approval",
+          "out": "The studio lead reads and edits the brief. Nothing reaches the CRM without approval."
         },
         {
-          "label": "CRM handoff",
-          "io": "Output",
-          "content": "HubSpot: deal “Northwind — office interiors”, brief attached, follow-up task assigned."
+          "label": "CRM",
+          "out": "HubSpot: deal “Northwind — office interiors”, brief attached, follow-up task assigned."
         }
-      ],
-      "approved": "Approved by studio lead",
-      "note": "Illustrative example. Built after discovery, with access to the client’s tools."
+      ]
     },
     "measure": {
-      "title": "What we’ll measure",
       "delivered": "Delivered",
-      "rows": [
-        {
-          "change": "Enquiry action on service pages",
-          "metric": "Share of service-page visitors who start and complete an enquiry",
-          "baseline": "Baseline: the weeks before launch"
-        },
-        {
-          "change": "Enquiry preparation assistant",
-          "metric": "Time from new enquiry to an approved call brief, and how often briefs need major edits",
-          "baseline": "Baseline: timed during discovery"
-        }
+      "change": "Enquiry action beside the service",
+      "measureLabel": "We’ll measure",
+      "metric": "Share of service-page visitors who start an enquiry",
+      "baselineLabel": "Starting point",
+      "baseline": "Recorded before launch",
+      "afterLabel": "After launch",
+      "after": "Compared over the agreed period",
+      "noNumbers": "No figures until the data exists.",
+      "decideLabel": "Next decision",
+      "options": [
+        "Keep",
+        "Adjust",
+        "Move to F02"
       ],
-      "resultLabel": "Result",
-      "result": "Measured after launch. No figures until the data exists.",
-      "timeline": [
-        "Baseline",
-        "Launch",
-        "Review",
-        "Next decision"
-      ],
-      "next": "Next decision: keep, adjust, or take the next finding from the report."
+      "client": "Example Studio",
+      "next": "Next: F02"
     },
     "sample": {
       "eyebrow": "Sample report",
@@ -1181,6 +1159,27 @@
       "work": "Work",
       "contact": "Contact",
       "rights": "© SailTru"
+    },
+    "ask": {
+      "questionLabel": "Example question",
+      "question": "Who designs offices for growing teams?",
+      "answerLabel": "Example answer",
+      "answerA": "Studios often mentioned for workplace projects include Northfield Studio and Harbor & Pine. ",
+      "answerB": "Example Studio is described as a residential designer.",
+      "issue": "Office work isn’t mentioned",
+      "capture": "Captured as a finding",
+      "note": "Illustrative. Answers vary by platform, prompt and time. Logos name the platforms we examine; no affiliation.",
+      "areas": [
+        "Your website",
+        "Competitors",
+        "Search & AI visibility"
+      ],
+      "boat": "SailTru",
+      "providers": [
+        "ChatGPT",
+        "Google",
+        "Perplexity"
+      ]
     }
   }
 }

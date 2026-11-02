@@ -33,7 +33,7 @@ export class HarborWater {
   readonly uniforms: Record<string, THREE.IUniform>;
 
   constructor() {
-    const geometry = new THREE.PlaneGeometry(220, 150, 220, 110);
+    const geometry = new THREE.PlaneGeometry(220, 150, 110, 55);
     geometry.rotateX(-Math.PI / 2);
     this.uniforms = {
       ...fogUniforms(),
@@ -294,13 +294,14 @@ export class RouteRibbon {
   }
 }
 
-/** Radial textures drawn once on a 2D canvas (foam ring, soft shadow, glow). */
+/** Radial textures drawn once on a 2D canvas (foam ring, soft shadow, glow), and a boat's wake. */
 class RadialTextures {
   private static cache = new Map<string, THREE.CanvasTexture>();
 
-  static get(kind: "shadow" | "foam" | "glow"): THREE.CanvasTexture {
+  static get(kind: "shadow" | "foam" | "glow" | "wake"): THREE.CanvasTexture {
     const hit = RadialTextures.cache.get(kind);
     if (hit) return hit;
+    if (kind === "wake") return RadialTextures.store(kind, RadialTextures.wake());
     const size = 128;
     const canvas = document.createElement("canvas");
     canvas.width = size;
@@ -324,6 +325,40 @@ class RadialTextures {
     }
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, size, size);
+    return RadialTextures.store(kind, canvas);
+  }
+
+  /**
+   * A stern wake, seen from above: two foam arms spreading from the stern (the right
+   * edge, the texture's +u) and a churned trail between them, fading astern.
+   */
+  private static wake(): HTMLCanvasElement {
+    const w = 256;
+    const h = 128;
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d")!;
+    ctx.filter = "blur(1.5px)";
+    for (let x = w; x >= 0; x -= 2) {
+      const t = (w - x) / w;
+      const fade = Math.pow(1 - t, 2);
+      // The churned trail right astern.
+      ctx.fillStyle = `rgba(255,253,246,${(0.55 * fade * fade).toFixed(3)})`;
+      const trail = 6 + t * 14;
+      ctx.fillRect(x, h / 2 - trail, 2, trail * 2);
+      // The two arms, broken by the swell.
+      const swell = 0.75 + 0.25 * Math.sin(t * 38);
+      ctx.fillStyle = `rgba(255,253,246,${(0.85 * fade * swell).toFixed(3)})`;
+      const spread = 8 + t * 50 + Math.sin(t * 23) * 2;
+      const arm = 3 + t * 6;
+      ctx.fillRect(x, h / 2 - spread - arm / 2, 2, arm);
+      ctx.fillRect(x, h / 2 + spread - arm / 2, 2, arm);
+    }
+    return canvas;
+  }
+
+  private static store(kind: string, canvas: HTMLCanvasElement): THREE.CanvasTexture {
     const tex = new THREE.CanvasTexture(canvas);
     tex.colorSpace = THREE.SRGBColorSpace;
     RadialTextures.cache.set(kind, tex);
@@ -341,7 +376,14 @@ export class WaterDecal {
     return WaterDecal.make("foam", width, depth, opacity, 0.05);
   }
 
-  private static make(kind: "shadow" | "foam", width: number, depth: number, opacity: number, lift: number) {
+  /** A boat's stern wake, `length` long astern of x = 0 (its stern end). */
+  static wake(length: number, width: number, opacity = 0.9): THREE.Mesh {
+    const mesh = WaterDecal.make("wake", length, width, opacity, 0.05);
+    mesh.geometry.translate(-length / 2, 0, 0);
+    return mesh;
+  }
+
+  private static make(kind: "shadow" | "foam" | "wake", width: number, depth: number, opacity: number, lift: number) {
     const geometry = new THREE.PlaneGeometry(width, depth);
     geometry.rotateX(-Math.PI / 2);
     const material = new THREE.MeshBasicMaterial({
