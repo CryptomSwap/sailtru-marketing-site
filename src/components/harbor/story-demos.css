@@ -1,0 +1,109 @@
+/* Foreground demonstrations. The harbor scene and its timing stay unchanged. */
+.hx-card__head { align-items: center; margin-bottom: 18px; }
+.hx-badge { border: 0; background: #f0efeb; padding: 4px 8px; font-size: 10px; }
+.hx-mini-label { letter-spacing: .065em; font-size: 10px; }
+.hx-ask { background: #fff; }
+.hx-ask .hx-card__head { padding-bottom: 12px; border-bottom: 1px solid #ececec; }
+.hx-ask__who .hx-provider { border: 0; padding: 0; }
+.hx-chat-transcript { min-height: 228px; }
+.hx-ask__q, [dir=rtl] .hx-ask__q { margin-inline-start: 28px; padding: 12px 16px; border: 0; border-radius: 20px; background: #f1f1f1; }
+.hx-ask__question { font-size: 14px; font-weight: 400; line-height: 1.55; }
+.hx-ask__a, [dir=rtl] .hx-ask__a { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 9px; border: 0; background: none; padding: 22px 0 10px; margin: 0; }
+.hx-ask__answer { color: #292929; font-size: 13px; line-height: 1.7; }
+.hx-ask__issue { display: block; margin-top: 12px; text-decoration: none; transition: background .3s; }
+.hx-ask__issue[data-on=true] { text-decoration: none; font-weight: 400; background: #eef0ff; box-shadow: 3px 0 #eef0ff, -3px 0 #eef0ff; }
+.hx-chat-tools { grid-column: 2; color: #858585; font-size: 17px; }
+.hx-chat-composer { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 9px 10px 9px 16px; border: 1px solid #e4e4e4; border-radius: 25px; color: #777; font-size: 12px; }
+.hx-chat-send { display: grid; place-items: center; border-radius: 50%; background: #222; color: white; width: 28px; height: 28px; font-size: 18px; }
+.hx-ask__capture { margin-top: 18px; padding-top: 14px; border-top: 1px solid #ececec; }
+.hx-chat-insight { margin: 5px 0 10px; font-size: 14px; font-weight: 600; line-height: 1.4; }
+.hx-ask__capture .hx-fchip { border: 0; padding: 0; font-size: 11px; color: var(--ink-3); }
+.hx-ask .hx-card__foot { font-size: 10px; line-height: 1.5; }
+/* Stream the answer on its own cue; keep all glyphs in flow to reserve space. */
+@media (min-width:960px) and (prefers-reduced-motion:no-preference) {
+  .hs-slot.is-active .hx-ask__a .hx-typed__ch { animation-delay: calc(100ms + var(--i) * 9ms); }
+}
+/* A quiet architectural thumbnail makes the studio preview read as a real site. */
+.hx-office-visual { position: relative; height: 92px; overflow: hidden; background: linear-gradient(155deg,#e1e3d9 0 46%,#c1bbaa 46% 48%,#eee8dc 48%); border-bottom: 1px solid #d5d0c4; }
+.hx-office-visual span { position: absolute; top: 12px; bottom: 20px; width: 18%; background: linear-gradient(135deg,#c0d0cf,#e3ede5); border: 3px solid #7b8179; transform: skewY(-8deg); }
+.hx-office-visual span:nth-child(1) { left: 9%; }
+.hx-office-visual span:nth-child(2) { left: 29%; }
+.hx-office-visual span:nth-child(3) { left: 49%; }
+.hx-office-visual i { position: absolute; bottom: 12px; left: 23%; width: 45%; height: 14px; background: #a29279; transform: skewX(-30deg); box-shadow: 8px 8px 0 #343b3530; }
+.hx-office-visual i:nth-of-type(2) { left: 40%; bottom: 7px; height: 24px; width: 4px; transform: none; background: #625d52; }
+.hx-office-visual b { position: absolute; right: 10%; bottom: 10px; width: 17px; height: 27px; border-radius: 3px 3px 7px 7px; background: #a38c71; }
+.hx-office-visual b:before { content: ''; position: absolute; bottom: 22px; left: -7px; width: 31px; height: 40px; border-radius: 60% 20% 50% 30%; background: #697665; }
+.hx-page__nav { padding: 12px; align-items: center; background: #faf9f6; }
+.hx-page__brand { font-family: var(--serif); font-size: 15px; }
+.hx-page__links { font-size: 9px; gap: 7px; }
+.hx-page__body { padding: 16px 12px; gap: 14px; }
+.hx-page__title { font-size: 22px; margin-bottom: 9px; }
+.hx-page__lead { font-size: 11px; line-height: 1.65; }
+.hx-page__list { font-size: 10px; line-height: 1.6; margin-top: 10px; }
+.hx-page__main.is-lit { outline-color: transparent; }
+.hx-page__gap { background: #f7f7f3; border: 1px dashed #b8b8b0; color: #76766e; font-size: 11px; }
+.hx-page__panel { background: #f7f8fc; border: 1px solid #d4daf2; padding: 10px; gap: 8px; }
+.hx-page__field { padding: 7px; border-radius: 3px; }
+.hx-page__submit { border-radius: 4px; padding: 8px; }
+.hx-page__footer { font-size: 9px; padding-block: 12px; }
+.hx-prio__row { border-radius: 5px; }
+.hx-prio__open { border-radius: 5px; background: #f7f8fc; }
+.hx-prio__field dt { font-size: 10px; text-transform: none; letter-spacing: 0; }
+.hx-flow__output { background: #f7f8fa; border: 1px solid #e0e3e8; border-radius: 7px; padding: 17px; }
+.hx-flow__panel .hx-mini-label { border-bottom: 1px solid #dddfe5; padding-bottom: 10px; }
+.hx-flow__out { font-size: 14px; line-height: 1.7; }
+.hx-flow__origin { font-size: 11px; line-height: 1.5; }
+.hx-review__compare { background: #f7f8fa; padding: 14px; border-radius: 6px; }
+@media (min-width:960px) and (max-height:820px) {
+ .hx-chat-transcript { min-height: 205px; }
+ .hx-ask__a { padding-top: 16px; }
+ .hx-ask__answer { font-size: 12px; line-height: 1.55; }
+ .hx-ask__capture { margin-top: 12px; padding-top: 10px; }
+ .hx-office-visual { height: 64px; }
+ .hx-page__body { padding-block: 12px; }
+}
+@media (max-width:420px) {
+ .hx-ask__q, [dir=rtl] .hx-ask__q { margin-inline-start: 14px; }
+ .hx-page__links { gap: 5px; font-size: 8px; }
+ .hx-page__brand { font-size: 13px; }
+ .hx-office-visual { height: 80px; }
+ .hx-chat-transcript { min-height: 0; }
+}
+@media (prefers-reduced-motion:reduce) { .hx-typed__ch { opacity: 1 !important; animation: none !important; } }
+.hx-flow__panel { border: 0; border-radius: 0; padding: 0; background: transparent; }
+
+.hx-ask .hx-reserve::before { display: none; }
+.hx-ask__a > .hx-provider { align-self: start; margin-top: 2px; }
+/* Narrative hierarchy: a complete promise stays visible while its example advances. */
+.hs-narr--message .hs-narr__label { color: var(--ink-3); font-size: 10px; letter-spacing: .07em; gap: 9px; margin-bottom: 18px; }
+.hs-narr--message .hs-narr__num { min-width: auto; height: auto; padding: 0; border: 0; border-radius: 0; color: var(--ink-3); font-size: 10px; }
+.hs-narr--message .hs-step__title { font-family: var(--sans); font-weight: 700; font-size: clamp(32px, 3vw, 44px); letter-spacing: -.04em; line-height: 1.1; text-wrap: pretty; margin-bottom: 20px; }
+.hs-title-accent { color: var(--cobalt-deep); }
+.hs-narr__summary { font-size: 16px; line-height: 1.6; color: var(--ink-2); margin: 0 0 20px; text-wrap: pretty; }
+.hs-narr__example { border-top: 1px solid var(--rule); padding-top: 14px; }
+.hs-narr__example .hs-line { font-size: 13px; line-height: 1.5; color: var(--ink-3); }
+.hs-stages { display: none; padding: 0; list-style: none; margin: 17px 0 0; }
+.locale-he .hs-narr--message .hs-step__title { letter-spacing: -.025em; }
+.locale-he .hs-narr--message .hs-narr__label { letter-spacing: 0; font-size: 12px; }
+@media (min-width:960px) and (min-height:600px) and (prefers-reduced-motion:no-preference) {
+ .hs-narr--message { padding: 28px; }
+ .hs-stages { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+ .hs-stages li { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; line-height: 1.4; color: var(--ink-3); }
+ .hs-stages__dot { width: 5px; height: 5px; flex: none; border-radius: 50%; border: 1px solid currentColor; }
+ .hs-stages li[aria-current=step] { color: var(--cobalt-deep); font-weight: 600; }
+ .hs-stages li[aria-current=step] .hs-stages__dot { background: currentColor; }
+}
+@media (min-width:960px) and (max-height:820px) and (prefers-reduced-motion:no-preference) {
+ .hs-narr--message { padding: 22px; }
+ .hs-narr--message .hs-step__title { font-size: clamp(30px,2.7vw,38px); margin-bottom: 15px; }
+ .hs-narr--message .hs-narr__label { margin-bottom: 14px; }
+ .hs-narr__summary { font-size: 14px; line-height: 1.55; margin-bottom: 15px; }
+ .hs-narr__example { padding-top: 12px; }
+ .hs-narr__example .hs-line { font-size: 12px; }
+ .hs-stages { margin-top: 14px; }
+}
+@media (max-width:959px), (prefers-reduced-motion:reduce) {
+ .hs-narr--message .hs-step__title { max-width: 580px; }
+ .hs-narr__summary { max-width: 580px; }
+ .hs-narr__example .hs-line { padding-inline-start: 18px; }
+}

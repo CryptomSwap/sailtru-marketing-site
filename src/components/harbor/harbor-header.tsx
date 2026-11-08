@@ -79,8 +79,7 @@ export function HarborHeader({ afterHero }: { afterHero?: string }) {
       <div className="hh__bar">
         <Link href="/" className="hh__brand" aria-label={t("home")} onClick={close}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/sailtrue-mark.svg" alt="" width="40" height="40" className="hh__mark" />
-          <span className="hh__word" aria-hidden />
+          <img src="/images/sailtru-lockup.png" alt="" width="757" height="183" className="hh__logo" />
         </Link>
         {/* The open sheet scrolls natively (Lenis skips it); the closed bar doesn't interrupt smooth wheel scrolling. */}
         <nav id="hh-nav" className="hh__nav" aria-label={t("nav")} data-lenis-prevent={open ? "" : undefined}>

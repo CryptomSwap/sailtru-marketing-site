@@ -12,49 +12,23 @@ type Titled = { title: string; body: string };
 
 export function SampleReportSection() {
   const t = useTranslations("harbor.sample");
-  const tFields = useTranslations("harbor.report.fields");
   const coverage = t.raw("coverage") as Titled[];
-  const anatomy = ["observed", "evidence", "why", "action", "uncertainty"] as const;
   return (
     <section id="sample-report" className="hb-sec hb-sample" aria-labelledby="hb-sample-title">
       <div className="hb-shell">
         <header className="hb-head">
           <p className="hb-eyebrow">{t("eyebrow")}</p>
-          <h2 id="hb-sample-title" className="hb-title">
-            {t("title")}
-          </h2>
+          <h2 id="hb-sample-title" className="hb-title">{t("title")} <span className="hb-title__accent">{t("titleAccent")}</span></h2>
           <p className="hb-lede">{t("intro")}</p>
         </header>
-        <div className="hb-sample__grid">
-          <div className="hb-sample__about">
-            <ul className="hb-coverage">
-              {coverage.map((item, i) => (
-                <li key={item.title}>
-                  <span className="hb-coverage__num" aria-hidden>
-                    {i + 1}
-                  </span>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <div className="hb-anatomy">
-              <h3>{t("anatomyTitle")}</h3>
-              <ol>
-                {anatomy.map((key) => (
-                  <li key={key}>{tFields(key)}</li>
-                ))}
-              </ol>
-            </div>
-            <p className="hb-note">{t("limits")}</p>
-            <Link href="/contact" className="hs-btn hs-btn--secondary">
-              {t("request")}
-            </Link>
-          </div>
-          <SampleReport />
+        <SampleReport />
+        <div className="hb-sample-scope">
+          <h3>{t("scopeTitle")}</h3>
+          <ul className="hb-coverage">{coverage.map((item, i) => (
+            <li key={item.title}><span className="hb-coverage__num" aria-hidden>{String(i + 1).padStart(2, "0")}</span><div><h4>{item.title}</h4><p>{item.body}</p></div></li>
+          ))}</ul>
         </div>
+        <div className="hb-sample-footer"><p className="hb-note">{t("limits")}</p><Link href="/contact" className="hs-btn hs-btn--primary">{t("request")} <span aria-hidden>↗</span></Link></div>
       </div>
     </section>
   );
@@ -63,19 +37,24 @@ export function SampleReportSection() {
 export function BuildSection() {
   const t = useTranslations("harbor.build");
   const items = t.raw("items") as (Titled & { example: string })[];
+  const visuals = t.raw("visuals") as string[][];
   return (
     <section id="build-examples" className="hb-sec hb-build" aria-labelledby="hb-build-title">
       <div className="hb-shell">
         <header className="hb-head">
           <p className="hb-eyebrow">{t("eyebrow")}</p>
           <h2 id="hb-build-title" className="hb-title">
-            {t("title")}
+            {t("title")} <span className="hb-title__accent">{t("titleAccent")}</span>
           </h2>
           <p className="hb-lede">{t("intro")}</p>
         </header>
         <ul className="hb-build__list">
           {items.map((item, i) => (
             <li key={item.title} className="hb-build__item">
+              <div className={`hb-build__visual hb-build__visual--${i}`} aria-hidden>
+                <div className="hb-visual-bar"><i /><i /><i /><span>{visuals[i][0]}</span></div>
+                {i === 0 ? <div className="hb-visual-site"><span>{visuals[i][1]}</span><div className="hb-visual-site__image" /><div className="hb-visual-lines"><i /><i /></div><b>{visuals[i][2]} ↗</b></div> : <div className="hb-visual-flow">{visuals[i].slice(1).map((label, j) => <div key={label}><span className="hb-visual-node">{i === 3 ? ["▤", "✳", "✓"][j] : ["↘", "⊞", "↗"][j]}</span><span>{label}</span></div>)}</div>}
+              </div>
               <span className="hb-build__num" aria-hidden>
                 {String(i + 1).padStart(2, "0")}
               </span>

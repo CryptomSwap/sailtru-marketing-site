@@ -11,6 +11,9 @@ import {
 } from "./harbor-sections";
 import "@/components/sections/home-v2/mobile-home.css";
 import "./harbor.css";
+import "./story-demos.css";
+import "./site-finish.css";
+import "./report-workspace.css";
 
 /** Selector of the cobalt hero that opens /en and /he. */
 const HERO_SELECTOR = "#hero";
@@ -50,3 +53,4 @@ export function HarborHome({ skipLabel, hero, scene3d = false }: { skipLabel: st
     </>
   );
 }
+

@@ -215,14 +215,14 @@ const DemoComplete = memo(function DemoComplete({ step }: { step: number }) {
 });
 
 /** A headline whose words rise into place when its chapter arrives. */
-function Words({ text }: { text: string }) {
+function Words({ text, offset = 0 }: { text: string; offset?: number }) {
   const words = text.split(" ");
   return (
     <>
       {words.map((w, i) => (
         <span key={i}>
           {i > 0 ? " " : null}
-          <span className="hs-word" style={{ "--i": i } as CSSProperties}>
+          <span className="hs-word" style={{ "--i": i + offset } as CSSProperties}>
             {w}
           </span>
         </span>
@@ -334,6 +334,34 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     let paintedOn = false;
     let arrivalStart = 0;
     let arrivalLength = 1;
+    let entrancePlayed = false;
+    let entranceRunning = false;
+    let entranceTimer = 0;
+
+    function finishEntrance() {
+      entranceRunning = false;
+      window.clearTimeout(entranceTimer);
+    }
+    function playEntrance() {
+      if (!hero || !cinematic || reduceQuery.matches || !anchors.length) return false;
+      entrancePlayed = true;
+      entranceRunning = true;
+      SmoothScroll.scrollTo(anchors[0], { duration: 2.1, lock: true, onComplete: finishEntrance });
+      // Native smooth-scroll fallback has no completion callback.
+      entranceTimer = window.setTimeout(finishEntrance, 2400);
+      return true;
+    }
+    function cancelEntrance() {
+      if (!entranceRunning) return;
+      SmoothScroll.scrollTo(window.scrollY, { smooth: false });
+      finishEntrance();
+    }
+    function onEntranceWheel(event: WheelEvent) {
+      if (entranceRunning && event.deltaY < 0) cancelEntrance();
+    }
+    function onEntranceKey(event: KeyboardEvent) {
+      if (event.key === "Escape" || event.key === "ArrowUp" || event.key === "PageUp" || event.key === "Home") cancelEntrance();
+    }
     const hole = { x: -1, y: -1, paintedX: -1, paintedY: -1, paintedR: -1 };
     const heroParts = {
       copy: heroNode?.querySelector<HTMLElement>(".field-main") ?? null,
@@ -800,6 +828,11 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
 
     function onScroll() {
       if (!cinematic) return;
+      const entered = window.scrollY - arrivalStart;
+      if (hero && !entrancePlayed && !document.body.classList.contains("nav-open")) {
+        if (entered >= arrivalLength) entrancePlayed = true;
+        else if (entered > 8 && entered < arrivalLength * .25) playEntrance();
+      }
       uTarget = linearFromScroll();
       arrivalTarget = arrivalFromScroll();
       if (inView) {
@@ -814,6 +847,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     }
 
     function onResize() {
+      cancelEntrance();
       measure();
       paintedArrival = -1;
       hole.paintedR = -1;
@@ -881,6 +915,10 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       const link = (event.target as Element | null)?.closest?.<HTMLAnchorElement>('a[href^="#"]');
       const id = link ? decodeURIComponent(link.getAttribute("href")!.slice(1)) : "";
       if (!link || !id) return;
+      if (link.hasAttribute("data-story-enter") && playEntrance()) {
+        event.preventDefault();
+        return;
+      }
       const index = id === "top" ? 0 : STEP_IDS.indexOf(id as (typeof STEP_IDS)[number]);
       if (index >= 0 && jumpRef.current(index, true)) {
         event.preventDefault();
@@ -909,6 +947,8 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     // A chapter link opened directly (/#report) lands on that chapter's settled state.
     const hashIndex = STEP_IDS.indexOf(window.location.hash.slice(1) as (typeof STEP_IDS)[number]);
     if (hashIndex > 0) jumpRef.current(hashIndex, false);
+    window.addEventListener("wheel", onEntranceWheel, { passive: true, capture: true });
+    window.addEventListener("keydown", onEntranceKey);
     window.addEventListener("hashchange", onHashChange);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointermove", onPointer, { passive: true });
@@ -922,6 +962,9 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     });
 
     return () => {
+      cancelEntrance();
+      window.removeEventListener("wheel", onEntranceWheel, true);
+      window.removeEventListener("keydown", onEntranceKey);
       SmoothScroll.cancelFrame(raf);
       window.clearTimeout(measureTimer);
       io.disconnect();
@@ -1150,12 +1193,14 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       {hero ? (
         <div ref={heroRef} className="hs-cobalt-hero harbor-hero">
           {hero}
+          <a href="#top" data-story-enter className="hs-enter-guide"><span>{t("guide.enter")}</span><span aria-hidden>↓</span></a>
           {/* SailTru's boat sails in across the cobalt here (drawn by the 3D harbor, from its camera). */}
           <canvas ref={setBoatCanvas} className="hs-boat-overlay" aria-hidden />
         </div>
       ) : null}
 
       <div ref={deckRef} className="hs-deck" onFocus={onDeckFocus}>
+        <a className="hs-scroll-guide" href={beat.step >= 6 ? "#sample-report" : `#${STEP_IDS[Math.min(beat.step + 1, 7)]}`}><span>{t(beat.step >= 6 ? "guide.finish" : "guide.continue")}</span><span aria-hidden>↓</span></a>
         {STEP_IDS.map((id, index) => {
           const isHero = id === "opening";
           const isClose = id === "close";
@@ -1221,7 +1266,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
                     </div>
                   </div>
                 ) : (
-                  <div className="hs-step__copy hs-narr">
+                  <div className="hs-step__copy hs-narr hs-narr--message">
                     <p className="hs-narr__label">
                       <span className="hs-narr__num" dir="ltr">
                         {String(index).padStart(2, "0")}
@@ -1229,9 +1274,11 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
                       {t(`story.${id}.label`)}
                     </p>
                     <h2 id={`hs-title-${id}`} className="hs-step__title">
-                      <Words text={t(`story.${id}.title`)} />
+                      <Words text={t(`story.${id}.titleLead`)} />{" "}
+                      <span className="hs-title-accent"><Words text={t(`story.${id}.titleAccent`)} offset={t(`story.${id}.titleLead`).split(" ").length} /></span>
                     </h2>
-                    <div className="hs-lines">
+                    <p className="hs-narr__summary">{t(`story.${id}.summary`)}</p>
+                    <div className="hs-lines hs-narr__example">
                       {(t.raw(`story.${id}.lines`) as string[]).map((line, i) => {
                         const at = lineFor(index, beat);
                         return (
@@ -1241,11 +1288,13 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
                         );
                       })}
                     </div>
-                    <span className="hs-dots" aria-hidden>
-                      {Array.from({ length: STEP_BEATS[id] }, (_, i) => (
-                        <i key={i} className={i === lineFor(index, beat) ? "is-on" : i < lineFor(index, beat) ? "is-done" : undefined} />
+                    <ol className="hs-stages" aria-label={t(`story.${id}.label`)}>
+                      {(t.raw(`story.${id}.stages`) as string[]).map((stage, i) => (
+                        <li key={stage} aria-current={i === lineFor(index, beat) ? "step" : undefined}>
+                          <span className="hs-stages__dot" aria-hidden />{stage}
+                        </li>
                       ))}
-                    </span>
+                    </ol>
                   </div>
                 )}
                 {!isClose ? (

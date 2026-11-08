@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { CSSProperties, ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { Providers, type ProviderId } from "./providers";
 
 /**
@@ -28,7 +28,6 @@ type Finding = {
 };
 type FlowStep = { label: string; out: string };
 
-const FIELD_KEYS = ["observed", "evidence", "why", "action", "uncertainty"] as const;
 
 function Badge() {
   const t = useTranslations("harbor.story");
@@ -79,14 +78,14 @@ function useFinding(index: number) {
 }
 
 /** Characters revealed one by one while `play` is set (short questions only). */
-function Typed({ text, play }: { text: string; play: boolean }) {
+function Typed({ text, play, offset = 0 }: { text: string; play: boolean; offset?: number }) {
   if (!play) return <>{text}</>;
   return (
     <span className="hx-typed">
       <span className="sr-only">{text}</span>
       <span aria-hidden>
         {Array.from(text).map((ch, i) => (
-          <span key={i} className="hx-typed__ch" style={{ "--i": i } as CSSProperties}>
+          <span key={i} className="hx-typed__ch" style={{ "--i": i + offset } as CSSProperties}>
             {ch}
           </span>
         ))}
@@ -117,7 +116,6 @@ function BrowserBar({ url }: { url: string }) {
 export function AskDemo({ sub, inline }: DemoProps) {
   const t = useTranslations("harbor.ask");
   const f02 = useFinding(1);
-  const areas = t.raw("areas") as string[];
   const providers = t.raw("providers") as string[];
   const level = inline ? 2 : sub;
   return (
@@ -129,36 +127,28 @@ export function AskDemo({ sub, inline }: DemoProps) {
         </p>
         <Badge />
       </header>
-      <div className="hx-ask__q">
-        <span className="hx-mini-label">{t("questionLabel")}</span>
-        <p className="hx-ask__question">
-          <Typed text={t("question")} play={!inline && sub === 0} />
-        </p>
+      <div className="hx-chat-transcript">
+        <div className="hx-ask__q">
+          <p className="hx-ask__question"><Typed text={t("question")} play={!inline && sub === 0} /></p>
+        </div>
+        <div className="hx-ask__a hx-reserve" data-on={level >= 1}>
+          <ProviderMark id="chatgpt" size={22} />
+          <p className="hx-ask__answer">
+            <Typed text={t("answerA")} play={!inline && sub === 1} />
+            <mark className="hx-ask__issue" data-on={level >= 2}>
+              <Typed text={t("answerB")} play={!inline && sub === 1} offset={Array.from(t("answerA")).length} />
+            </mark>
+          </p>
+          <div className="hx-chat-tools" aria-hidden>
+            <svg viewBox="0 0 72 18" width="72" height="18" fill="none" stroke="currentColor" strokeWidth="1.2"><rect x="2" y="5" width="9" height="10" rx="1.5"/><path d="M5 5V2h9v10h-3M29 8l3-6c3 0 1 6 1 6h5v7h-9zM26 8h3v7h-3zM55 5a6 6 0 1 1-2 7M55 2v4h5"/></svg>
+          </div>
+        </div>
       </div>
-      <div className="hx-ask__a hx-reserve" data-on={level >= 1}>
-        <span className="hx-mini-label">{t("answerLabel")}</span>
-        <p className="hx-ask__answer">
-          {t("answerA")}
-          <mark className="hx-ask__issue" data-on={level >= 1}>
-            {t("answerB")}
-          </mark>
-        </p>
-        <p className="hx-ask__flag" data-on={level >= 1}>
-          <span aria-hidden className="hx-ask__flag-dot" />
-          {t("issue")}
-        </p>
-      </div>
+      <div className="hx-chat-composer" aria-hidden><span>{t("composer")}</span><span className="hx-chat-send">↑</span></div>
       <div className="hx-ask__capture hx-reserve" data-on={level >= 2}>
         <span className="hx-mini-label">{t("capture")}</span>
+        <p className="hx-chat-insight">{t("issue")}</p>
         <FindingChip id={f02.id} title={f02.title} />
-        <ul className="hx-chips" data-on={level >= 2}>
-          {areas.map((a, i) => (
-            <li key={a} style={{ "--i": i } as CSSProperties}>
-              <Check />
-              {a}
-            </li>
-          ))}
-        </ul>
       </div>
       <p className="hx-card__foot hx-card__foot--muted">{t("note")}</p>
     </Card>
@@ -194,6 +184,7 @@ function ServicePage({
           ))}
         </span>
       </div>
+      <div className="hx-office-visual" aria-hidden><span /><span /><span /><i /><i /><b /></div>
       <div className="hx-page__body">
         <div className={`hx-page__main${mode === "evidence" && level === 0 ? " is-lit" : ""}`}>
           <p className="hx-page__title">{t("title")}</p>
@@ -331,66 +322,33 @@ export function ReportDemo({ sub, inline }: DemoProps) {
   );
 }
 
-function FindingFields({ finding }: { finding: Finding }) {
-  const t = useTranslations("harbor.report.fields");
-  return (
-    <dl className="hx-fields">
-      {FIELD_KEYS.map((key) => (
-        <div key={key} className={`hx-fields__row hx-fields__row--${key}`}>
-          <dt>{t(key)}</dt>
-          <dd>{finding[key]}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
 /** The complete sample report, with every finding readable. */
 export function SampleReport() {
   const t = useTranslations("harbor.report");
-  const tSample = useTranslations("harbor.sample");
-  const coverage = t.raw("coverage") as string[];
+  const s = useTranslations("harbor.sample");
+  const fields = useTranslations("harbor.report.fields");
   const findings = t.raw("findings") as Finding[];
+  const [selected, setSelected] = useState(0);
+  const finding = findings[selected];
+  const titles = s.raw("findingTitles") as string[];
+  const previews = s.raw("previews") as { before: string; after: string; note: string }[];
+  const preview = previews[selected];
   return (
-    <article className="hx-card hx-report hx-report--full" aria-labelledby="sample-report-title">
-      <header className="hx-card__head">
-        <div>
-          <h3 id="sample-report-title" className="hx-card__title">
-            {tSample("sampleTitle")}
-          </h3>
-          <p className="hx-card__sub">{tSample("sampleIntro")}</p>
+    <article className="report-workspace" aria-labelledby="sample-report-title">
+      <header className="rw-toolbar"><span className="rw-wordmark">SailTru<span>{s("workspaceLabel")}</span></span><span className="rw-sample"><span aria-hidden />{s("edition")}</span></header>
+      <div className="rw-overview"><div><p className="rw-caption">{s("preparedFor")}</p><h3 id="sample-report-title">{s("documentTitle")}</h3><p>{s("overview")}</p></div><div className="rw-count"><strong>3</strong><span>{s("countLabel")}</span></div></div>
+      <nav className="rw-opportunities" aria-label={t("priorities")}>
+        {findings.map((f,i)=><button key={f.id} type="button" aria-pressed={selected===i} aria-controls="rw-detail" className={selected===i ? "is-active" : undefined} onClick={()=>setSelected(i)}><span className="rw-opportunity-meta"><span className="rw-number">0{i+1}</span><span>{f.area}</span><span className="rw-arrow" aria-hidden>↗</span></span><strong>{titles[i]}</strong><span className="rw-selection">{i===0 ? s("startHere") : s("readFinding")}</span></button>)}
+      </nav>
+      <section id="rw-detail" className="rw-detail" aria-labelledby="rw-detail-title" aria-live="polite">
+        <header className="rw-detail-header"><span className="rw-caption">{s("findingLabel")} 0{selected+1}</span><h4 id="rw-detail-title">{titles[selected]}</h4></header>
+        <div className="rw-detail-grid">
+          <div className="rw-reasoning"><dl>{(["observed","why"] as const).map(key=><div key={key}><dt>{fields(key)}</dt><dd>{finding[key]}</dd></div>)}</dl><div className="rw-evidence"><span className="rw-evidence-icon" aria-hidden>↳</span><div><h5>{fields("evidence")}</h5><p>{finding.evidence}</p></div></div></div>
+          <div className="rw-recommendation"><div className="rw-comparison"><div><span className="rw-caption">{s("today")}</span><p>{preview.before}</p></div><div className="rw-after"><span className="rw-caption">{s("proposed")}</span><p>{preview.after}</p><span className="rw-proposal-note">{preview.note}</span></div></div><div className="rw-next-action"><h5><span aria-hidden>↗</span>{fields("action")}</h5><p>{finding.action}</p></div></div>
         </div>
-        <Badge />
-      </header>
-      <div className="hx-report__coverage">
-        <p className="hx-mini-label">{t("coverageLabel")}</p>
-        <ul>
-          {coverage.map((c) => (
-            <li key={c}>
-              <Check />
-              {c}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <p className="hx-mini-label">{t("priorities")}</p>
-      <ol className="hx-full">
-        {findings.map((f, i) => (
-          <li key={f.id} className="hx-full__finding">
-            <details open={i === 0}>
-              <summary className="hx-full__head">
-                <span className="hx-prio__rank">{i + 1}</span>
-                <FindingChip id={f.id} tone={i === 0 ? "accent" : "ink"} />
-                <span className="hx-prio__title">{f.title}</span>
-                <span className="hx-full__area">{f.area}</span>
-              </summary>
-              <div className="hx-full__detail">
-                <FindingFields finding={f} />
-              </div>
-            </details>
-          </li>
-        ))}
-      </ol>
+        <div className="rw-validation"><span className="rw-validation-icon" aria-hidden>i</span><div><h5>{fields("uncertainty")}</h5><p>{finding.uncertainty}</p></div></div>
+      </section>
+      <footer className="rw-footer"><span>{s("sampleFooter")}</span><span className="rw-footer-brand">SailTru</span></footer>
     </article>
   );
 }
@@ -543,7 +501,6 @@ function PersonGlyph() {
 
 export function ReviewDemo({ sub, inline }: DemoProps) {
   const t = useTranslations("harbor.measure");
-  const f01 = useFinding(0);
   const options = t.raw("options") as string[];
   const level = inline ? 2 : sub;
   return (
@@ -555,10 +512,8 @@ export function ReviewDemo({ sub, inline }: DemoProps) {
         </p>
         <Badge />
       </header>
-      <p className="hx-review__change">
-        <FindingChip id={f01.id} tone="accent" />
-        {t("change")}
-      </p>
+      <h3 className="hx-review__headline">{t("headline")} <em>{t("headlineAccent")}</em></h3>
+      <p className="hx-review__change">{t("change")}</p>
       <div className="hx-review__metric">
         <span className="hx-mini-label">{t("measureLabel")}</span>
         <p>{t("metric")}</p>
@@ -566,12 +521,12 @@ export function ReviewDemo({ sub, inline }: DemoProps) {
       <div className="hx-review__compare hx-reserve" data-on={level >= 1}>
         <div className="hx-review__col">
           <span className="hx-mini-label">{t("baselineLabel")}</span>
-          <span className="hx-review__bar" aria-hidden />
+          <span className="hx-review__status">{t("baselineStatus")}</span>
           <p>{t("baseline")}</p>
         </div>
         <div className="hx-review__col is-after">
           <span className="hx-mini-label">{t("afterLabel")}</span>
-          <span className="hx-review__bar" aria-hidden />
+          <span className="hx-review__status">{t("afterStatus")}</span>
           <p>{t("after")}</p>
         </div>
         <p className="hx-review__none">{t("noNumbers")}</p>

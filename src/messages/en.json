@@ -827,7 +827,7 @@
     "hero": {
       "titleA": "Find what’s missing.",
       "titleB": "Fix what matters.",
-      "support": "We look at your website, your competitors, and how customers find you. Then we help you make the next move—with better websites, automation, and custom AI.",
+      "support": "Find out where customers lose sight of you—and what to do about it. We turn business, competitor and visibility analysis into better websites, connected workflows and AI built for your team.",
       "primary": "See a sample report",
       "secondary": "Discuss your project",
       "note": "Already know what you need? You don’t need a report to start a project.",
@@ -836,64 +836,113 @@
     "story": {
       "badge": "Illustrative example",
       "find": {
-        "label": "Find",
-        "title": "Your next customer is looking.",
+        "label": "Search & AI visibility",
+        "title": "See what customers find about you.",
         "lines": [
-          "They search. Ask AI. Compare their options.",
-          "What do they find about you?",
-          "We check your website, your competitors, and your visibility."
+          "A buyer asks AI for a recommendation.",
+          "The answer overlooks the studio’s office expertise.",
+          "That missing expertise becomes a finding."
+        ],
+        "titleLead": "See what customers",
+        "titleAccent": "find about you.",
+        "summary": "We compare your website, competitors and AI answers to uncover missing information and missed opportunities.",
+        "stages": [
+          "Question",
+          "Answer",
+          "Finding"
         ]
       },
       "evidence": {
-        "label": "Evidence",
-        "title": "They found your website. What happens next?",
+        "label": "Website & customer journey",
+        "title": "Find what gets in the way.",
         "lines": [
-          "The service looks right.",
-          "But the way to enquire is buried in the footer.",
-          "We show you the gap—and where we found it."
+          "The studio’s service page explains the offer.",
+          "Its only contact link is in the footer.",
+          "The report records exactly where the journey breaks."
+        ],
+        "titleLead": "Find what gets",
+        "titleAccent": "in the way.",
+        "summary": "We follow the path from interest to enquiry and identify where your website makes the next step harder.",
+        "stages": [
+          "Visit",
+          "Friction",
+          "Evidence"
         ]
       },
       "report": {
-        "label": "Report",
+        "label": "Business intelligence",
         "title": "Know what to fix first.",
         "lines": [
-          "Bring the findings together.",
-          "Choose the change worth making next.",
-          "See the evidence behind the recommendation."
+          "Website, competitor and visibility findings come together.",
+          "The enquiry route is selected as the first priority.",
+          "The recommendation connects directly to the evidence."
+        ],
+        "titleLead": "Know what to",
+        "titleAccent": "fix first.",
+        "summary": "Get a prioritized report with the evidence, why each finding matters, and a practical recommendation for what to do next.",
+        "stages": [
+          "Findings",
+          "Priority",
+          "Action"
         ]
       },
       "build": {
-        "label": "Build",
-        "title": "Turn the finding into a working fix.",
+        "label": "Website & software delivery",
+        "title": "Turn the plan into a working fix.",
         "lines": [
-          "Put the enquiry action beside the service.",
-          "Make the next step clear.",
-          "Use your team—or ask us to build it."
+          "The missing enquiry route becomes a build brief.",
+          "A form now sits beside the service it’s about.",
+          "The change is ready to hand over and measure."
+        ],
+        "titleLead": "Turn the plan into",
+        "titleAccent": "a working fix.",
+        "summary": "We build the pages, software and integrations your business needs, with a clear scope and a useful outcome.",
+        "stages": [
+          "Scope",
+          "Build",
+          "Deliver"
         ]
       },
       "workflow": {
-        "label": "Custom systems",
-        "title": "And after the enquiry arrives?",
+        "label": "Bespoke AI & agents",
+        "title": "Your team’s work. Your AI system.",
         "lines": [
-          "Someone still has to research the company.",
-          "Prepare the brief.",
-          "And update the CRM.",
-          "We can connect that workflow—with a person reviewing the result."
+          "Research the company behind the new enquiry.",
+          "Prepare a brief with relevant services and projects.",
+          "A person checks the brief before it moves on.",
+          "Send the approved brief to the right CRM record."
+        ],
+        "titleLead": "Your team’s work.",
+        "titleAccent": "Your AI system.",
+        "summary": "We connect your knowledge and tools to agents that handle defined tasks, with your team reviewing the work that matters.",
+        "stages": [
+          "Research",
+          "Brief",
+          "Review",
+          "Handoff"
         ]
       },
       "review": {
-        "label": "Review",
-        "title": "Did the change help?",
+        "label": "Measurement & improvement",
+        "title": "See what changed. Choose what’s next.",
         "lines": [
-          "Agree what to measure.",
-          "Compare it with the starting point.",
-          "Decide what comes next."
+          "For this change, track visitors who start an enquiry.",
+          "Compare before and after over an agreed period.",
+          "Keep, adjust, or move to the next priority."
+        ],
+        "titleLead": "See what changed.",
+        "titleAccent": "Choose what’s next.",
+        "summary": "We agree on the measures that matter, compare them with a starting point, and use the results to guide the next improvement.",
+        "stages": [
+          "Measure",
+          "Compare",
+          "Decide"
         ]
       },
       "close": {
         "titleA": "Start with a report.",
         "titleB": "Or bring us your project.",
-        "body": "Either is a good place to start. You don’t need a report before a project.",
+        "body": "Get a clear plan for what to improve, or a team to build the solution you already have in mind.",
         "reportTitle": "See what to fix first",
         "reportBody": "Your website, competitors, and search and AI visibility—in priority order, with the evidence.",
         "projectTitle": "Build what you already need",
@@ -1034,28 +1083,32 @@
       ]
     },
     "measure": {
-      "delivered": "Delivered",
-      "change": "Enquiry action beside the service",
-      "measureLabel": "We’ll measure",
-      "metric": "Share of service-page visitors who start an enquiry",
-      "baselineLabel": "Starting point",
-      "baseline": "Recorded before launch",
-      "afterLabel": "After launch",
-      "after": "Compared over the agreed period",
-      "noNumbers": "No figures until the data exists.",
-      "decideLabel": "Next decision",
+      "delivered": "From launch to learning",
+      "change": "The enquiry route is live. Next, we measure whether more visitors take that first step.",
+      "measureLabel": "The question we’ll answer",
+      "metric": "Are more visitors starting a conversation?",
+      "baselineLabel": "Before the change",
+      "baseline": "How often do visitors start an enquiry?",
+      "afterLabel": "After the change",
+      "after": "Compare the same measure over an agreed period.",
+      "noNumbers": "A measurement plan, not a claimed result.",
+      "decideLabel": "Let the evidence guide the next move",
       "options": [
         "Keep",
-        "Adjust",
-        "Move to F02"
+        "Refine",
+        "Next opportunity"
       ],
       "client": "Example Studio",
-      "next": "Next: F02"
+      "next": "Next: F02",
+      "headline": "A better journey.",
+      "headlineAccent": "Now, does it work?",
+      "baselineStatus": "Set the baseline",
+      "afterStatus": "Look for a difference"
     },
     "sample": {
-      "eyebrow": "Sample report",
-      "title": "What the report covers",
-      "intro": "An outside-in analysis of your business, written to be read and acted on—not a score.",
+      "eyebrow": "A clear view. A concrete plan.",
+      "title": "Know what’s getting in the way.",
+      "intro": "Explore a sample review of a service business: three opportunities to help customers find the right expertise, understand the offer, and get in touch.",
       "coverage": [
         {
           "title": "Business & website",
@@ -1076,14 +1129,74 @@
       ],
       "anatomyTitle": "Every recommendation includes",
       "sampleTitle": "Sample report — Example Studio",
-      "sampleIntro": "A fictional business, used to show the format. Open any finding to read it in full.",
+      "sampleIntro": "A closer look at the moments between finding your business and choosing to get in touch.",
       "limits": "A public analysis can’t see inside your business. Internal workflows, sales data and operations need discovery and information you choose to share.",
-      "request": "Ask for a report on your business"
+      "request": "Ask for a report on your business",
+      "titleAccent": "See what to do next.",
+      "scopeTitle": "The full picture, across four areas.",
+      "documentType": "The opportunity review",
+      "preparedFor": "Example Studio · Interior design",
+      "documentTitle": "From interest to enquiry",
+      "edition": "Interactive sample",
+      "editionNote": "Website · Visibility · Customer confidence",
+      "summaryLabel": "Our reading of the situation",
+      "summaryTitle": "The next step asks too much of the customer.",
+      "summaryBody": "Imagine someone likes your work and wants to discuss a project. They reach the end of a service page, but there’s no invitation to talk. They also can’t tell how the process works. Small unanswered questions become reasons to look elsewhere.",
+      "firstMove": "Where we would start",
+      "firstMoveBody": "Make it easy to start a conversation, right where interest is highest. Then explain what happens after the enquiry.",
+      "selectHint": "Three moments worth a closer look.",
+      "readFinding": "Explore opportunity",
+      "findingLabel": "Opportunity",
+      "sampleFooter": "Fictional business and findings. Illustrative recommendations.",
+      "coverTitle": "An interested visitor.",
+      "coverAccent": "A missed conversation.",
+      "findingTitles": [
+        "Make the next step obvious",
+        "Show the expertise you want to sell",
+        "Help customers choose with confidence"
+      ],
+      "journey": [
+        {
+          "title": "They find you",
+          "body": "Does the right expertise show up?"
+        },
+        {
+          "title": "They consider you",
+          "body": "Can they picture working with you?"
+        },
+        {
+          "title": "They reach out",
+          "body": "Is the next step obvious?"
+        }
+      ],
+      "workspaceLabel": "Business review",
+      "overview": "Three opportunities across the customer journey. Start with the enquiry route, then strengthen visibility and customer confidence.",
+      "countLabel": "opportunities to explore",
+      "startHere": "Recommended starting point",
+      "today": "The experience today",
+      "proposed": "The proposed improvement",
+      "previews": [
+        {
+          "before": "Interested in office design? Find “Contact” in the footer.",
+          "after": "“Tell us about your office project.”",
+          "note": "A clear invitation beside the service, with what happens next."
+        },
+        {
+          "before": "AI describes the studio as a residential designer.",
+          "after": "Office expertise, clearly explained and supported.",
+          "note": "Consistent service information and relevant project examples."
+        },
+        {
+          "before": "Services are listed. The project process is unclear.",
+          "after": "First call → Design proposal → Project delivery",
+          "note": "Explain the stages and what the customer can expect."
+        }
+      ]
     },
     "build": {
       "eyebrow": "What we build",
-      "title": "From recommendation to working system",
-      "intro": "We implement what the analysis recommends—or the project you already have in mind. Every build is scoped with you first.",
+      "title": "From a clear priority",
+      "intro": "A better website. A connected workflow. An AI system built for your team. Start with the problem you need to solve.",
       "items": [
         {
           "title": "Websites and pages",
@@ -1107,7 +1220,33 @@
         }
       ],
       "discovery": "Internal workflow projects start with discovery: we learn how the process runs today and what information the system needs. A website scan can’t reveal this.",
-      "cta": "Discuss your project"
+      "cta": "Discuss your project",
+      "titleAccent": "to something that works.",
+      "visuals": [
+        [
+          "Your website",
+          "Services",
+          "Start a conversation"
+        ],
+        [
+          "Your tools, connected",
+          "Website",
+          "CRM",
+          "Team"
+        ],
+        [
+          "The next step, handled",
+          "New enquiry",
+          "Route to owner",
+          "Follow up"
+        ],
+        [
+          "Your knowledge, put to work",
+          "Company knowledge",
+          "AI assistant",
+          "Human review"
+        ]
+      ]
     },
     "proof": {
       "eyebrow": "Client work",
@@ -1146,8 +1285,8 @@
       ]
     },
     "closing": {
-      "title": "Where would you like to start?",
-      "body": "See what a SailTru report looks like, or tell us about the project you have in mind.",
+      "title": "Your next move starts here.",
+      "body": "Get clarity with a report, or bring us the project you’re ready to build.",
       "direct": "Or reach us directly",
       "calendly": "Book a call",
       "whatsapp": "WhatsApp"
@@ -1164,11 +1303,11 @@
       "questionLabel": "Example question",
       "question": "Who designs offices for growing teams?",
       "answerLabel": "Example answer",
-      "answerA": "Studios often mentioned for workplace projects include Northfield Studio and Harbor & Pine. ",
-      "answerB": "Example Studio is described as a residential designer.",
-      "issue": "Office work isn’t mentioned",
-      "capture": "Captured as a finding",
-      "note": "Illustrative. Answers vary by platform, prompt and time. Logos name the platforms we examine; no affiliation.",
+      "answerA": "For a growing team, I’d look at Northfield Studio or Harbor & Pine. Both focus on workplace design. ",
+      "answerB": "Example Studio is another option, though its focus appears to be residential interiors.",
+      "issue": "Your office expertise is missing from the answer.",
+      "capture": "SAILTRU FINDS THE GAP",
+      "note": "Fictional conversation to illustrate the analysis. Not a live ChatGPT response; no affiliation.",
       "areas": [
         "Your website",
         "Competitors",
@@ -1179,7 +1318,13 @@
         "ChatGPT",
         "Google",
         "Perplexity"
-      ]
+      ],
+      "composer": "Ask a follow-up"
+    },
+    "guide": {
+      "enter": "Scroll to see how SailTru works",
+      "finish": "Explore the report and what we build",
+      "continue": "Scroll to follow the next step"
     }
   }
 }

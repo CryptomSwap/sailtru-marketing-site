@@ -36,14 +36,14 @@ export const STEP_BEATS: Record<StepId, number> = {
 
 /** Relative scroll length of each step (in viewport heights) in the cinematic layout. */
 export const STEP_LENGTH: Record<StepId, number> = {
-  opening: 1.4,
-  find: 2.5,
-  evidence: 2.4,
-  report: 2.4,
-  build: 2.5,
-  workflow: 2.9,
-  review: 2.2,
-  close: 1.5
+  opening: 1.1,
+  find: 1.5,
+  evidence: 1.45,
+  report: 1.45,
+  build: 1.5,
+  workflow: 1.75,
+  review: 1.4,
+  close: 1.1
 };
 
 /**
@@ -375,7 +375,7 @@ export class HeaderReveal {
  */
 export class CobaltArrival {
   /** Scroll length in viewport heights (the arrival track is sized from it). */
-  static readonly LENGTH = 2.4;
+  static readonly LENGTH = 1.2;
   /** The hero copy, then the hero cards, fade away. */
   static readonly COPY: [number, number] = [0.02, 0.16];
   static readonly CARDS: [number, number] = [0.12, 0.45];

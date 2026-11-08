@@ -89,7 +89,7 @@ export class SmoothScroll {
    * Smooth jumps use Lenis when it runs, otherwise native smooth scrolling;
    * `smooth: false` (and reduced motion) jumps at once.
    */
-  static scrollTo(target: number | HTMLElement, { smooth = true }: { smooth?: boolean } = {}) {
+  static scrollTo(target: number | HTMLElement, { smooth = true, duration: requestedDuration, lock = false, onComplete }: { smooth?: boolean; duration?: number; lock?: boolean; onComplete?: () => void } = {}) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const lenis = SmoothScroll.lenis;
     if (lenis) {
@@ -100,8 +100,8 @@ export class SmoothScroll {
       const top = typeof target === "number" ? target : target.getBoundingClientRect().top + window.scrollY;
       const distance = Math.abs(top - window.scrollY);
       // Long chapter jumps take a little longer, but never drag.
-      const duration = Math.min(1.6, Math.max(0.7, 0.55 + distance / 7000));
-      lenis.scrollTo(target, { duration, easing: SmoothScroll.ease, force: true });
+      const duration = requestedDuration ?? Math.min(1.6, Math.max(0.7, 0.55 + distance / 7000));
+      lenis.scrollTo(target, { duration, easing: SmoothScroll.ease, force: true, lock, onComplete });
       return;
     }
     const behavior: ScrollBehavior = smooth && !reduced ? "smooth" : "auto";
