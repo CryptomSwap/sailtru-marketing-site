@@ -3,7 +3,9 @@
   color: white;
   font-family: var(--font-sans), sans-serif;
 }
+.company-hero.field-hero--ref .field-hero__dots[data-ready] { opacity: .5; }
 .company-shell {
+  position: relative;
   width: min(82%, 78rem);
   margin-inline: auto;
   min-height: 100svh;

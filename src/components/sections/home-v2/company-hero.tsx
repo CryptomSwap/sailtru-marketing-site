@@ -4,6 +4,7 @@ import { useState, type KeyboardEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Link } from "@/i18n/navigation";
+import { HeroDotField } from "./hero-dot-field";
 import { HeroScanSequence } from "./hero-scan-sequence";
 import "./home-v2.css";
 import "./field-hero-ref.css";
@@ -35,6 +36,7 @@ export function CompanyHero() {
   return (
     <section id="hero" className="field-hero field-hero--ref company-hero">
       <a className="sr-only focus:not-sr-only" href="#observe">{common("skipToContent")}</a>
+      <HeroDotField subtle />
       <div className="company-shell">
         <SiteHeader company />
         <div className="company-stage">
@@ -64,7 +66,7 @@ export function CompanyHero() {
                     {t(`${service}.cta`)}
                   </a>
                 )}
-                {service === "analysis" && <Link className="company-report" href="/analysis#sample-report">{t("analysis.report")}</Link>}
+                {service === "analysis" && <Link className="company-report" prefetch={false} href="/analysis#sample-report">{t("analysis.report")}</Link>}
               </div>
             ))}
           </div>
