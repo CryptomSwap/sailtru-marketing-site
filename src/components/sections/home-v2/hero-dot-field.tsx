@@ -15,7 +15,7 @@ const REST_Y = 0.4;
  * Perspective dot field for the hero. The plane tilts with the pointer,
  * and the dots under the cursor lift toward the camera.
  */
-export function HeroDotField() {
+export function HeroDotField({ subtle = false }: { subtle?: boolean } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -46,8 +46,8 @@ export function HeroDotField() {
     let onScreen = true;
 
     const build = (width: number) => {
-      const nextCols = width < 760 ? 24 : 42;
-      const nextRows = width < 760 ? 14 : 22;
+      const nextCols = subtle ? (width < 760 ? 16 : 30) : (width < 760 ? 24 : 42);
+      const nextRows = subtle ? (width < 760 ? 10 : 16) : (width < 760 ? 14 : 22);
       if (nextCols === cols && nextRows === rows) return;
       cols = nextCols;
       rows = nextRows;
@@ -161,15 +161,16 @@ export function HeroDotField() {
         ctx.stroke();
       };
 
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const i = r * cols + c;
+      if (!subtle) {
+        for (let i = 0; i < dots.length; i++) {
+          const c = i % cols;
+          const r = Math.floor(i / cols);
           if (c + 1 < cols) link(i, i + 1);
           if (r + 1 < rows) link(i, i + cols);
         }
       }
 
-      order.sort((a, b) => depth[b] - depth[a]);
+      if (!subtle) order.sort((a, b) => depth[b] - depth[a]);
 
       for (let n = 0; n < order.length; n++) {
         const i = order[n];
@@ -206,9 +207,13 @@ export function HeroDotField() {
       }
     };
 
+    let lastDraw = -Infinity;
     const frame = (time: number) => {
       if (canvas.width < canvas.clientWidth || canvas.height < canvas.clientHeight) resize();
-      draw(time);
+      if (!subtle || settle || time - lastDraw >= 1000 / 24) {
+        draw(time);
+        lastDraw = time;
+      }
       if (running && !motionQuery.matches) raf = window.requestAnimationFrame(frame);
     };
 
@@ -231,7 +236,7 @@ export function HeroDotField() {
 
     const start = () => {
       if (raf) window.cancelAnimationFrame(raf);
-      if (dissolved) {
+      if (dissolved || !onScreen || document.hidden) {
         running = false;
         raf = 0;
         return;
@@ -298,7 +303,7 @@ export function HeroDotField() {
       document.removeEventListener("visibilitychange", onVisibility);
       motionQuery.removeEventListener("change", start);
     };
-  }, []);
+  }, [subtle]);
 
   return <canvas ref={canvasRef} className="field-hero__dots" aria-hidden />;
 }

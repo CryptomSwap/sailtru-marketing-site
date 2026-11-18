@@ -279,14 +279,17 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
   useEffect(() => {
     const root = rootRef.current;
     if (!scene3d || !root) return;
-    if (WebGLSupport.prefersReducedMotion() || !WebGLSupport.available()) return;
-    setHarbor3d("loading");
+    if (WebGLSupport.prefersReducedMotion()) return;
+    const mode = stageRef.current && getComputedStyle(stageRef.current).display !== "none" ? "stage" : "vignette";
     let idle = 0;
     const start = () => {
       const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
       // The cinematic stage on wide screens; otherwise the stacked layout's vignettes.
-      const mode = stageRef.current && getComputedStyle(stageRef.current).display !== "none" ? "stage" : "vignette";
-      idle = ric(() => setLoad3d(mode), { timeout: 1200 });
+      idle = ric(() => {
+        if (WebGLSupport.prefersReducedMotion() || !WebGLSupport.available()) return;
+        setHarbor3d("loading");
+        setLoad3d(mode);
+      }, { timeout: 1200 });
     };
     const io = new IntersectionObserver(
       (entries) => {
@@ -294,9 +297,9 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
         io.disconnect();
         start();
       },
-      { rootMargin: "100% 0px" }
+      { rootMargin: mode === "vignette" ? "200px 0px" : "100% 0px" }
     );
-    io.observe(root);
+    io.observe(mode === "vignette" ? root.querySelector(".hs-vignette--opening") ?? root : root);
     return () => {
       io.disconnect();
       (window.cancelIdleCallback ?? window.clearTimeout)(idle);
@@ -365,7 +368,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     const hole = { x: -1, y: -1, paintedX: -1, paintedY: -1, paintedR: -1 };
     const heroParts = {
       copy: heroNode?.querySelector<HTMLElement>(".field-main") ?? null,
-      cards: heroNode?.querySelector<HTMLElement>(".hsw__diagram--hero") ?? null
+      cards: heroNode?.querySelector<HTMLElement>("[data-arrival-services], .hsw__diagram--hero") ?? null
     };
     let uDisp = -1;
     let pointer = { x: 0, y: 0 };
@@ -798,13 +801,14 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       const dt = Math.min(0.1, realDt);
       last = time;
       // The ambient clock (swell, drifting boats, gulls, the lamp) always runs, unless motion is reduced.
-      const ambient = !reduceQuery.matches;
-      if (ambient) ambientT += Math.min(0.3, realDt);
+
       // The scroll as Lenis left it on this tick (the scroll event only arrives with the next frame).
       if (cinematic) {
         uTarget = linearFromScroll();
         arrivalTarget = arrivalFromScroll();
       }
+      const ambient = !reduceQuery.matches && (!hero || arrivalTarget > 0);
+      if (ambient) ambientT += Math.min(0.3, realDt);
       // Copy, cards, overlays and the cobalt hero follow the same damped position as the scene.
       const stage3d = stage3dRef.current;
       let settled: boolean;
@@ -861,7 +865,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     }
 
     function onPointer(event: PointerEvent) {
-      if (event.pointerType === "touch" || !cinematic) return;
+      if (event.pointerType === "touch" || !cinematic || (hero && arrivalTarget === 0)) return;
       pointerTarget = {
         x: (event.clientX / window.innerWidth) * 2 - 1,
         y: (event.clientY / window.innerHeight) * 2 - 1
@@ -1006,7 +1010,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     let last = 0;
     let t = 0;
     let inView = true;
-    let stillsStarted = false;
+    const nearby = new Set<HTMLElement>();
     let timer = 0;
 
     function renderLive() {
@@ -1027,13 +1031,15 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     function renderStills() {
       const stage = stage3dRef.current;
       const mid = window.innerHeight / 2;
-      const items = Array.from(root!.querySelectorAll<HTMLElement>(".hs-vignette:not(.hs-vignette--opening):not([data-still])"));
+      timer = 0;
+      const items = Array.from(nearby);
       const distance = (e: HTMLElement) => {
         const r = e.getBoundingClientRect();
         return Math.abs(r.top + r.height / 2 - mid);
       };
       const el = items.sort((a, b) => distance(a) - distance(b))[0];
       if (!stage || !el) return;
+      nearby.delete(el);
       el.dataset.still = "1";
       const step = Number(el.dataset.step);
       const overlays = Array.from(el.querySelectorAll<HTMLElement>(".hs-ctx--still"));
@@ -1060,7 +1066,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
           tag.style.setProperty("--y", `${((p.y / el.clientHeight) * 100).toFixed(2)}%`);
         });
       }
-      timer = window.setTimeout(renderStills, 40);
+      if (nearby.size) timer = window.setTimeout(renderStills, 40);
     }
 
     function frame(time: number) {
@@ -1070,10 +1076,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       const ambient = !reduceQuery.matches;
       if (ambient) t += dt;
       if (!renderLive()) return;
-      if (!stillsStarted) {
-        stillsStarted = true;
-        timer = window.setTimeout(renderStills, 60);
-      }
+      if (!timer && nearby.size) timer = window.setTimeout(renderStills, 60);
       if (inView && ambient && document.visibilityState === "visible") raf = SmoothScroll.requestFrame(frame);
       else last = 0;
     }
@@ -1087,6 +1090,15 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       if (inView) kick();
     });
     if (live) io.observe(live);
+    const stillObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const el = entry.target as HTMLElement;
+        if (entry.isIntersecting && !el.dataset.still) nearby.add(el);
+        else nearby.delete(el);
+      }
+      if (nearby.size && !timer && stage3dRef.current) timer = window.setTimeout(renderStills, 40);
+    }, { rootMargin: "50% 0px" });
+    root.querySelectorAll(".hs-vignette:not(.hs-vignette--opening)").forEach(el => stillObserver.observe(el));
     root.addEventListener("harbor:kick", kick);
     document.addEventListener("visibilitychange", kick);
     kick();
@@ -1094,6 +1106,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
       SmoothScroll.cancelFrame(raf);
       window.clearTimeout(timer);
       io.disconnect();
+      stillObserver.disconnect();
       root.removeEventListener("harbor:kick", kick);
       document.removeEventListener("visibilitychange", kick);
     };

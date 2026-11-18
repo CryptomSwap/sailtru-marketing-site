@@ -1,4 +1,33 @@
 {
+  "companyHero": {
+    "title": "Business intelligence",
+    "accent": "and applied AI.",
+    "intro": "We analyze websites, build custom AI systems, and create ads and social content.",
+    "services": "Choose a service",
+    "meta": {
+      "title": "SailTru | Business intelligence and applied AI",
+      "description": "We analyze websites, build custom AI systems, and create ads and social content."
+    },
+    "analysis": {
+      "label": "Website Analysis",
+      "line": "Find out what to fix on your website.",
+      "report": "View sample report"
+    },
+    "solutions": {
+      "label": "Custom AI Solutions",
+      "line": "Put AI to work on a process your team handles by hand.",
+      "cta": "Describe your workflow",
+      "subject": "Custom AI workflow enquiry",
+      "brief": "The workflow we want to improve is: "
+    },
+    "studio": {
+      "label": "Studio",
+      "line": "Turn a campaign brief into ads and social posts.",
+      "cta": "Brief the studio",
+      "subject": "SailTru Studio campaign brief",
+      "brief": "Our campaign, audience, and channels: "
+    }
+  },
   "metadata": {
     "title": "SailTru | AI-native growth & automation",
     "description": "SailTru helps businesses find where they're losing opportunity — across discovery, competition, operations, and build — then implements the systems to improve it."

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 const SITE_URL = "https://sailtru.com";
 const LOCALES = ["en", "he"] as const;
-const PATHS = ["", "/services", "/how-we-work", "/work", "/contact"] as const;
+const PATHS = ["", "/analysis", "/services", "/how-we-work", "/work", "/contact"] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = [];
