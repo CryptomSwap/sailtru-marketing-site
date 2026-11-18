@@ -365,7 +365,7 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
     const hole = { x: -1, y: -1, paintedX: -1, paintedY: -1, paintedR: -1 };
     const heroParts = {
       copy: heroNode?.querySelector<HTMLElement>(".field-main") ?? null,
-      cards: heroNode?.querySelector<HTMLElement>(".hsw__diagram--hero") ?? null
+      cards: heroNode?.querySelector<HTMLElement>("[data-arrival-services], .hsw__diagram--hero") ?? null
     };
     let uDisp = -1;
     let pointer = { x: 0, y: 0 };

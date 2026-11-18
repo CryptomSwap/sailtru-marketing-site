@@ -322,3 +322,10 @@
     transition: none;
   }
 }
+
+@media (max-width: 979px) {
+  .field-hero .site-header__links:not(.is-open) { visibility: hidden; }
+}
+@media (max-width: 899px) {
+  .sp-hero .site-header__links:not(.is-open) { visibility: hidden; }
+}

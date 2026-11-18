@@ -32,7 +32,7 @@ const PHASE_EXIT = { opacity: 0, scale: 1.008 };
  * The homepage hero's one animated sequence: URL field only, then — after Run scan —
  * scan → input signals → intelligence layer → the Northline-style mockup, last.
  */
-export function HeroScanSequence({ className = "" }: { className?: string }) {
+export function HeroScanSequence({ className = "", simpleEntry = false }: { className?: string; simpleEntry?: boolean }) {
   const t = useTranslations("homeV2.howItWorks");
   const router = useRouter();
   const reduceMotion = useReducedMotion() ?? false;
@@ -61,7 +61,7 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
         router.push(nextHost ? { pathname: "/login", query: { host: nextHost } } : "/login");
       };
 
-      if (reduceMotion) {
+      if (reduceMotion || (simpleEntry && window.matchMedia("(max-width: 979px)").matches)) {
         goLogin();
         return;
       }
@@ -77,7 +77,7 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
         setTimeout(goLogin, afterIntel)
       );
     },
-    [reduceMotion, router]
+    [reduceMotion, router, simpleEntry]
   );
 
   const target = useMemo(() => normalizeToHttpsUrl(submittedUrl), [submittedUrl]);
@@ -96,6 +96,10 @@ export function HeroScanSequence({ className = "" }: { className?: string }) {
   }, [phase, canCapture, previewSrc]);
 
   const handleImageError = useCallback(() => setPreviewFailed(true), []);
+
+  if (simpleEntry && phase === "idle") {
+    return <div className="field-scan field-scan--ref"><HeroUrlScan onRunScan={runScan} /></div>;
+  }
 
   const caption =
     phase === "scan"

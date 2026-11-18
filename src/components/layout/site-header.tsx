@@ -9,9 +9,16 @@ import "./site-header-mobile.css";
 
 type SiteHeaderProps = {
   compact?: boolean;
+  company?: boolean;
 };
 
-export function SiteHeader({ compact = false }: SiteHeaderProps) {
+export function SiteHeader(props: SiteHeaderProps) {
+  const locale = useLocale();
+  const pathname = usePathname();
+  return <HeaderNavigation key={`${locale}:${pathname}`} {...props} />;
+}
+
+function HeaderNavigation({ compact = false, company = false }: SiteHeaderProps) {
   const tNav = useTranslations("nav");
   const tCommon = useTranslations("common");
   const locale = useLocale() as Locale;
@@ -19,15 +26,14 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname, locale]);
-
-  useEffect(() => {
     document.body.classList.toggle("nav-open", menuOpen);
     return () => document.body.classList.remove("nav-open");
   }, [menuOpen]);
 
-  const navItems = [
+  const navItems = company ? [
+    { label: tNav("work"), href: "/work" as const },
+    { label: tNav("contact"), href: "/contact" as const }
+  ] : [
     { label: tNav("home"), href: "/" as const },
     { label: tNav("services"), href: "/services" as const },
     { label: tNav("howItWorks"), href: "/how-we-work" as const },
@@ -54,7 +60,7 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
         id="site-primary-nav"
         aria-label={tCommon("primaryNav")}
         className={`site-header__links${menuOpen ? " is-open" : ""}`}
-        aria-hidden={!menuOpen}
+
         data-lenis-prevent={menuOpen ? "" : undefined}
       >
         {navItems.map((item) => {
@@ -69,7 +75,7 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`site-header__link${item.href === "/contact" ? " site-header__link--cta" : ""}${isActive ? " site-header__link--active" : ""}`}
+              className={`site-header__link${!company && item.href === "/contact" ? " site-header__link--cta" : ""}${isActive ? " site-header__link--active" : ""}`}
             >
               {item.label}
             </Link>
@@ -94,9 +100,9 @@ export function SiteHeader({ compact = false }: SiteHeaderProps) {
         >
           {alternateLocale === "he" ? tCommon("localeHe") : tCommon("localeEn")}
         </Link>
-        <Link href="/contact" className="site-header__cta">
+        {!company && <Link href="/contact" className="site-header__cta">
           {tNav("beginDiagnosis")}
-        </Link>
+        </Link>}
       </div>
 
       <button
