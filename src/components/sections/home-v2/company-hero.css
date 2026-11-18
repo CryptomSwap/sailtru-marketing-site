@@ -108,31 +108,6 @@
 
 .company-services .field-scan {
   margin: 0;
-  max-width: 100%;
-}
-
-/* Hard graphic treatment inside the company hero (no glass / soft float). */
-.company-hero .field-scan--ref .hero-url-scan {
-  background: rgb(7 18 47 / 28%);
-  border: 1.5px solid rgb(255 255 255 / 55%);
-  box-shadow: 6px 6px 0 rgb(7 18 47 / 55%);
-  backdrop-filter: none;
-}
-
-.company-hero .field-scan--ref .hero-url-scan:focus-within {
-  box-shadow: 6px 6px 0 rgb(7 18 47 / 55%);
-}
-
-.company-hero .field-scan--ref .hero-url-scan__button,
-.company-hero .field-scan--ref .hero-cta--primary {
-  box-shadow: 3px 3px 0 #07122f;
-  border: 1.5px solid #07122f;
-}
-
-.company-hero .field-scan--ref .hero-url-scan__button:hover,
-.company-hero .field-scan--ref .hero-cta--primary:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 #07122f;
 }
 
 .company-action {
