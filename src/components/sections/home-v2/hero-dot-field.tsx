@@ -8,12 +8,22 @@ type Dot = {
   lift: number;
 };
 
-const REST_X = 0.62;
-const REST_Y = 0.4;
+const REST_X = 0.58;
+const REST_Y = 0.42;
+
+type FieldProfile = {
+  cols: number;
+  rows: number;
+  /** Draw every nth horizontal / vertical edge (1 = all). */
+  linkStride: number;
+  dprCap: number;
+  /** Skip painter's-algorithm sort when true (mobile). */
+  skipDepthSort: boolean;
+};
 
 /**
- * Perspective dot field for the hero. The plane tilts with the pointer,
- * and the dots under the cursor lift toward the camera.
+ * Perspective dot field for the cobalt hero.
+ * Calm idle drift + restrained pointer parallax; density/link budget scales by viewport.
  */
 export function HeroDotField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -21,12 +31,14 @@ export function HeroDotField() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
     if (!ctx) return;
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const finePointer = window.matchMedia("(pointer: fine)");
     const pointer = { x: REST_X, y: REST_Y, inside: false };
     const smooth = { x: REST_X, y: REST_Y };
+    const scrollParallax = { x: 0, y: 0, tx: 0, ty: 0 };
 
     let dots: Dot[] = [];
     let depth = new Float64Array(0);
@@ -37,20 +49,31 @@ export function HeroDotField() {
     let cols = 0;
     let rows = 0;
     let pixel = 1;
-    // Inside the homepage story the hero stays mounted (sticky) after the arrival has dissolved it; the
-    // story marks it data-dissolved then, and the field draws nothing until the hero comes back.
+    let profile: FieldProfile = { cols: 0, rows: 0, linkStride: 1, dprCap: 1.75, skipDepthSort: false };
+    let lastTime = 0;
+    // Homepage story keeps the hero sticky after arrival dissolves it.
     const host = canvas.closest<HTMLElement>(".hs-cobalt-hero");
     let dissolved = host?.hasAttribute("data-dissolved") ?? false;
-    /** The first frame back jumps the pointer easing to where it would have settled meanwhile. */
     let settle = false;
     let onScreen = true;
 
+    const profileFor = (width: number): FieldProfile => {
+      // Phones: enough mesh to read as a field, stride-2 links to keep the frame cheap.
+      if (width < 400) return { cols: 18, rows: 11, linkStride: 2, dprCap: 1.5, skipDepthSort: true };
+      if (width < 760) return { cols: 24, rows: 14, linkStride: 1, dprCap: 1.5, skipDepthSort: true };
+      if (width < 1024) return { cols: 32, rows: 17, linkStride: 1, dprCap: 1.75, skipDepthSort: false };
+      return { cols: 40, rows: 21, linkStride: 1, dprCap: 1.75, skipDepthSort: false };
+    };
+
     const build = (width: number) => {
-      const nextCols = width < 760 ? 24 : 42;
-      const nextRows = width < 760 ? 14 : 22;
-      if (nextCols === cols && nextRows === rows) return;
-      cols = nextCols;
-      rows = nextRows;
+      const next = profileFor(width);
+      if (next.cols === cols && next.rows === rows) {
+        profile = next;
+        return;
+      }
+      profile = next;
+      cols = next.cols;
+      rows = next.rows;
       dots = [];
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -70,7 +93,8 @@ export function HeroDotField() {
       const cssWidth = canvas.clientWidth;
       const cssHeight = canvas.clientHeight;
       if (cssWidth < 2 || cssHeight < 2) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      const next = profileFor(cssWidth);
+      const dpr = Math.min(window.devicePixelRatio || 1, next.dprCap);
       const width = Math.max(1, Math.round(cssWidth * dpr));
       const height = Math.max(1, Math.round(cssHeight * dpr));
       if (canvas.width !== width || canvas.height !== height) {
@@ -82,39 +106,66 @@ export function HeroDotField() {
       build(cssWidth);
     };
 
+    const easeToward = (current: number, target: number, rate: number, dt: number) => {
+      // Frame-rate independent exponential smoothing.
+      const t = 1 - Math.exp(-rate * dt);
+      return current + (target - current) * t;
+    };
+
     const draw = (time: number) => {
       const width = canvas.width;
       const height = canvas.height;
       if (width < 2 || height < 2 || dots.length === 0) return;
 
-      const follow = motionQuery.matches || settle ? 1 : 0.075;
-      smooth.x += ((pointer.inside ? pointer.x : REST_X) - smooth.x) * follow;
-      smooth.y += ((pointer.inside ? pointer.y : REST_Y) - smooth.y) * follow;
+      const reduce = motionQuery.matches;
+      const dt = settle || !lastTime ? 1 / 60 : Math.min(0.05, Math.max(0.001, (time - lastTime) / 1000));
+      lastTime = time;
 
-      const idle = motionQuery.matches ? 0 : Math.sin(time * 0.00035) * 0.045;
-      const rotY = (smooth.x - 0.5) * 0.7 - 0.2 + idle;
-      const rotX = (smooth.y - 0.5) * -0.42 + 0.28;
+      const targetX = pointer.inside ? pointer.x : REST_X;
+      const targetY = pointer.inside ? pointer.y : REST_Y;
+      if (reduce || settle) {
+        smooth.x = targetX;
+        smooth.y = targetY;
+        scrollParallax.x = scrollParallax.tx;
+        scrollParallax.y = scrollParallax.ty;
+      } else {
+        // Soft critically-damped feel — calm, not laggy.
+        smooth.x = easeToward(smooth.x, targetX, 4.2, dt);
+        smooth.y = easeToward(smooth.y, targetY, 4.2, dt);
+        scrollParallax.x = easeToward(scrollParallax.x, scrollParallax.tx, 2.4, dt);
+        scrollParallax.y = easeToward(scrollParallax.y, scrollParallax.ty, 2.4, dt);
+      }
+
+      // Dual-frequency idle: slow yaw + slower pitch, tiny amplitude.
+      const idleY = reduce ? 0 : Math.sin(time * 0.00022) * 0.028 + Math.sin(time * 0.00011) * 0.012;
+      const idleX = reduce ? 0 : Math.sin(time * 0.00017 + 1.1) * 0.016;
+      const rotY = (smooth.x - 0.5) * 0.48 - 0.14 + idleY + scrollParallax.x * 0.08;
+      const rotX = (smooth.y - 0.5) * -0.3 + 0.22 + idleX + scrollParallax.y * 0.06;
       const cosY = Math.cos(rotY);
       const sinY = Math.sin(rotY);
       const cosX = Math.cos(rotX);
       const sinX = Math.sin(rotX);
 
+      // Frozen attractive phase when motion is reduced.
+      const flow = reduce ? 0.18 : time * 0.00022;
+      const allowLift = pointer.inside && !reduce && finePointer.matches;
+
       for (let i = 0; i < dots.length; i++) {
         const dot = dots[i];
         const dx = dot.gx - smooth.x;
         const dy = dot.gy - smooth.y;
-        const influence = pointer.inside && !motionQuery.matches ? Math.exp(-(dx * dx + dy * dy) * 12) : 0;
-        dot.lift += (influence - dot.lift) * (motionQuery.matches || settle ? 1 : 0.14);
+        const influence = allowLift ? Math.exp(-(dx * dx + dy * dy) * 10) : 0;
+        if (reduce || settle) dot.lift = influence;
+        else dot.lift = easeToward(dot.lift, influence, 7.5, dt);
 
-        const push = dot.lift * 0.035;
-        const flow = motionQuery.matches ? 0 : time * 0.00036;
-        const crest = motionQuery.matches
-          ? 0
-          : Math.sin((dot.gx * 1.65 + dot.gy * 0.4 - flow) * Math.PI * 2) * 0.75 +
-            Math.sin((dot.gy * 1.2 - flow * 0.55) * Math.PI * 2) * 0.25;
-        const x = (dot.gx - 0.5) * 2.45 + dx * push;
-        const y = (dot.gy - 0.5) * 1.34 + dy * push;
-        const z = crest * 0.32 - dot.lift * 0.82;
+        const push = dot.lift * 0.028;
+        const crest = Math.sin((dot.gx * 1.45 + dot.gy * 0.35 - flow) * Math.PI * 2) * 0.55 +
+          Math.sin((dot.gy * 1.05 - flow * 0.48 + 0.4) * Math.PI * 2) * 0.22;
+        // Depth bias by row for a quiet parallax shelf.
+        const shelf = (dot.gy - 0.5) * 0.08;
+        const x = (dot.gx - 0.5) * 2.35 + dx * push;
+        const y = (dot.gy - 0.5) * 1.28 + dy * push;
+        const z = crest * 0.24 - dot.lift * 0.62 + shelf;
 
         const x1 = x * cosY + z * sinY;
         const z1 = -x * sinY + z * cosY;
@@ -123,10 +174,13 @@ export function HeroDotField() {
         depth[i] = 2.55 + z2;
 
         const p = 1.45 / depth[i];
-        scratch[i * 6] = width * 0.5 + x1 * p * width * 0.6;
-        scratch[i * 6 + 1] = height * 0.46 + y1 * p * height * 0.64;
+        scratch[i * 6] = width * 0.5 + x1 * p * width * 0.58;
+        scratch[i * 6 + 1] = height * 0.48 + y1 * p * height * 0.6;
         scratch[i * 6 + 2] = p;
-        scratch[i * 6 + 3] = Math.sin(dot.gx * Math.PI) * Math.sin(dot.gy * Math.PI);
+        // Soft vignette — keep presence under copy, stronger toward the field center.
+        const edgeX = Math.sin(dot.gx * Math.PI);
+        const edgeY = Math.sin(dot.gy * Math.PI);
+        scratch[i * 6 + 3] = Math.max(0.35, edgeX * edgeY) * (0.7 + dot.gx * 0.3);
         scratch[i * 6 + 4] = dot.lift;
         scratch[i * 6 + 5] = crest * 0.5 + 0.5;
         order[i] = i;
@@ -135,26 +189,28 @@ export function HeroDotField() {
 
       ctx.clearRect(0, 0, width, height);
       ctx.lineCap = "butt";
-      ctx.lineWidth = Math.max(1, pixel * 0.7);
+      ctx.lineJoin = "miter";
+      ctx.lineWidth = Math.max(1, pixel * 0.65);
 
+      const stride = profile.linkStride;
       const link = (a: number, b: number) => {
         const ax = scratch[a * 6];
         const ay = scratch[a * 6 + 1];
         const bx = scratch[b * 6];
         const by = scratch[b * 6 + 1];
-        if (ax < -30 || bx < -30 || ax > width + 30 || bx > width + 30) return;
-        if (ay < -30 || by < -30 || ay > height + 30 || by > height + 30) return;
+        if (ax < -24 || bx < -24 || ax > width + 24 || bx > width + 24) return;
+        if (ay < -24 || by < -24 || ay > height + 24 || by > height + 24) return;
         const lift = Math.min(scratch[a * 6 + 4], scratch[b * 6 + 4]);
         const signal = Math.max(scratch[a * 6 + 5], scratch[b * 6 + 5]);
         const fade = Math.min(scratch[a * 6 + 3], scratch[b * 6 + 3]);
-        const side = 0.2 + Math.min(dots[a].gx, dots[b].gx) * 0.8;
-        const depthFade = 0.72 + Math.min(scratch[a * 6 + 2], scratch[b * 6 + 2]) * 0.45;
-        const alpha = (0.14 + lift * 0.55 + signal * 0.22) * fade * side * depthFade;
-        if (alpha < 0.04) return;
-        const lit = lift > 0.22 || signal > 0.68;
+        const depthFade = 0.7 + Math.min(scratch[a * 6 + 2], scratch[b * 6 + 2]) * 0.4;
+        // Stable alpha floor avoids sparkle/flicker as waves pass.
+        const alpha = (0.14 + lift * 0.42 + signal * 0.16) * fade * depthFade;
+        if (alpha < 0.05) return;
+        const lit = lift > 0.28 || signal > 0.72;
         ctx.beginPath();
         ctx.strokeStyle = lit
-          ? `rgba(126, 231, 255, ${Math.min(0.78, alpha)})`
+          ? `rgba(126, 231, 255, ${Math.min(0.68, alpha)})`
           : `rgba(214, 232, 255, ${Math.min(0.34, alpha)})`;
         ctx.moveTo(ax, ay);
         ctx.lineTo(bx, by);
@@ -164,12 +220,12 @@ export function HeroDotField() {
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const i = r * cols + c;
-          if (c + 1 < cols) link(i, i + 1);
-          if (r + 1 < rows) link(i, i + cols);
+          if (c + stride < cols && r % stride === 0) link(i, i + stride);
+          if (r + stride < rows && c % stride === 0) link(i, i + cols * stride);
         }
       }
 
-      order.sort((a, b) => depth[b] - depth[a]);
+      if (!profile.skipDepthSort) order.sort((a, b) => depth[b] - depth[a]);
 
       for (let n = 0; n < order.length; n++) {
         const i = order[n];
@@ -179,29 +235,31 @@ export function HeroDotField() {
         const fade = scratch[i * 6 + 3];
         const lift = scratch[i * 6 + 4];
         const signal = scratch[i * 6 + 5];
-        if (sx < -12 || sy < -12 || sx > width + 12 || sy > height + 12) continue;
+        if (sx < -10 || sy < -10 || sx > width + 10 || sy > height + 10) continue;
 
         const c = i % cols;
         const r = (i / cols) | 0;
         const major = c % 5 === 0 && r % 4 === 0;
         const hot = lift > 0.55;
-        const side = 0.28 + dots[i].gx * 0.72;
         const alpha = Math.min(
-          0.96,
-          (0.32 + lift * 0.7 + signal * 0.38) * (0.5 + fade * 0.7) * side * (0.75 + p * 0.35)
+          0.9,
+          (0.28 + lift * 0.55 + signal * 0.28) * (0.45 + fade * 0.75) * (0.78 + p * 0.3)
         );
+        if (alpha < 0.05) continue;
 
         if (major || hot) {
           ctx.beginPath();
-          ctx.lineWidth = Math.max(1, pixel * 0.85);
-          ctx.strokeStyle = hot ? `rgba(126, 231, 255, ${0.35 + lift * 0.55})` : `rgba(214, 232, 255, ${alpha * 0.7})`;
-          ctx.arc(sx, sy, (2.15 + lift * 1.7) * pixel, 0, Math.PI * 2);
+          ctx.lineWidth = Math.max(1, pixel * 0.8);
+          ctx.strokeStyle = hot
+            ? `rgba(126, 231, 255, ${0.28 + lift * 0.45})`
+            : `rgba(214, 232, 255, ${alpha * 0.55})`;
+          ctx.arc(sx, sy, (1.9 + lift * 1.35) * pixel, 0, Math.PI * 2);
           ctx.stroke();
         }
 
         ctx.beginPath();
         ctx.fillStyle = hot ? `rgba(255, 255, 255, ${alpha})` : `rgba(232, 242, 255, ${alpha})`;
-        ctx.arc(sx, sy, Math.max(0.7, (0.85 + (major ? 0.45 : 0) + lift * 0.55) * pixel), 0, Math.PI * 2);
+        ctx.arc(sx, sy, Math.max(0.65, (0.75 + (major ? 0.4 : 0) + lift * 0.45) * pixel), 0, Math.PI * 2);
         ctx.fill();
       }
     };
@@ -213,6 +271,10 @@ export function HeroDotField() {
     };
 
     const onPointer = (event: PointerEvent) => {
+      if (event.pointerType === "touch") {
+        pointer.inside = false;
+        return;
+      }
       const rect = canvas.getBoundingClientRect();
       const inside =
         event.clientX >= rect.left &&
@@ -229,6 +291,20 @@ export function HeroDotField() {
       pointer.inside = false;
     };
 
+    const onScroll = () => {
+      // Tiny scroll parallax while the hero is in view — restrained.
+      if (!onScreen || motionQuery.matches) {
+        scrollParallax.tx = 0;
+        scrollParallax.ty = 0;
+        return;
+      }
+      const rect = canvas.getBoundingClientRect();
+      const mid = rect.top + rect.height * 0.5;
+      const norm = Math.max(-1, Math.min(1, (window.innerHeight * 0.45 - mid) / window.innerHeight));
+      scrollParallax.tx = norm * 0.35;
+      scrollParallax.ty = norm * 0.55;
+    };
+
     const start = () => {
       if (raf) window.cancelAnimationFrame(raf);
       if (dissolved || !onScreen || document.hidden) {
@@ -237,6 +313,7 @@ export function HeroDotField() {
         return;
       }
       running = true;
+      lastTime = 0;
       if (motionQuery.matches) {
         draw(0);
         return;
@@ -248,6 +325,7 @@ export function HeroDotField() {
       running = false;
       if (raf) window.cancelAnimationFrame(raf);
       raf = 0;
+      lastTime = 0;
     };
 
     const onVisibility = () => {
@@ -256,6 +334,7 @@ export function HeroDotField() {
     };
 
     resize();
+    onScroll();
     start();
 
     const observer = new ResizeObserver(resize);
@@ -275,7 +354,6 @@ export function HeroDotField() {
       dissolved = next;
       if (dissolved) stop();
       else if (onScreen && document.visibilityState === "visible") {
-        // Drawn now, before this frame paints, so the returning hero never shows a stale frame.
         settle = true;
         running = true;
         frame(performance.now());
@@ -284,9 +362,11 @@ export function HeroDotField() {
     if (host) dissolve.observe(host, { attributes: true, attributeFilter: ["data-dissolved"] });
 
     window.addEventListener("pointermove", onPointer, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("pointerleave", onLeave);
     document.addEventListener("visibilitychange", onVisibility);
     motionQuery.addEventListener("change", start);
+    finePointer.addEventListener("change", start);
 
     return () => {
       stop();
@@ -294,9 +374,11 @@ export function HeroDotField() {
       view.disconnect();
       dissolve.disconnect();
       window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
       motionQuery.removeEventListener("change", start);
+      finePointer.removeEventListener("change", start);
     };
   }, []);
 

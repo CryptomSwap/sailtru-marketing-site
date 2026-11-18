@@ -1,47 +1,237 @@
 .home-cobalt-field .company-hero {
-  background: linear-gradient(155deg, #5476f8, #365af1);
+  /* Match the harbor cobalt field, not a second competing gradient. */
+  background: linear-gradient(180deg, #4f78ff 0%, #3d6cff 45%, #2f5bff 100%);
   color: white;
   font-family: var(--font-sans), sans-serif;
+  overflow: clip;
 }
+
+.company-hero.field-hero--ref .field-hero__dots[data-ready] {
+  opacity: 1;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 62%,
+    transparent 94%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 62%,
+    transparent 94%
+  );
+}
+
 .company-shell {
   position: relative;
+  z-index: 1;
   width: min(82%, 78rem);
   margin-inline: auto;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  padding-inline: 0;
 }
-.company-hero .site-header { border: 0; }
+
+.company-hero .site-header {
+  border: 0;
+}
+
 .company-stage {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-content: center;
   align-items: start;
   gap: clamp(2rem, 5vw, 6rem);
   padding-block: 3rem 6rem;
+  min-width: 0;
 }
-.company-hero .company-copy, .company-services { min-width: 0; }
+
+.company-hero .company-copy,
+.company-services {
+  min-width: 0;
+  position: relative;
+}
+
+/* Keep headline readable over the mesh without glass or soft glow. */
 .company-copy h1 {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: clamp(3rem, 4.4vw, 5rem);
-  letter-spacing: -.04em;
+  font-size: clamp(2.6rem, 4.4vw, 5rem);
+  letter-spacing: -0.04em;
   line-height: 1.04;
   margin: 0;
+  text-wrap: balance;
 }
-.company-copy h1 em { color: #9af1ff; }
-.company-copy p { max-width: 39ch; margin: 1.4rem 0 0; line-height: 1.5; font-size: clamp(1rem, 1.3vw, 1.3rem); }
-.company-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
-.company-tabs button { padding: .55rem .65rem; border-radius: .55rem; font-size: clamp(.8rem, 1vw, 1rem); font-weight: 600; cursor: pointer; }
-.company-tabs button[aria-selected=true], .company-tabs button:hover { background: rgb(255 255 255 / 20%); }
-.company-services h2 { font: 600 clamp(1.2rem, 1.6vw, 1.7rem)/1.3 var(--font-sans), sans-serif; margin: 1.25rem 0; }
-.company-services .field-scan { margin: 0; }
-.company-action { display: inline-block; border-radius: 2rem; padding: .75rem 1.25rem; background: white; color: #10224f; font-weight: 600; }
-.company-report { display: inline-block; margin-block-start: .65rem; font-size: .85rem; text-decoration: underline; text-underline-offset: .2em; }
-.company-services :is(button,a):focus-visible { outline: 2px solid white; outline-offset: 3px; }
-@media (max-width: 959px) {
-  .company-shell { width: min(90%, 40rem); }
-  .company-stage { grid-template-columns: minmax(0,1fr); gap: 2rem; }
-  .company-copy h1 { font-size: clamp(2.7rem, 8vw, 4rem); }
-  .company-tabs button { min-height: 44px; }
+
+.company-copy h1 em {
+  color: #9af1ff;
+  font-style: italic;
+}
+
+.company-copy p {
+  max-width: 39ch;
+  margin: 1.4rem 0 0;
+  line-height: 1.5;
+  font-size: clamp(1rem, 1.3vw, 1.3rem);
+  color: rgb(244 246 255 / 92%);
+}
+
+.company-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.company-tabs button {
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  font-weight: 600;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+
+.company-tabs button[aria-selected="true"],
+.company-tabs button:hover {
+  background: rgb(255 255 255 / 20%);
+}
+
+.company-services h2 {
+  font: 600 clamp(1.15rem, 1.6vw, 1.7rem) / 1.3 var(--font-sans), sans-serif;
+  margin: 1.25rem 0;
+  text-wrap: balance;
+}
+
+.company-services .field-scan {
+  margin: 0;
+  max-width: 100%;
+}
+
+/* Hard graphic treatment inside the company hero (no glass / soft float). */
+.company-hero .field-scan--ref .hero-url-scan {
+  background: rgb(7 18 47 / 28%);
+  border: 1.5px solid rgb(255 255 255 / 55%);
+  box-shadow: 6px 6px 0 rgb(7 18 47 / 55%);
+  backdrop-filter: none;
+}
+
+.company-hero .field-scan--ref .hero-url-scan:focus-within {
+  box-shadow: 6px 6px 0 rgb(7 18 47 / 55%);
+}
+
+.company-hero .field-scan--ref .hero-url-scan__button,
+.company-hero .field-scan--ref .hero-cta--primary {
+  box-shadow: 3px 3px 0 #07122f;
+  border: 1.5px solid #07122f;
+}
+
+.company-hero .field-scan--ref .hero-url-scan__button:hover,
+.company-hero .field-scan--ref .hero-cta--primary:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #07122f;
+}
+
+.company-action {
+  display: inline-block;
+  border-radius: 2rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  color: #10224f;
+  font-weight: 600;
+  border: 1.5px solid #07122f;
+  box-shadow: 4px 4px 0 #07122f;
+}
+
+.company-action:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 #07122f;
+}
+
+.company-report {
+  display: inline-block;
+  margin-block-start: 0.65rem;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.company-services :is(button, a):focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+@media (max-width: 1023px) {
+  .company-shell {
+    width: min(92%, 48rem);
+  }
+
+  .company-stage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+    padding-block: 2rem 4.5rem;
+  }
+
+  .company-copy h1 {
+    font-size: clamp(2.4rem, 7.2vw, 3.6rem);
+  }
+}
+
+@media (max-width: 759px) {
+  .company-shell {
+    width: min(100% - 1.5rem, 40rem);
+  }
+
+  .company-stage {
+    gap: 1.5rem;
+    padding-block: 1.5rem 3.5rem;
+  }
+
+  .company-copy h1 {
+    font-size: clamp(2.15rem, 9vw, 2.85rem);
+  }
+
+  .company-copy p {
+    font-size: 1rem;
+    max-width: 34ch;
+  }
+
+  .company-tabs {
+    gap: 0.2rem;
+  }
+
+  .company-tabs button {
+    min-height: 44px;
+    padding-inline: 0.55rem;
+    font-size: 0.8rem;
+  }
+
+  .company-services h2 {
+    margin-block: 1rem;
+  }
+
+  .company-hero.field-hero--ref .field-hero__dots[data-ready] {
+    opacity: 0.9;
+  }
+}
+
+@media (max-width: 389px) {
+  .company-shell {
+    width: min(100% - 1rem, 24rem);
+  }
+
+  .company-tabs button {
+    flex: 1 1 auto;
+    font-size: 0.74rem;
+    padding-inline: 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .company-action:hover {
+    transform: none;
+  }
 }
