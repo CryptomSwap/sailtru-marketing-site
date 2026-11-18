@@ -36,7 +36,7 @@ export function CompanyHero() {
   return (
     <section id="hero" className="field-hero field-hero--ref company-hero">
       <a className="sr-only focus:not-sr-only" href="#observe">{common("skipToContent")}</a>
-      <HeroDotField subtle />
+      <HeroDotField />
       <div className="company-shell">
         <SiteHeader company />
         <div className="company-stage">

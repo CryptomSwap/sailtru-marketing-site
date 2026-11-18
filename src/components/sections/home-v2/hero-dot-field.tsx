@@ -15,7 +15,7 @@ const REST_Y = 0.4;
  * Perspective dot field for the hero. The plane tilts with the pointer,
  * and the dots under the cursor lift toward the camera.
  */
-export function HeroDotField({ subtle = false }: { subtle?: boolean } = {}) {
+export function HeroDotField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -46,8 +46,8 @@ export function HeroDotField({ subtle = false }: { subtle?: boolean } = {}) {
     let onScreen = true;
 
     const build = (width: number) => {
-      const nextCols = subtle ? (width < 760 ? 16 : 30) : (width < 760 ? 24 : 42);
-      const nextRows = subtle ? (width < 760 ? 10 : 16) : (width < 760 ? 14 : 22);
+      const nextCols = width < 760 ? 24 : 42;
+      const nextRows = width < 760 ? 14 : 22;
       if (nextCols === cols && nextRows === rows) return;
       cols = nextCols;
       rows = nextRows;
@@ -161,16 +161,15 @@ export function HeroDotField({ subtle = false }: { subtle?: boolean } = {}) {
         ctx.stroke();
       };
 
-      if (!subtle) {
-        for (let i = 0; i < dots.length; i++) {
-          const c = i % cols;
-          const r = Math.floor(i / cols);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const i = r * cols + c;
           if (c + 1 < cols) link(i, i + 1);
           if (r + 1 < rows) link(i, i + cols);
         }
       }
 
-      if (!subtle) order.sort((a, b) => depth[b] - depth[a]);
+      order.sort((a, b) => depth[b] - depth[a]);
 
       for (let n = 0; n < order.length; n++) {
         const i = order[n];
@@ -207,13 +206,9 @@ export function HeroDotField({ subtle = false }: { subtle?: boolean } = {}) {
       }
     };
 
-    let lastDraw = -Infinity;
     const frame = (time: number) => {
       if (canvas.width < canvas.clientWidth || canvas.height < canvas.clientHeight) resize();
-      if (!subtle || settle || time - lastDraw >= 1000 / 24) {
-        draw(time);
-        lastDraw = time;
-      }
+      draw(time);
       if (running && !motionQuery.matches) raf = window.requestAnimationFrame(frame);
     };
 
@@ -303,7 +298,7 @@ export function HeroDotField({ subtle = false }: { subtle?: boolean } = {}) {
       document.removeEventListener("visibilitychange", onVisibility);
       motionQuery.removeEventListener("change", start);
     };
-  }, [subtle]);
+  }, []);
 
   return <canvas ref={canvasRef} className="field-hero__dots" aria-hidden />;
 }
