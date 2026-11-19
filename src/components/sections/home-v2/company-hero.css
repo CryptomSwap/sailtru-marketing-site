@@ -24,7 +24,7 @@
   align-items: start;
   column-gap: 3.5%;
   row-gap: 0;
-  padding-block: 0.85rem 5.5rem;
+  padding-block: 1.5rem 4.5rem;
   transition: --tone 0.5s ease;
 }
 .company-stage[data-service="solutions"] { --tone: #e2cdff; }
@@ -620,13 +620,24 @@
 .offer-board[data-offer="pages"] .art--page { opacity: 1; }
 
 @media (min-width: 761px) {
-  .company-stage { min-height: min(43rem, 85svh); }
+  .company-stage {
+    min-height: min(43rem, 85svh);
+    align-content: center;
+    align-items: center;
+    padding-block: 0 4.75rem;
+  }
+  .company-entry,
+  .service-preview {
+    align-self: center;
+  }
 }
 @media (max-width: 760px) {
   .company-shell { width: 90%; }
   .company-stage {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto auto auto;
+    align-content: start;
+    align-items: stretch;
     row-gap: 1.15rem;
     padding-block: 1.4rem 4.5rem;
   }
