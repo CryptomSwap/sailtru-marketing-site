@@ -1,12 +1,22 @@
 {
   "companyHero": {
     "preview": {
-      "analysis": "Dashboard tour · Sample account",
+      "analysis": "Sample report",
       "solutions": "Example workflow",
       "studio": "Example campaign",
       "tourDescription": "From a sample signal to a recommended action",
       "pause": "Pause",
       "play": "Play",
+      "findingId": "F01",
+      "findingArea": "Website",
+      "findingAreaAi": "AI answers",
+      "findingAreaMarket": "Competitors",
+      "findingTitle": "Enquiry action only in the footer",
+      "findingTwo": "AI answers call the studio residential-only",
+      "findingThree": "Competitors explain their process",
+      "findingEvidence": "On every service page, the only enquiry route is a Contact link in the footer. Two competitors place the action beside the offer.",
+      "findingAction": "Put an enquiry action next to each service, and say what happens after someone writes.",
+      "actionLabel": "Recommended next",
       "workflowTitle": "From enquiry to sales brief",
       "receive": "Receive the enquiry",
       "receiveDetail": "A website form captures the company and request.",
