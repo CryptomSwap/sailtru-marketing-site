@@ -9,15 +9,6 @@ gsap.registerPlugin(useGSAP);
 
 type Service = "analysis" | "solutions" | "studio";
 
-type Finding = {
-  id: string;
-  area: string;
-  observed: string;
-  action: string;
-};
-
-type Preview = { before: string; after: string };
-
 function Pointer() {
   return (
     <svg className="dash-pointer" data-pointer="" viewBox="0 0 24 24" aria-hidden="true">
@@ -46,110 +37,144 @@ function clickPointer(pointer: HTMLElement, tl: gsap.core.Timeline) {
 }
 
 function AnalysisBoard({ playing }: { playing: boolean }) {
-  const s = useTranslations("harbor.sample");
-  const fields = useTranslations("harbor.report.fields");
   const t = useTranslations("companyHero.preview");
   const rtl = useLocale() === "he";
   const root = useRef<HTMLDivElement>(null);
-  const findings = useTranslations("harbor.report").raw("findings") as Finding[];
-  const titles = s.raw("findingTitles") as string[];
-  const previews = s.raw("previews") as Preview[];
+  const googleRows = [
+    { q: t("googleQ1"), you: t("googleYou1"), other: t("googleOther1"), tone: "gap", fill: 0.16 },
+    { q: t("googleQ2"), you: t("googleYou2"), other: t("googleOther2"), tone: "weak", fill: 0.34 },
+    { q: t("googleQ3"), you: t("googleYou3"), other: t("googleOther3"), tone: "ok", fill: 0.82 }
+  ];
+  const aiRows = [
+    { q: t("aiQ1"), you: t("aiYou1"), other: t("aiOther1"), tone: "gap", fill: 0.1 },
+    { q: t("aiQ2"), you: t("aiYou2"), other: t("aiOther2"), tone: "weak", fill: 0.22 },
+    { q: t("aiQ3"), you: t("aiYou3"), other: t("aiOther3"), tone: "gap", fill: 0.08 }
+  ];
 
   useGSAP(
     () => {
       const el = root.current;
       if (!el) return;
       const pointer = el.querySelector<HTMLElement>("[data-pointer]");
-      const rows = gsap.utils.toArray<HTMLElement>("[data-find]");
-      const title = el.querySelector<HTMLElement>("[data-dash=title]");
-      const observed = el.querySelector<HTMLElement>("[data-dash=observed]");
-      const before = el.querySelector<HTMLElement>("[data-dash=before]");
-      const after = el.querySelector<HTMLElement>("[data-dash=after]");
-      const action = el.querySelector<HTMLElement>("[data-dash=action]");
+      const googleTab = el.querySelector<HTMLElement>("[data-tab=google]");
+      const aiTab = el.querySelector<HTMLElement>("[data-tab=ai]");
+      const googleTable = el.querySelector<HTMLElement>("[data-table=google]");
+      const aiTable = el.querySelector<HTMLElement>("[data-table=ai]");
+      const action = el.querySelector<HTMLElement>("[data-action]");
+      const title = el.querySelector<HTMLElement>("[data-fix-title]");
+      const body = el.querySelector<HTMLElement>("[data-fix-body]");
+      const bars = gsap.utils.toArray<HTMLElement>("[data-fill]");
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      const paint = (index: number) => {
-        rows.forEach((row, i) => row.classList.toggle("is-active", i === index));
-        if (title) title.textContent = titles[index];
-        if (observed) observed.textContent = findings[index].observed;
-        if (before) before.textContent = previews[index].before;
-        if (after) after.textContent = previews[index].after;
-        if (action) action.textContent = findings[index].action;
+      const show = (view: "google" | "ai") => {
+        el.dataset.view = view;
+        googleTab?.classList.toggle("is-on", view === "google");
+        aiTab?.classList.toggle("is-on", view === "ai");
+        if (googleTable) gsap.set(googleTable, { autoAlpha: view === "google" ? 1 : 0 });
+        if (aiTable) gsap.set(aiTable, { autoAlpha: view === "ai" ? 1 : 0 });
+        if (title) title.textContent = view === "google" ? t("fixGoogle") : t("fixAi");
+        if (body) body.textContent = view === "google" ? t("fixGoogleDo") : t("fixAiDo");
       };
 
-      paint(0);
-      if (!pointer) return;
-      if (!playing || reduced) {
-        gsap.set(pointer, { autoAlpha: 0 });
+      show("google");
+      bars.forEach((bar) => {
+        const fill = Number(bar.dataset.fill ?? 0.2);
+        gsap.set(bar, { scaleX: reduced ? fill : 0, transformOrigin: rtl ? "100% 50%" : "0% 50%" });
+      });
+
+      if (!playing || reduced || !pointer) {
+        if (pointer) gsap.set(pointer, { autoAlpha: 0 });
+        bars.forEach((bar) => gsap.set(bar, { scaleX: Number(bar.dataset.fill ?? 0.2) }));
         return;
       }
 
-      gsap.set(pointer, { autoAlpha: 1, x: rtl ? el.clientWidth - 48 : 28, y: 36, scale: 1 });
-      const detail = el.querySelector<HTMLElement>("[data-dash=detail]");
-      const actionBtn = el.querySelector<HTMLElement>("[data-dash=action-wrap]");
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.55 });
-
-      const visit = (index: number) => {
-        const row = rows[index];
-        if (row) tl.to(pointer, { ...pointerXY(el, row), duration: 0.65, ease: "power2.inOut" });
+      gsap.set(pointer, { autoAlpha: 1, x: rtl ? el.clientWidth - 40 : 36, y: 28, scale: 1 });
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.7 });
+      tl.to(bars, { scaleX: (_, target) => Number((target as HTMLElement).dataset.fill ?? 0.2), duration: 0.7, stagger: 0.06, ease: "power3.out" });
+      const firstGoogle = el.querySelector<HTMLElement>("[data-table=google] [data-row]");
+      if (firstGoogle) {
+        tl.to(pointer, { ...pointerXY(el, firstGoogle), duration: 0.55, ease: "power2.inOut" });
         clickPointer(pointer, tl);
-        tl.add(() => {
-          paint(index);
-        });
-        if (detail) tl.fromTo(detail, { autoAlpha: 0.55, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.32, ease: "power3.out" });
-        if (actionBtn) {
-          tl.to(pointer, { ...pointerXY(el, actionBtn), duration: 0.55, ease: "power2.inOut" });
-          clickPointer(pointer, tl);
-          tl.to(actionBtn, { scale: 0.985, duration: 0.1 }).to(actionBtn, { scale: 1, duration: 0.18 });
+        tl.to(firstGoogle, { backgroundColor: "rgba(94, 124, 255, 0.16)", duration: 0.2 });
+      }
+      if (action) {
+        tl.to(pointer, { ...pointerXY(el, action), duration: 0.5, ease: "power2.inOut" });
+        clickPointer(pointer, tl);
+        tl.to(action, { boxShadow: "0 0 0 1px #6d8bff, 0 12px 28px rgba(49,84,218,0.28)", duration: 0.2 });
+      }
+      tl.to({}, { duration: 0.7 });
+      if (aiTab) {
+        tl.to(pointer, { ...pointerXY(el, aiTab), duration: 0.5, ease: "power2.inOut" });
+        clickPointer(pointer, tl);
+        tl.add(() => show("ai"));
+        if (googleTable && aiTable) {
+          tl.fromTo(aiTable, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power3.out" });
         }
-        tl.to({}, { duration: 1.05 });
-      };
-
-      visit(0);
-      visit(1);
-      visit(2);
+      }
+      const firstAi = el.querySelector<HTMLElement>("[data-table=ai] [data-row]");
+      if (firstAi) {
+        tl.to(pointer, { ...pointerXY(el, firstAi), duration: 0.5, ease: "power2.inOut" });
+        clickPointer(pointer, tl);
+        tl.to(firstAi, { backgroundColor: "rgba(94, 124, 255, 0.16)", duration: 0.2 });
+      }
+      if (action) {
+        tl.to(pointer, { ...pointerXY(el, action), duration: 0.48, ease: "power2.inOut" });
+        clickPointer(pointer, tl);
+      }
+      tl.to({}, { duration: 1.3 });
+      tl.add(() => {
+        firstGoogle?.style.removeProperty("background-color");
+        firstAi?.style.removeProperty("background-color");
+        show("google");
+      });
     },
     { scope: root, dependencies: [playing, rtl], revertOnUpdate: true }
   );
 
-  return (
-    <div ref={root} className="dash-app" aria-label={t("tourDescription")}>
-      <header className="dash-chrome">
-        <span className="dash-dots" aria-hidden="true">
-          <i /><i /><i />
-        </span>
-        <span>{s("workspaceLabel")}</span>
-        <em>{s("preparedFor")}</em>
-      </header>
-      <div className="dash-body">
-        <nav className="dash-list" aria-hidden="true">
-          {findings.map((finding, index) => (
-            <button key={finding.id} type="button" tabIndex={-1} data-find={index} className={index === 0 ? "is-active" : undefined}>
-              <span>{finding.id}</span>
-              <strong>{titles[index]}</strong>
-              <small>{finding.area}</small>
-            </button>
-          ))}
-        </nav>
-        <div className="dash-main" data-dash="detail">
-          <p className="dash-kicker">{s("findingLabel")}</p>
-          <h2 data-dash="title">{titles[0]}</h2>
-          <p data-dash="observed">{findings[0].observed}</p>
-          <div className="dash-split">
-            <div>
-              <span>{s("today")}</span>
-              <p data-dash="before">{previews[0].before}</p>
-            </div>
-            <div>
-              <span>{s("proposed")}</span>
-              <p data-dash="after">{previews[0].after}</p>
-            </div>
-          </div>
-          <div className="dash-cta" data-dash="action-wrap">
-            <span>{fields("action")}</span>
-            <strong data-dash="action">{findings[0].action}</strong>
-          </div>
+  const table = (id: "google" | "ai", rows: typeof googleRows) => (
+    <div className="vis-table" data-table={id}>
+      <div className="vis-head">
+        <span>{t("colQuery")}</span>
+        <span>{t("colYou")}</span>
+        <span>{t("colOthers")}</span>
+      </div>
+      {rows.map((row) => (
+        <div key={row.q} className="vis-row" data-row="" data-tone={row.tone}>
+          <strong>{row.q}</strong>
+          <span className="vis-you">
+            <span className="vis-track">
+              <i data-fill={String(row.fill)} />
+            </span>
+            <em>{row.you}</em>
+          </span>
+          <span>{row.other}</span>
         </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div ref={root} className="vis-app" data-view="google" aria-label={t("tourDescription")}>
+      <header className="vis-top">
+        <span className="vis-domain">{t("domain")}</span>
+        <span className="vis-badge">{t("sampleBadge")}</span>
+        <div className="vis-tabs" role="presentation">
+          <button type="button" tabIndex={-1} data-tab="google" className="is-on">
+            {t("googleTab")}
+          </button>
+          <button type="button" tabIndex={-1} data-tab="ai">
+            {t("aiTab")}
+          </button>
+        </div>
+      </header>
+      <div className="vis-stage">
+        {table("google", googleRows)}
+        {table("ai", aiRows)}
+      </div>
+      <div className="vis-next" data-action="">
+        <span>{t("next")}</span>
+        <strong data-fix-title="">{t("fixGoogle")}</strong>
+        <p data-fix-body="">{t("fixGoogleDo")}</p>
       </div>
       <Pointer />
     </div>
@@ -345,7 +370,6 @@ function StudioBoard({ playing }: { playing: boolean }) {
 }
 
 export function ServicePreview({ service }: { service: Service }) {
-  const t = useTranslations("companyHero.preview");
   const viewport = useRef<HTMLDivElement>(null);
   const booted = useRef(false);
 
@@ -385,10 +409,6 @@ export function ServicePreview({ service }: { service: Service }) {
 
   return (
     <figure className="service-preview" data-service={service} data-arrival-services="">
-      <figcaption>
-        <strong>SailTru</strong>
-        <span>{t(service)}</span>
-      </figcaption>
       <div ref={viewport} className="preview-viewport">
         <div data-pane="analysis" className="preview-pane">
           <AnalysisBoard playing={service === "analysis"} />
