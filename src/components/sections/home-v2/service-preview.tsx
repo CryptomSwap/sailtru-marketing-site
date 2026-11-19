@@ -36,19 +36,49 @@ function clickPointer(pointer: HTMLElement, tl: gsap.core.Timeline) {
   tl.to(pointer, { scale: 1, duration: 0.14, ease: "power2.out" });
 }
 
+function seriesPath(values: number[], width: number, height: number, max: number) {
+  const step = width / Math.max(values.length - 1, 1);
+  return values
+    .map((value, index) => `${index === 0 ? "M" : "L"}${index * step},${(height - (value / max) * height).toFixed(1)}`)
+    .join(" ");
+}
+
+function seriesArea(values: number[], width: number, height: number, max: number) {
+  return `${seriesPath(values, width, height, max)} L${width},${height} L0,${height} Z`;
+}
+
+function ChartGrid({ width, height }: { width: number; height: number }) {
+  return (
+    <g className="ui-grid" aria-hidden="true">
+      {[0.25, 0.5, 0.75, 1].map((n) => (
+        <line key={n} x1="0" x2={width} y1={height * (1 - n)} y2={height * (1 - n)} />
+      ))}
+    </g>
+  );
+}
+
 function AnalysisBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
   const rtl = useLocale() === "he";
   const root = useRef<HTMLDivElement>(null);
-  const googleRows = [
-    { q: t("googleQ1"), you: t("googleYou1"), other: t("googleOther1"), tone: "gap", fill: 0.16 },
-    { q: t("googleQ2"), you: t("googleYou2"), other: t("googleOther2"), tone: "weak", fill: 0.34 },
-    { q: t("googleQ3"), you: t("googleYou3"), other: t("googleOther3"), tone: "ok", fill: 0.82 }
+  const you = [18, 19, 20, 19, 21, 22, 23, 24];
+  const rivals = [
+    { id: "a", color: "#22c55e", values: [48, 49, 50, 51, 51, 52, 53, 54] },
+    { id: "b", color: "#f59e0b", values: [32, 33, 34, 33, 35, 36, 36, 37] },
+    { id: "c", color: "#ef4444", values: [22, 23, 24, 25, 24, 25, 26, 26] }
   ];
-  const aiRows = [
-    { q: t("aiQ1"), you: t("aiYou1"), other: t("aiOther1"), tone: "gap", fill: 0.1 },
-    { q: t("aiQ2"), you: t("aiYou2"), other: t("aiOther2"), tone: "weak", fill: 0.22 },
-    { q: t("aiQ3"), you: t("aiYou3"), other: t("aiOther3"), tone: "gap", fill: 0.08 }
+  const models = [
+    { id: "gpt", label: t("modelGpt"), color: "#10a37f", values: [28, 30, 29, 31, 33, 34, 36, 38] },
+    { id: "gemini", label: t("modelGemini"), color: "#4285f4", values: [22, 23, 24, 24, 25, 26, 27, 28] },
+    { id: "perplexity", label: t("modelPerplexity"), color: "#20808d", values: [14, 15, 15, 16, 16, 17, 18, 18] },
+    { id: "claude", label: t("modelClaude"), color: "#d97706", values: [18, 18, 19, 19, 20, 21, 21, 22] }
+  ];
+  const kpis = [
+    { key: "google", label: t("kpiGoogle"), value: t("kpiGoogleVal"), delta: t("kpiGoogleDelta"), up: true },
+    { key: "pos", label: t("kpiPos"), value: t("kpiPosVal"), delta: t("kpiPosDelta"), up: true },
+    { key: "ai", label: t("kpiAi"), value: t("kpiAiVal"), delta: t("kpiAiDelta"), up: true },
+    { key: "sov", label: t("kpiSov"), value: t("kpiSovVal"), delta: t("kpiSovDelta"), up: false },
+    { key: "rival", label: t("kpiRival"), value: t("kpiRivalVal"), delta: t("kpiRivalDelta"), up: false, watch: true }
   ];
 
   useGSAP(
@@ -56,125 +86,151 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
       const el = root.current;
       if (!el) return;
       const pointer = el.querySelector<HTMLElement>("[data-pointer]");
-      const googleTab = el.querySelector<HTMLElement>("[data-tab=google]");
-      const aiTab = el.querySelector<HTMLElement>("[data-tab=ai]");
-      const googleTable = el.querySelector<HTMLElement>("[data-table=google]");
-      const aiTable = el.querySelector<HTMLElement>("[data-table=ai]");
-      const action = el.querySelector<HTMLElement>("[data-action]");
-      const title = el.querySelector<HTMLElement>("[data-fix-title]");
-      const body = el.querySelector<HTMLElement>("[data-fix-body]");
-      const bars = gsap.utils.toArray<HTMLElement>("[data-fill]");
+      const lines = gsap.utils.toArray<SVGGeometryElement>("[data-line]");
+      const fills = gsap.utils.toArray<HTMLElement>("[data-fill]");
+      const nav = gsap.utils.toArray<HTMLElement>("[data-nav]");
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const caption = el.querySelector<HTMLElement>("[data-caption]");
 
-      const show = (view: "google" | "ai") => {
-        el.dataset.view = view;
-        googleTab?.classList.toggle("is-on", view === "google");
-        aiTab?.classList.toggle("is-on", view === "ai");
-        if (googleTable) gsap.set(googleTable, { autoAlpha: view === "google" ? 1 : 0 });
-        if (aiTable) gsap.set(aiTable, { autoAlpha: view === "ai" ? 1 : 0 });
-        if (title) title.textContent = view === "google" ? t("fixGoogle") : t("fixAi");
-        if (body) body.textContent = view === "google" ? t("fixGoogleDo") : t("fixAiDo");
+      const setNav = (id: string) => {
+        nav.forEach((item) => item.classList.toggle("is-on", item.dataset.nav === id));
+        el.dataset.view = id;
+        const source = nav.find((item) => item.dataset.nav === id);
+        if (caption && source?.dataset.note) caption.textContent = source.dataset.note;
       };
 
-      show("google");
-      bars.forEach((bar) => {
-        const fill = Number(bar.dataset.fill ?? 0.2);
-        gsap.set(bar, { scaleX: reduced ? fill : 0, transformOrigin: rtl ? "100% 50%" : "0% 50%" });
+      setNav("overview");
+      lines.forEach((line) => {
+        const length = line.getTotalLength();
+        gsap.set(line, { strokeDasharray: length, strokeDashoffset: reduced ? 0 : length });
       });
+      gsap.set(fills, { autoAlpha: reduced ? 0.16 : 0 });
 
       if (!playing || reduced || !pointer) {
         if (pointer) gsap.set(pointer, { autoAlpha: 0 });
-        bars.forEach((bar) => gsap.set(bar, { scaleX: Number(bar.dataset.fill ?? 0.2) }));
         return;
       }
 
-      gsap.set(pointer, { autoAlpha: 1, x: rtl ? el.clientWidth - 40 : 36, y: 28, scale: 1 });
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.7 });
-      tl.to(bars, { scaleX: (_, target) => Number((target as HTMLElement).dataset.fill ?? 0.2), duration: 0.7, stagger: 0.06, ease: "power3.out" });
-      const firstGoogle = el.querySelector<HTMLElement>("[data-table=google] [data-row]");
-      if (firstGoogle) {
-        tl.to(pointer, { ...pointerXY(el, firstGoogle), duration: 0.55, ease: "power2.inOut" });
+      gsap.set(pointer, { autoAlpha: 1, x: rtl ? el.clientWidth - 36 : 24, y: 48, scale: 1 });
+      const seo = el.querySelector<HTMLElement>("[data-nav=seo]");
+      const aeo = el.querySelector<HTMLElement>("[data-nav=aeo]");
+      const watch = el.querySelector<HTMLElement>("[data-nav=watch]");
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8 });
+      tl.to(lines, { strokeDashoffset: 0, duration: 1.15, stagger: 0.08, ease: "power2.out" });
+      tl.to(fills, { autoAlpha: 0.16, duration: 0.4 }, 0.35);
+      if (seo) {
+        tl.to(pointer, { ...pointerXY(el, seo), duration: 0.45, ease: "power2.inOut" });
         clickPointer(pointer, tl);
-        tl.to(firstGoogle, { backgroundColor: "rgba(94, 124, 255, 0.16)", duration: 0.2 });
+        tl.add(() => setNav("seo"));
       }
-      if (action) {
-        tl.to(pointer, { ...pointerXY(el, action), duration: 0.5, ease: "power2.inOut" });
+      tl.to({}, { duration: 0.9 });
+      if (aeo) {
+        tl.to(pointer, { ...pointerXY(el, aeo), duration: 0.45, ease: "power2.inOut" });
         clickPointer(pointer, tl);
-        tl.to(action, { boxShadow: "0 0 0 1px #6d8bff, 0 12px 28px rgba(49,84,218,0.28)", duration: 0.2 });
+        tl.add(() => setNav("aeo"));
       }
-      tl.to({}, { duration: 0.7 });
-      if (aiTab) {
-        tl.to(pointer, { ...pointerXY(el, aiTab), duration: 0.5, ease: "power2.inOut" });
+      tl.to({}, { duration: 0.9 });
+      if (watch) {
+        tl.to(pointer, { ...pointerXY(el, watch), duration: 0.45, ease: "power2.inOut" });
         clickPointer(pointer, tl);
-        tl.add(() => show("ai"));
-        if (googleTable && aiTable) {
-          tl.fromTo(aiTable, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power3.out" });
-        }
+        tl.add(() => setNav("watch"));
+        tl.to("[data-rival]", { strokeWidth: 2.8, duration: 0.25 });
       }
-      const firstAi = el.querySelector<HTMLElement>("[data-table=ai] [data-row]");
-      if (firstAi) {
-        tl.to(pointer, { ...pointerXY(el, firstAi), duration: 0.5, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-        tl.to(firstAi, { backgroundColor: "rgba(94, 124, 255, 0.16)", duration: 0.2 });
-      }
-      if (action) {
-        tl.to(pointer, { ...pointerXY(el, action), duration: 0.48, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-      }
-      tl.to({}, { duration: 1.3 });
-      tl.add(() => {
-        firstGoogle?.style.removeProperty("background-color");
-        firstAi?.style.removeProperty("background-color");
-        show("google");
-      });
+      tl.to({}, { duration: 1.15 });
+      tl.add(() => setNav("overview"));
     },
     { scope: root, dependencies: [playing, rtl], revertOnUpdate: true }
   );
 
-  const table = (id: "google" | "ai", rows: typeof googleRows) => (
-    <div className="vis-table" data-table={id}>
-      <div className="vis-head">
-        <span>{t("colQuery")}</span>
-        <span>{t("colYou")}</span>
-        <span>{t("colOthers")}</span>
-      </div>
-      {rows.map((row) => (
-        <div key={row.q} className="vis-row" data-row="" data-tone={row.tone}>
-          <strong>{row.q}</strong>
-          <span className="vis-you">
-            <span className="vis-track">
-              <i data-fill={String(row.fill)} />
-            </span>
-            <em>{row.you}</em>
-          </span>
-          <span>{row.other}</span>
-        </div>
-      ))}
-    </div>
-  );
-
   return (
-    <div ref={root} className="vis-app" data-view="google" aria-label={t("tourDescription")}>
-      <header className="vis-top">
-        <span className="vis-domain">{t("domain")}</span>
-        <span className="vis-badge">{t("sampleBadge")}</span>
-        <div className="vis-tabs" role="presentation">
-          <button type="button" tabIndex={-1} data-tab="google" className="is-on">
-            {t("googleTab")}
-          </button>
-          <button type="button" tabIndex={-1} data-tab="ai">
-            {t("aiTab")}
-          </button>
+    <div ref={root} className="ui-dash" data-view="overview" aria-label={t("tourDescription")}>
+      <aside className="ui-rail" aria-hidden="true">
+        <strong>SailTru</strong>
+        <span>{t("navGroupAnalytics")}</span>
+        <button type="button" tabIndex={-1} data-nav="overview" data-note={t("captionOverview")} className="is-on">
+          {t("navOverview")}
+        </button>
+        <button type="button" tabIndex={-1} data-nav="seo" data-note={t("captionSeo")}>
+          {t("navSeo")}
+        </button>
+        <button type="button" tabIndex={-1} data-nav="aeo" data-note={t("captionAeo")}>
+          {t("navAeo")}
+        </button>
+        <span>{t("navGroupWatch")}</span>
+        <button type="button" tabIndex={-1} data-nav="watch" data-note={t("captionWatch")}>
+          {t("navWatch")}
+        </button>
+      </aside>
+      <div className="ui-main">
+        <header className="ui-head">
+          <span>{t("overview")}</span>
+          <em>{t("range")}</em>
+          <b>{t("sampleBadge")}</b>
+        </header>
+        <p className="ui-caption" data-caption="">
+          {t("captionOverview")}
+        </p>
+        <div className="ui-kpis">
+          {kpis.map((kpi) => (
+            <article key={kpi.key} data-watch-kpi={kpi.watch ? "" : undefined}>
+              <span>{kpi.label}</span>
+              <strong>{kpi.value}</strong>
+              <em data-up={kpi.up ? "" : undefined}>{kpi.delta}</em>
+            </article>
+          ))}
         </div>
-      </header>
-      <div className="vis-stage">
-        {table("google", googleRows)}
-        {table("ai", aiRows)}
-      </div>
-      <div className="vis-next" data-action="">
-        <span>{t("next")}</span>
-        <strong data-fix-title="">{t("fixGoogle")}</strong>
-        <p data-fix-body="">{t("fixGoogleDo")}</p>
+        <div className="ui-charts">
+          <section data-chart="seo">
+            <p>{t("chartSeo")}</p>
+            <svg viewBox="0 0 280 92" role="img" aria-hidden="true">
+              <ChartGrid width={280} height={92} />
+              <path data-fill="" fill="#3558f5" d={seriesArea(you, 280, 92, 60)} />
+              {rivals.map((rival) => (
+                <path
+                  key={rival.id}
+                  data-line=""
+                  data-rival=""
+                  fill="none"
+                  stroke={rival.color}
+                  strokeWidth="1.8"
+                  d={seriesPath(rival.values, 280, 92, 60)}
+                />
+              ))}
+              <path data-line="" fill="none" stroke="#3558f5" strokeWidth="2.4" d={seriesPath(you, 280, 92, 60)} />
+            </svg>
+            <ul>
+              <li>
+                <i className="is-you" /> {t("you")}
+              </li>
+              <li>
+                <i className="is-rival" /> {t("competitors")}
+              </li>
+            </ul>
+          </section>
+          <section data-chart="aeo">
+            <p>{t("chartAeo")}</p>
+            <svg viewBox="0 0 280 92" role="img" aria-hidden="true">
+              <ChartGrid width={280} height={92} />
+              {models.map((model) => (
+                <path
+                  key={model.id}
+                  data-line=""
+                  fill="none"
+                  stroke={model.color}
+                  strokeWidth="1.8"
+                  d={seriesPath(model.values, 280, 92, 50)}
+                />
+              ))}
+            </svg>
+            <ul>
+              {models.map((model) => (
+                <li key={model.id}>
+                  <i style={{ background: model.color }} /> {model.label}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
       <Pointer />
     </div>
@@ -184,132 +240,60 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
 function SolutionsBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
   const root = useRef<HTMLDivElement>(null);
+  const teams = [
+    { id: "sales", title: t("teamSales"), line: t("teamSalesLine"), agents: [t("agentInbox"), t("agentBrief"), t("agentCrm")] },
+    { id: "support", title: t("teamSupport"), line: t("teamSupportLine"), agents: [t("agentDocs"), t("agentReply"), t("agentHand")] },
+    { id: "watch", title: t("teamWatch"), line: t("teamWatchLine"), agents: [t("agentScan"), t("agentAlert"), t("agentWatchNote")] },
+    { id: "ops", title: t("teamOps"), line: t("teamOpsLine"), agents: [t("agentOpsQ"), t("agentOpsA"), t("agentOpsLog")] }
+  ];
 
   useGSAP(
     () => {
       const el = root.current;
       if (!el) return;
+      const cards = gsap.utils.toArray<HTMLElement>("[data-team]");
       const pointer = el.querySelector<HTMLElement>("[data-pointer]");
-      const scenes = gsap.utils.toArray<HTMLElement>("[data-scene]");
-      const typed = el.querySelector<HTMLElement>("[data-typed]");
-      const request = el.querySelector<HTMLElement>("[data-request]");
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const company = t("typedCompany");
-      const need = t("typedRequest");
-
-      gsap.set(scenes, { autoAlpha: 0 });
-      gsap.set(scenes[0], { autoAlpha: 1 });
-      if (typed) typed.textContent = reduced ? company : "";
-      if (request) request.textContent = reduced ? need : "";
+      gsap.set(cards, { autoAlpha: 1 });
       if (!playing || reduced || !pointer) {
-        gsap.set(pointer, { autoAlpha: 0 });
-        gsap.set(scenes, { autoAlpha: 1, x: 0 });
+        if (pointer) gsap.set(pointer, { autoAlpha: 0 });
         return;
       }
-
-      gsap.set(pointer, { autoAlpha: 1, x: 40, y: 64, scale: 1 });
-      const field = el.querySelector<HTMLElement>("[data-field=company]");
-      const next = el.querySelector<HTMLElement>("[data-next]");
-      const approve = el.querySelector<HTMLElement>("[data-approve]");
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8 });
-
-      const typeInto = (node: HTMLElement | null, text: string) => {
-        if (!node) return;
-        const state = { i: 0 };
-        tl.to(state, {
-          i: text.length,
-          duration: Math.min(1.6, text.length * 0.045),
-          ease: "none",
-          onUpdate: () => {
-            node.textContent = text.slice(0, Math.round(state.i));
-          }
+      gsap.set(pointer, { autoAlpha: 1, x: 28, y: 36 });
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.6 });
+      cards.forEach((card) => {
+        tl.to(pointer, { ...pointerXY(el, card), duration: 0.5, ease: "power2.inOut" });
+        clickPointer(pointer, tl);
+        tl.add(() => {
+          cards.forEach((item) => item.classList.toggle("is-on", item === card));
         });
-      };
-
-      if (field) {
-        tl.to(pointer, { ...pointerXY(el, field), duration: 0.5, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-      }
-      typeInto(typed, company);
-      typeInto(request, need);
-      if (next) {
-        tl.to(pointer, { ...pointerXY(el, next), duration: 0.45, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-      }
-      tl.to(scenes[0], { autoAlpha: 0, x: -24, duration: 0.32, ease: "power2.in" });
-      tl.fromTo(scenes[1], { autoAlpha: 0, x: 28 }, { autoAlpha: 1, x: 0, duration: 0.42, ease: "power3.out" }, "<0.12");
-      tl.to({}, { duration: 1.2 });
-      const continueBtn = el.querySelector<HTMLElement>("[data-continue]");
-      if (continueBtn) {
-        tl.to(pointer, { ...pointerXY(el, continueBtn), duration: 0.4, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-      }
-      tl.to(scenes[1], { autoAlpha: 0, x: -24, duration: 0.32, ease: "power2.in" });
-      tl.fromTo(scenes[2], { autoAlpha: 0, x: 28 }, { autoAlpha: 1, x: 0, duration: 0.42, ease: "power3.out" }, "<0.12");
-      if (approve) {
-        tl.set(approve, { backgroundColor: "#fff", color: "#152f85" });
-        tl.to(pointer, { ...pointerXY(el, approve), duration: 0.45, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-        tl.to(approve, { backgroundColor: "#3154da", color: "#fff", duration: 0.2 });
-      }
-      tl.to({}, { duration: 1.4 });
-      tl.add(() => {
-        if (typed) typed.textContent = "";
-        if (request) request.textContent = "";
+        tl.from(card.querySelectorAll("li"), { y: 6, autoAlpha: 0, stagger: 0.08, duration: 0.28, ease: "power3.out" });
+        tl.to({}, { duration: 0.95 });
       });
     },
     { scope: root, dependencies: [playing], revertOnUpdate: true }
   );
 
   return (
-    <div ref={root} className="flow-app">
-      <div data-scene="form" className="flow-scene">
-        <p className="flow-title">{t("receive")}</p>
-        <label data-field="company">
-          {t("formCompany")}
-          <span data-typed="" className="flow-input" />
-        </label>
-        <label>
-          {t("formNeed")}
-          <span data-request="" className="flow-input flow-input--tall" />
-        </label>
-        <button type="button" tabIndex={-1} data-next="" className="flow-next">
-          {t("qualify")}
-        </button>
-      </div>
-      <div data-scene="brief" className="flow-scene">
-        <p className="flow-title">{t("qualify")}</p>
-        <p>{t("qualifyDetail")}</p>
-        <dl className="flow-card">
-          <div>
-            <dt>{t("formCompany")}</dt>
-            <dd>{t("typedCompany")}</dd>
-          </div>
-          <div>
-            <dt>{t("formNeed")}</dt>
-            <dd>{t("typedRequest")}</dd>
-          </div>
-        </dl>
-        <p className="flow-flag">{t("missing")}</p>
-        <button type="button" tabIndex={-1} data-continue="" className="flow-next">
-          {t("handoff")}
-        </button>
-      </div>
-      <div data-scene="crm" className="flow-scene">
-        <p className="flow-title">{t("handoff")}</p>
-        <dl className="flow-card">
-          <div>
-            <dt>{t("formCompany")}</dt>
-            <dd>{t("typedCompany")}</dd>
-          </div>
-          <div>
-            <dt>{t("crmDeal")}</dt>
-            <dd>{t("handoffDetail")}</dd>
-          </div>
-        </dl>
-        <button type="button" tabIndex={-1} data-approve="" className="flow-next">
-          {t("approve")}
-        </button>
+    <div ref={root} className="team-board">
+      <p className="team-lead">{t("teamsLead")}</p>
+      <ol className="team-how">
+        <li>{t("how1")}</li>
+        <li>{t("how2")}</li>
+        <li>{t("how3")}</li>
+      </ol>
+      <div className="team-grid">
+        {teams.map((team, index) => (
+          <article key={team.id} data-team={team.id} className={index === 0 ? "is-on" : ""}>
+            <h3>{team.title}</h3>
+            <p>{team.line}</p>
+            <ol>
+              {team.agents.map((agent) => (
+                <li key={agent}>{agent}</li>
+              ))}
+            </ol>
+          </article>
+        ))}
       </div>
       <Pointer />
     </div>
@@ -319,52 +303,45 @@ function SolutionsBoard({ playing }: { playing: boolean }) {
 function StudioBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
   const root = useRef<HTMLDivElement>(null);
+  const offers = [
+    { id: "ads", title: t("offerAds"), line: t("offerAdsLine"), example: t("offerAdsEx") },
+    { id: "social", title: t("offerSocial"), line: t("offerSocialLine"), example: t("offerSocialEx") },
+    { id: "pages", title: t("offerPages"), line: t("offerPagesLine"), example: t("offerPagesEx") }
+  ];
 
   useGSAP(
     () => {
       const el = root.current;
       if (!el) return;
+      const cards = gsap.utils.toArray<HTMLElement>("[data-offer]");
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const line = el.querySelector<HTMLElement>("[data-line]");
-      const post = el.querySelector<HTMLElement>("[data-post]");
-      const share = el.querySelector<HTMLElement>("[data-share]");
-      const pointer = el.querySelector<HTMLElement>("[data-pointer]");
-      if (!playing || reduced) {
-        gsap.set([line, post, share, pointer], { clearProps: "all" });
-        if (pointer) gsap.set(pointer, { autoAlpha: 0 });
-        return;
-      }
-      if (pointer) gsap.set(pointer, { autoAlpha: 1, x: 80, y: 90 });
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.7, defaults: { ease: "power3.out" } });
-      if (line) tl.fromTo(line, { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.65 }, 0);
-      if (post) tl.fromTo(post, { xPercent: 16, autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: 0.65 }, 0.55);
-      if (share && pointer) {
-        tl.set(share, { backgroundColor: "#fff", color: "#152f85" });
-        tl.to(pointer, { ...pointerXY(el, share), duration: 0.55, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-        tl.to(share, { backgroundColor: "#3154da", color: "#fff", duration: 0.2 });
-      }
-      tl.to({}, { duration: 1.6 });
+      gsap.set(cards, { autoAlpha: 1, y: 0 });
+      if (!playing || reduced) return;
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8, defaults: { ease: "power3.out" } });
+      cards.forEach((card) => {
+        tl.add(() => {
+          cards.forEach((item) => item.classList.toggle("is-on", item === card));
+        });
+        tl.to({}, { duration: 1.25 });
+      });
     },
     { scope: root, dependencies: [playing], revertOnUpdate: true }
   );
 
   return (
-    <div ref={root} className="studio-board">
-      <article className="studio-print" data-print="">
-        <small>Northline</small>
-        <strong data-line="">{t("adCopy")}</strong>
-      </article>
-      <article className="studio-post" data-post="">
-        <div className="studio-post__photo" aria-hidden="true" />
-        <small>{t("social")}</small>
-        <strong>{t("postTitle")}</strong>
-        <p>{t("postCopy")}</p>
-        <button type="button" tabIndex={-1} data-share="" className="studio-share">
-          {t("share")}
-        </button>
-      </article>
-      <Pointer />
+    <div ref={root} className="offer-board">
+      <p className="team-lead">{t("studioLead")}</p>
+      <p className="studio-how">{t("studioHow")}</p>
+      <div className="offer-grid">
+        {offers.map((offer, index) => (
+          <article key={offer.id} data-offer={offer.id} className={index === 0 ? "is-on" : ""}>
+            <em>{t("studioStep", { n: index + 1 })}</em>
+            <h3>{offer.title}</h3>
+            <p>{offer.line}</p>
+            <span>{offer.example}</span>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }

@@ -98,7 +98,12 @@ export function HeroScanSequence({ className = "", simpleEntry = false }: { clas
   const handleImageError = useCallback(() => setPreviewFailed(true), []);
 
   if (simpleEntry && phase === "idle") {
-    return <div className="field-scan field-scan--ref"><HeroUrlScan onRunScan={runScan} /></div>;
+    return (
+      <div className="field-scan field-scan--ref company-scan">
+        <HeroUrlScan onRunScan={runScan} />
+        <RotatingBrandSlot className="company-credibility rotating-brand--centered" />
+      </div>
+    );
   }
 
   const caption =
