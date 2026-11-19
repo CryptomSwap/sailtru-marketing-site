@@ -2,363 +2,216 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 gsap.registerPlugin(useGSAP);
 
 type Service = "analysis" | "solutions" | "studio";
+type AnalysisView = "overview" | "answers" | "competitors" | "priorities";
+type Automation = "sales" | "support" | "watch";
+type StudioOutput = "video" | "plan";
 
-function Pointer() {
+const analysisViews: AnalysisView[] = ["overview", "answers", "competitors", "priorities"];
+
+function LineChart() {
   return (
-    <svg className="dash-pointer" data-pointer="" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="#fff"
-        stroke="#12141a"
-        strokeWidth="1.4"
-        d="M4.2 3.2 19 13.1l-6.4.7 2.8 6.6-2.7 1.1-2.8-6.6-3.8 3.6z"
-      />
+    <svg className="product-chart" viewBox="0 0 620 190" role="img" aria-label="Visibility trend">
+      <defs>
+        <linearGradient id="visibility-fill" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#5470ff" stopOpacity=".26" />
+          <stop offset="100%" stopColor="#5470ff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {[28, 76, 124, 172].map((y) => <line key={y} x1="0" x2="620" y1={y} y2={y} className="chart-gridline" />)}
+      <path className="chart-fill" d="M0 169 C70 165 108 151 155 152 S248 146 300 121 S402 113 456 86 S550 78 620 41 L620 190 L0 190 Z" />
+      <path data-chart-line="" className="chart-line" d="M0 169 C70 165 108 151 155 152 S248 146 300 121 S402 113 456 86 S550 78 620 41" />
+      <path className="chart-rival" d="M0 72 C110 69 190 76 278 65 S452 72 620 58" />
+      <circle cx="620" cy="41" r="7" className="chart-dot" />
     </svg>
   );
 }
 
-function pointerXY(root: HTMLElement, target: HTMLElement) {
-  const frame = root.getBoundingClientRect();
-  const box = target.getBoundingClientRect();
-  return {
-    x: box.left - frame.left + box.width * 0.62,
-    y: box.top - frame.top + box.height * 0.42
-  };
+function AnalysisOverview() {
+  const t = useTranslations("companyHero.preview");
+  return <div className="analysis-screen analysis-overview" data-analysis-screen="overview">
+    <div className="metric-strip">
+      <article><span>{t("visibilityScore")}</span><strong>42</strong><em>+7</em></article>
+      <article><span>{t("aiMentions")}</span><strong>9%</strong><em>+1.4</em></article>
+      <article><span>{t("searchPosition")}</span><strong>14.2</strong><em>−0.8</em></article>
+    </div>
+    <div className="analysis-grid">
+      <section className="trend-card">
+        <header><div><strong>{t("visibilityTrend")}</strong><span>{t("youVsMarket")}</span></div><b>{t("last30Days")}</b></header>
+        <LineChart />
+        <footer><span><i className="legend-you" />{t("you")}</span><span><i className="legend-market" />{t("marketLeader")}</span></footer>
+      </section>
+      <aside className="opportunity-stack">
+        <header><strong>{t("topOpportunities")}</strong><span>3 {t("found")}</span></header>
+        <article><b>01</b><div><strong>{t("officeGap")}</strong><span>{t("highImpact")}</span></div></article>
+        <article><b>02</b><div><strong>{t("aiDescriptionGap")}</strong><span>{t("mediumImpact")}</span></div></article>
+        <article><b>03</b><div><strong>{t("competitorProofGap")}</strong><span>{t("mediumImpact")}</span></div></article>
+      </aside>
+    </div>
+  </div>;
 }
 
-function clickPointer(pointer: HTMLElement, tl: gsap.core.Timeline) {
-  tl.to(pointer, { scale: 0.82, duration: 0.08, ease: "power2.in" });
-  tl.to(pointer, { scale: 1, duration: 0.14, ease: "power2.out" });
+function AnalysisAnswers() {
+  const t = useTranslations("companyHero.preview");
+  return <div className="analysis-screen answer-screen" data-analysis-screen="answers">
+    <header className="screen-title"><div><strong>{t("answerCoverage")}</strong><span>{t("answerCoverageLine")}</span></div><b>9 / 40</b></header>
+    <div className="answer-layout">
+      <section className="model-coverage">
+        {[{ name: "ChatGPT", score: 31 }, { name: "Gemini", score: 24 }, { name: "Perplexity", score: 18 }, { name: "Claude", score: 14 }].map((model) => <article key={model.name}><div><strong>{model.name}</strong><span>{model.score}%</span></div><i><span style={{ width: `${model.score}%` }} /></i></article>)}
+      </section>
+      <section className="prompt-results">
+        <header><span>{t("testedPrompt")}</span><span>{t("result")}</span></header>
+        <article><strong>{t("promptOffice")}</strong><em data-state="missing">{t("notNamed")}</em></article>
+        <article><strong>{t("promptBest")}</strong><em data-state="wrong">{t("wrongCategory")}</em></article>
+        <article><strong>{t("promptResidential")}</strong><em data-state="visible">{t("visible")}</em></article>
+      </section>
+    </div>
+    <div className="recommended-action"><span>{t("recommendedAction")}</span><strong>{t("answerRecommendation")}</strong></div>
+  </div>;
 }
 
-function points(values: number[], width: number, height: number, max: number) {
-  const step = width / Math.max(values.length - 1, 1);
-  return values.map((value, index) => ({
-    x: index * step,
-    y: height - (value / max) * height
-  }));
+function AnalysisCompetitors() {
+  const t = useTranslations("companyHero.preview");
+  const rivals = [{ name: "Apex Studio", score: 82, mentions: 34 }, { name: "Forma", score: 67, mentions: 27 }, { name: t("yourCompany"), score: 42, mentions: 9 }, { name: "North & Co.", score: 35, mentions: 7 }];
+  return <div className="analysis-screen competitor-screen" data-analysis-screen="competitors">
+    <header className="screen-title"><div><strong>{t("competitorBenchmark")}</strong><span>{t("competitorBenchmarkLine")}</span></div><b>4 {t("tracked")}</b></header>
+    <div className="competitor-table">
+      <header><span>{t("company")}</span><span>{t("visibility")}</span><span>{t("aiMentions")}</span></header>
+      {rivals.map((rival, index) => <article key={rival.name} data-you={index === 2 ? "" : undefined}><div><b>{index + 1}</b><strong>{rival.name}</strong></div><div className="rank-bar"><i><span style={{ width: `${rival.score}%` }} /></i><em>{rival.score}</em></div><span>{rival.mentions}</span></article>)}
+    </div>
+    <div className="gap-callout"><span>{t("whyTheyLead")}</span><strong>{t("competitorLeadReason")}</strong><p>{t("competitorLeadAction")}</p></div>
+  </div>;
 }
 
-function smoothPath(values: number[], width: number, height: number, max: number) {
-  const pts = points(values, width, height, max);
-  if (!pts.length) return "";
-  let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i === 0 ? i : i - 1];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2] ?? p2;
-    const c1x = p1.x + (p2.x - p0.x) / 6;
-    const c1y = p1.y + (p2.y - p0.y) / 6;
-    const c2x = p2.x - (p3.x - p1.x) / 6;
-    const c2y = p2.y - (p3.y - p1.y) / 6;
-    d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
-  }
-  return d;
-}
-
-function smoothArea(values: number[], width: number, height: number, max: number) {
-  return `${smoothPath(values, width, height, max)} L${width},${height} L0,${height} Z`;
-}
-
-function ChartGrid({ width, height }: { width: number; height: number }) {
-  return (
-    <g className="ui-grid" aria-hidden="true">
-      {[0.25, 0.5, 0.75, 1].map((n) => (
-        <line key={n} x1="0" x2={width} y1={height * (1 - n)} y2={height * (1 - n)} />
-      ))}
-    </g>
-  );
+function AnalysisPriorities() {
+  const t = useTranslations("companyHero.preview");
+  const priorities = [["P1", "officeGap", "highImpact", "lowEffort"], ["P2", "answerDescription", "highImpact", "mediumEffort"], ["P3", "proofGap", "mediumImpact", "mediumEffort"]] as const;
+  return <div className="analysis-screen priorities-screen" data-analysis-screen="priorities">
+    <header className="screen-title"><div><strong>{t("priorityPlan")}</strong><span>{t("priorityPlanLine")}</span></div><b>{t("readyToBuild")}</b></header>
+    <div className="priority-list">{priorities.map(([id, title, impact, effort], index) => <article key={id}>
+      <div className="priority-rank"><b>{id}</b><i>{index + 1}</i></div><div><strong>{t(title)}</strong><p>{t(`${title}Action`)}</p></div>
+      <dl><div><dt>{t("impact")}</dt><dd>{t(impact)}</dd></div><div><dt>{t("effort")}</dt><dd>{t(effort)}</dd></div></dl>
+    </article>)}</div>
+  </div>;
 }
 
 function AnalysisBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
   const rtl = useLocale() === "he";
   const root = useRef<HTMLDivElement>(null);
-  const [selectedView, setSelectedView] = useState<string | null>(null);
-  const you = [10, 11, 12, 13, 14, 15, 16, 18];
-  const rivals = [
-    { id: "a", color: "#16a34a", values: [54, 55, 55, 56, 56, 57, 57, 58] },
-    { id: "b", color: "#d97706", values: [38, 39, 41, 40, 42, 43, 44, 45] },
-    { id: "c", color: "#e11d48", values: [26, 27, 28, 29, 28, 30, 31, 32] }
-  ];
-  const models = [
-    { id: "gpt", label: t("modelGpt"), color: "#10a37f", values: [18, 22, 26, 31, 36, 42, 48, 54] },
-    { id: "gemini", label: t("modelGemini"), color: "#4285f4", values: [14, 16, 18, 21, 24, 27, 30, 33] },
-    { id: "perplexity", label: t("modelPerplexity"), color: "#0f766e", values: [8, 9, 11, 12, 14, 15, 17, 18] },
-    { id: "claude", label: t("modelClaude"), color: "#c2410c", values: [11, 13, 14, 16, 18, 20, 22, 24] }
-  ];
-  const kpis = [
-    { key: "google", label: t("kpiGoogle"), value: t("kpiGoogleVal"), delta: t("kpiGoogleDelta"), up: true },
-    { key: "pos", label: t("kpiPos"), value: t("kpiPosVal"), delta: t("kpiPosDelta"), up: true },
-    { key: "ai", label: t("kpiAi"), value: t("kpiAiVal"), delta: t("kpiAiDelta"), up: true },
-    { key: "rival", label: t("kpiRival"), value: t("kpiRivalVal"), delta: t("kpiRivalDelta"), up: false, watch: true }
-  ];
-  const plot = { w: 640, h: 236, max: 64 };
-  const youPts = points(you, plot.w, plot.h, plot.max);
-  const last = youPts[youPts.length - 1];
-  const ticks = ["3 Sep", "12 Sep", "22 Sep", "1 Oct"];
+  const [view, setView] = useState<AnalysisView>("overview");
+  const manual = useRef(false);
 
-  useGSAP(
-    () => {
-      const el = root.current;
-      if (!el) return;
-      const pointer = el.querySelector<HTMLElement>("[data-pointer]");
-      const lines = gsap.utils.toArray<SVGGeometryElement>("[data-line]");
-      const fills = gsap.utils.toArray<SVGElement>("[data-fill]");
-      const nav = gsap.utils.toArray<HTMLElement>("[data-nav]");
-      const cards = gsap.utils.toArray<HTMLElement>(".ui-kpis article");
-      const beam = el.querySelector<HTMLElement>("[data-beam]");
-      const tip = el.querySelector<HTMLElement>("[data-tip]");
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const setNav = (id: string) => {
-        nav.forEach((item) => item.classList.toggle("is-on", item.dataset.nav === id));
-        el.dataset.view = id;
-        cards.forEach((card) => {
-          const hot =
-            (id === "watch" && card.hasAttribute("data-watch-kpi")) ||
-            (id === "seo" && card.dataset.key === "google") ||
-            (id === "aeo" && card.dataset.key === "ai");
-          card.classList.toggle("is-hot", hot);
-        });
-      };
+  useGSAP(() => {
+    const el = root.current;
+    if (!el) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const screen = el.querySelector<HTMLElement>("[data-analysis-screen]");
+    gsap.fromTo(screen, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: reduced ? 0 : .42, ease: "power3.out" });
+    if (view === "overview" && !reduced) {
+      const line = el.querySelector<SVGPathElement>("[data-chart-line]");
+      if (line) { const length = line.getTotalLength(); gsap.fromTo(line, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: 1.25, ease: "power2.out" }); }
+      gsap.from(".metric-strip article, .opportunity-stack article", { autoAlpha: 0, y: 9, stagger: .07, duration: .38 });
+    }
+  }, { scope: root, dependencies: [view] });
 
-      setNav(selectedView ?? "overview");
-      lines.forEach((line) => {
-        const length = line.getTotalLength();
-        gsap.set(line, { strokeDasharray: length, strokeDashoffset: reduced || selectedView ? 0 : length });
-      });
-      gsap.set(fills, { autoAlpha: reduced || selectedView ? 1 : 0 });
-      if (tip) gsap.set(tip, { autoAlpha: reduced || selectedView ? 1 : 0 });
+  useEffect(() => {
+    if (!playing || manual.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let index = 0;
+    const timer = window.setInterval(() => { index = (index + 1) % analysisViews.length; setView(analysisViews[index]); }, 3600);
+    return () => window.clearInterval(timer);
+  }, [playing]);
 
-      if (!playing || reduced || selectedView || !pointer) {
-        if (pointer) gsap.set(pointer, { autoAlpha: 0 });
-        return;
-      }
+  function selectView(next: AnalysisView) { manual.current = true; setView(next); }
 
-      gsap.set(pointer, { autoAlpha: 1, x: rtl ? el.clientWidth - 40 : 28, y: 56, scale: 1 });
-      gsap.from(cards, { y: 14, autoAlpha: 0, stagger: 0.05, duration: 0.45, ease: "power3.out" });
-      const seo = el.querySelector<HTMLElement>("[data-nav=seo]");
-      const aeo = el.querySelector<HTMLElement>("[data-nav=aeo]");
-      const watch = el.querySelector<HTMLElement>("[data-nav=watch]");
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.7 });
-      tl.to(lines, { strokeDashoffset: 0, duration: 1.35, stagger: 0.07, ease: "power2.out" });
-      tl.to(fills, { autoAlpha: 1, duration: 0.5 }, 0.45);
-      if (beam) {
-        tl.fromTo(beam, { xPercent: rtl ? 80 : -20, autoAlpha: 0.7 }, { xPercent: rtl ? -20 : 110, autoAlpha: 0, duration: 1.1, ease: "none" }, 0.2);
-      }
-      if (tip) {
-        tl.to(tip, { autoAlpha: 1, duration: 0.25 }, 1.1);
-      }
-      if (seo) {
-        tl.to(pointer, { ...pointerXY(el, seo), duration: 0.5, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-        tl.add(() => setNav("seo"));
-      }
-      tl.to({}, { duration: 0.95 });
-      if (aeo) {
-        tl.to(pointer, { ...pointerXY(el, aeo), duration: 0.5, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-        tl.add(() => setNav("aeo"));
-      }
-      tl.to({}, { duration: 0.95 });
-      if (watch) {
-        tl.to(pointer, { ...pointerXY(el, watch), duration: 0.5, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-        tl.add(() => setNav("watch"));
-        tl.to("[data-rival]", { strokeWidth: 3, duration: 0.28 });
-      }
-      tl.to({}, { duration: 1.2 });
-      tl.add(() => setNav("overview"));
-    },
-    { scope: root, dependencies: [playing, rtl, selectedView], revertOnUpdate: true }
-  );
-
-  return (
-    <div ref={root} className="ui-dash" data-view="overview" aria-label={t("tourDescription")}>
-      <aside className="ui-rail" aria-label={t("navGroupAnalytics")}>
-        <strong>SailTru</strong>
-        <span>{t("navGroupAnalytics")}</span>
-        <button type="button" onClick={() => setSelectedView("overview")} data-nav="overview" className="is-on">
-          {t("navOverview")}
-        </button>
-        <button type="button" onClick={() => setSelectedView("seo")} data-nav="seo">
-          {t("navSeo")}
-        </button>
-        <button type="button" onClick={() => setSelectedView("aeo")} data-nav="aeo">
-          {t("navAeo")}
-        </button>
-        <span>{t("navGroupWatch")}</span>
-        <button type="button" onClick={() => setSelectedView("watch")} data-nav="watch">
-          {t("navWatch")}
-        </button>
-      </aside>
-      <div className="ui-main">
-        <header className="ui-head">
-          <span>{t("overview")}</span>
-          <em>{t("range")}</em>
-          <b>{t("sampleBadge")}</b>
-        </header>
-        <div className="ui-kpis">
-          {kpis.map((kpi) => (
-            <article key={kpi.key} data-key={kpi.key} data-watch-kpi={kpi.watch ? "" : undefined}>
-              <span>{kpi.label}</span>
-              <div>
-                <strong>{kpi.value}</strong>
-                <em data-up={kpi.up ? "" : undefined}>{kpi.delta}</em>
-              </div>
-            </article>
-          ))}
-        </div>
-        <div className="ui-charts">
-          <section data-chart="seo">
-            <p>
-              {t("chartSeo")} <small>{t("chartSeoHint")}</small>
-            </p>
-            <div className="ui-plot">
-              <i className="ui-beam" data-beam="" />
-              <svg viewBox={`0 0 ${plot.w} ${plot.h}`} role="img" aria-hidden="true" shapeRendering="geometricPrecision">
-                <defs>
-                  <linearGradient id="sailtruYouFill" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#3558f5" stopOpacity="0.32" />
-                    <stop offset="100%" stopColor="#3558f5" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <ChartGrid width={plot.w} height={plot.h} />
-                <path data-fill="" fill="url(#sailtruYouFill)" d={smoothArea(you, plot.w, plot.h, plot.max)} />
-                {rivals.map((rival) => (
-                  <path
-                    key={rival.id}
-                    data-line=""
-                    data-rival=""
-                    fill="none"
-                    stroke={rival.color}
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d={smoothPath(rival.values, plot.w, plot.h, plot.max)}
-                  />
-                ))}
-                <path
-                  data-line=""
-                  fill="none"
-                  stroke="#3558f5"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d={smoothPath(you, plot.w, plot.h, plot.max)}
-                />
-                <circle cx={last.x} cy={last.y} r="6" fill="#fff" stroke="#3558f5" strokeWidth="3" />
-              </svg>
-              <div className="ui-tip" data-tip="" style={{ left: `${(last.x / plot.w) * 100}%`, top: `${(last.y / plot.h) * 100}%` }}>
-                <strong>{t("kpiGoogleVal")}</strong>
-                <span>{t("you")}</span>
-              </div>
-              <ol className="ui-ticks" aria-hidden="true">
-                {ticks.map((tick) => (
-                  <li key={tick}>{tick}</li>
-                ))}
-              </ol>
-            </div>
-            <ul>
-              <li>
-                <i className="is-you" /> {t("you")}
-              </li>
-              <li>
-                <i className="is-rival" /> {t("competitors")}
-              </li>
-            </ul>
-          </section>
-          <section data-chart="aeo">
-            <p>
-              {t("chartAeo")} <small>{t("chartAeoHint")}</small>
-            </p>
-            <div className="ui-plot">
-              <svg viewBox={`0 0 ${plot.w} ${plot.h}`} role="img" aria-hidden="true" shapeRendering="geometricPrecision">
-                <ChartGrid width={plot.w} height={plot.h} />
-                {models.map((model) => (
-                  <path
-                    key={model.id}
-                    data-line=""
-                    fill="none"
-                    stroke={model.color}
-                    strokeWidth="3.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d={smoothPath(model.values, plot.w, plot.h, 60)}
-                  />
-                ))}
-              </svg>
-              <ol className="ui-ticks" aria-hidden="true">
-                {ticks.map((tick) => (
-                  <li key={tick}>{tick}</li>
-                ))}
-              </ol>
-            </div>
-            <ul>
-              {models.map((model) => (
-                <li key={model.id}>
-                  <i style={{ background: model.color }} /> {model.label}
-                </li>
-              ))}
-            </ul>
-          </section>
-        </div>
-        <section className="visibility-action"><small>{t("next")}</small>
-          {(["overview","seo","aeo","watch"] as const).map((view, i) =>
-            <div key={view} data-insight={view}><h3>{t(["visibilityGap","googleQ2","aiQ2","googleQ1"][i])}</h3>
-              <p>{t(["visibilityAction","fixGoogleDo","fixAiDo","googleOther1"][i])}</p></div>
-          )}
-        </section>
-      </div>
-      <Pointer />
-    </div>
-  );
+  return <div ref={root} className="analysis-app" dir={rtl ? "rtl" : "ltr"}>
+    <aside className="product-sidebar">
+      <div className="product-mark"><i />Sailtru</div><span>{t("workspace")}</span>
+      {analysisViews.map((item) => <button key={item} type="button" aria-current={view === item ? "page" : undefined} onClick={() => selectView(item)}><i className={`nav-icon nav-icon--${item}`} aria-hidden="true" /><span>{t(`analysisNav.${item}`)}</span></button>)}
+      <footer><i />{t("monitoringActive")}</footer>
+    </aside>
+    <main className="product-main">
+      <header className="product-topbar"><div><strong>example.studio</strong><span>{t("lastScan")}</span></div><button type="button">{t("exportReport")}</button></header>
+      <div className="screen-shell" key={view}>{view === "overview" && <AnalysisOverview />}{view === "answers" && <AnalysisAnswers />}{view === "competitors" && <AnalysisCompetitors />}{view === "priorities" && <AnalysisPriorities />}</div>
+    </main>
+  </div>;
 }
 
-function SolutionsBoard() {
+const automationTypes: Automation[] = ["sales", "support", "watch"];
+
+function SolutionsBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
-  const [team, setTeam] = useState<"sales" | "support">("sales");
-  return <section className="client-board desk-board">
-    <header className="board-head"><span>{t("customWorkspace")}</span><small>{t("sampleBadge")}</small></header>
-    <h2>{t("deskTitle")}</h2>
-    <div className="preview-choices">{(["sales", "support"] as const).map(id =>
-      <button type="button" key={id} aria-pressed={team === id} onClick={() => setTeam(id)}>{t(id === "sales" ? "teamSales" : "teamSupport")}</button>
-    )}</div>
-    <div className="desk-result output-enter" key={team}>
-      <small>{t("incoming")}</small><blockquote>{t(`${team}Input`)}</blockquote>
-      <div className="desk-paper"><small>{t(`${team}Destination`)}</small><h3>{t(`${team}Title`)}</h3><p>{t(`${team}Draft`)}</p><strong>{t("forReview")}</strong></div>
+  const [automation, setAutomation] = useState<Automation>("sales");
+  const [step, setStep] = useState(0);
+  const steps = t.raw(`automations.${automation}.steps`) as { title: string; detail: string }[];
+
+  useEffect(() => {
+    if (!playing || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => setStep((value) => (value + 1) % steps.length), 1500);
+    return () => window.clearInterval(timer);
+  }, [automation, playing, steps.length]);
+
+  return <div className="automation-app">
+    <header className="automation-topbar"><div className="product-mark product-mark--dark"><i />Sailtru</div><span>{t("agentSystem")}</span><b><i />{t("live")}</b></header>
+    <div className="automation-body">
+      <nav className="automation-picker" aria-label={t("chooseSystem")}><span>{t("systemsWeCanBuild")}</span>
+        {automationTypes.map((item) => <button type="button" key={item} aria-pressed={automation === item} onClick={() => { setAutomation(item); setStep(0); }}><i /><div><strong>{t(`automations.${item}.label`)}</strong><small>{t(`automations.${item}.caption`)}</small></div></button>)}
+      </nav>
+      <main className="automation-workspace">
+        <header><div><span>{t("runningNow")}</span><h2>{t(`automations.${automation}.title`)}</h2></div><div className="tool-pills"><i>{t(`automations.${automation}.source`)}</i><span>+</span><i>{t(`automations.${automation}.destination`)}</i></div></header>
+        <div className="automation-canvas">
+          <section className="agent-run">{steps.map((item, index) => <article key={item.title} data-active={step === index ? "" : undefined} data-complete={step > index ? "" : undefined}>
+            <div className="agent-step-state"><i>{step > index ? "✓" : index + 1}</i><span /></div><div><strong>{item.title}</strong><p>{item.detail}</p></div>{step === index && <em>{t("working")}</em>}
+          </article>)}</section>
+          <aside className="agent-output" key={automation}><span>{t("draftOutput")}</span><h3>{t(`automations.${automation}.outputTitle`)}</h3><p>{t(`automations.${automation}.outputBody`)}</p>
+            <dl><div><dt>{t("confidence")}</dt><dd>94%</dd></div><div><dt>{t("sources")}</dt><dd>{t(`automations.${automation}.sourceCount`)}</dd></div></dl>
+            <button type="button">{t("approveAndSend")}</button><small>{t("humanApproval")}</small>
+          </aside>
+        </div>
+      </main>
     </div>
-  </section>;
+  </div>;
 }
 
 function StudioBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
-  const [output, setOutput] = useState<"video" | "plan">("video");
+  const [output, setOutput] = useState<StudioOutput>("video");
+  const [agentStep, setAgentStep] = useState(0);
   const posts = t.raw("postPlan") as { day: string; format: string; title: string }[];
-  return <section className="client-board agent-board">
-    <header className="board-head"><span>Sailtru Studio</span><small>{t("exampleWorkspace")}</small></header>
-    <h2>{t("agentTitle")}</h2>
-    <div className="agent-sources">
-      <div><small>{t("scanSource")}</small><strong>Northline</strong></div>
-      <div><small>{t("userSource")}</small><strong dir="ltr">@northline</strong></div>
-      <div><small>{t("agentSource")}</small><strong>{t("rivalsScanned")}</strong></div>
+  const agentSteps = t.raw("studioAgentSteps") as string[];
+
+  useEffect(() => {
+    if (!playing || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => setAgentStep((value) => (value + 1) % agentSteps.length), 1600);
+    return () => window.clearInterval(timer);
+  }, [agentSteps.length, playing]);
+
+  return <div className="studio-app">
+    <header className="studio-topbar"><div className="product-mark product-mark--cream"><i />Sailtru Studio</div><b><i />{t("agentActive")}</b></header>
+    <div className="studio-body">
+      <aside className="studio-agent-panel"><span>{t("yourCampaignAgent")}</span><h2>{t("agentLearningTitle")}</h2>
+        <div className="studio-sources">
+          <article><i className="source-icon source-icon--site" /><div><strong>{t("websiteScan")}</strong><small>example.studio</small></div><b>✓</b></article>
+          <article><i className="source-icon source-icon--social" /><div><strong>{t("socialProfiles")}</strong><small dir="ltr">@example.studio</small></div><b>✓</b></article>
+          <article><i className="source-icon source-icon--rivals" /><div><strong>{t("competitorResearch")}</strong><small>{t("threeCompetitors")}</small></div><b>✓</b></article>
+        </div>
+        <ol className="studio-agent-steps">{agentSteps.map((item, index) => <li key={item} data-active={agentStep === index ? "" : undefined} data-complete={agentStep > index ? "" : undefined}><i>{agentStep > index ? "✓" : index + 1}</i><span>{item}</span></li>)}</ol>
+      </aside>
+      <main className="studio-workspace">
+        <header><div><span>{t("campaignWorkspace")}</span><h2>Northline · {t("springCampaign")}</h2></div><nav aria-label={t("outputChoice")}>{(["video", "plan"] as StudioOutput[]).map((item) => <button type="button" key={item} aria-pressed={output === item} onClick={() => setOutput(item)}>{t(item === "video" ? "videoChoice" : "planChoice")}</button>)}</nav></header>
+        <div className="studio-result" key={output}>
+          {output === "video" ? <div className="video-result"><video controls playsInline muted preload="metadata" poster="/videos/tours/northline-poster.webp" src="/videos/tours/northline-ad.mp4" aria-label={t("videoChoice")} />
+            <section><span>{t("agentDecision")}</span><h3>{t("adCopy")}</h3><p>{t("adRationale")}</p><dl><div><dt>{t("format")}</dt><dd>4:5 · 8s</dd></div><div><dt>{t("channel")}</dt><dd>Meta</dd></div></dl></section></div>
+          : <div className="calendar-result"><header><span>{t("weekTitle")}</span><b>{t("readyForReview")}</b></header>{posts.map((post, index) => <article key={post.day}><time>{post.day}</time><div><small>{post.format}</small><strong>{post.title}</strong><span>{t(`postGoals.${index}`)}</span></div><i>{index === 0 ? "▣" : index === 1 ? "Aa" : "▶"}</i></article>)}</div>}
+        </div>
+      </main>
     </div>
-    <div className="preview-choices" role="group" aria-label={t("outputChoice")}>{(["video", "plan"] as const).map(id =>
-      <button type="button" key={id} aria-pressed={output === id} onClick={() => setOutput(id)}>{t(id === "video" ? "videoChoice" : "planChoice")}</button>
-    )}</div>
-    <div className="studio-output output-enter" key={output}>
-      {output === "video" ? <>
-        {playing && <video controls playsInline muted preload="none" poster="/videos/tours/northline-poster.webp" src="/videos/tours/northline-ad.mp4" aria-label={t("videoChoice")} />}
-        <div><small>{t("adDirection")}</small><h3>{t("adCopy")}</h3><p>{t("adRationale")}</p></div>
-      </> : <div className="week-plan"><small>{t("weekTitle")}</small>{posts.map(post => <article key={post.day}><b>{post.day}</b><div><small>{post.format}</small><strong>{post.title}</strong></div></article>)}</div>}
-    </div>
-  </section>;
+  </div>;
 }
 
 export function ServicePreview({ service }: { service: Service }) {
@@ -367,84 +220,37 @@ export function ServicePreview({ service }: { service: Service }) {
   const booted = useRef(false);
   const rtl = useLocale() === "he";
 
-  useGSAP(
-    () => {
-      const root = viewport.current;
-      const frame = device.current;
-      if (!root) return;
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const desktop = window.matchMedia("(min-width: 761px)").matches;
-      const panes = gsap.utils.toArray<HTMLElement>("[data-pane]");
-      panes.forEach((pane) => {
-        const on = pane.dataset.pane === service;
-        gsap.killTweensOf(pane);
-        if (!booted.current || reduced) {
-          gsap.set(pane, { autoAlpha: on ? 1 : 0, xPercent: 0, pointerEvents: on ? "auto" : "none" });
-          return;
-        }
-        if (on) {
-          gsap.fromTo(
-            pane,
-            { autoAlpha: 0, xPercent: rtl ? -6 : 6, pointerEvents: "auto" },
-            { autoAlpha: 1, xPercent: 0, duration: 0.5, ease: "power3.out", delay: 0.04 }
-          );
-        } else {
-          gsap.to(pane, {
-            autoAlpha: 0,
-            xPercent: rtl ? 5 : -5,
-            pointerEvents: "none",
-            duration: 0.22,
-            ease: "power2.in"
-          });
-        }
-      });
-      booted.current = true;
+  useGSAP(() => {
+    const root = viewport.current;
+    const frame = device.current;
+    if (!root) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const desktop = window.matchMedia("(min-width: 761px)").matches;
+    const panes = gsap.utils.toArray<HTMLElement>("[data-pane]");
+    panes.forEach((pane) => {
+      const on = pane.dataset.pane === service;
+      gsap.killTweensOf(pane);
+      if (!booted.current || reduced) gsap.set(pane, { autoAlpha: on ? 1 : 0, xPercent: 0, pointerEvents: on ? "auto" : "none" });
+      else if (on) gsap.fromTo(pane, { autoAlpha: 0, xPercent: rtl ? -5 : 5, scale: .985, pointerEvents: "auto" }, { autoAlpha: 1, xPercent: 0, scale: 1, duration: .52, ease: "power3.out", delay: .06 });
+      else gsap.to(pane, { autoAlpha: 0, xPercent: rtl ? 4 : -4, scale: .99, pointerEvents: "none", duration: .22, ease: "power2.in" });
+    });
+    booted.current = true;
+    if (frame) {
+      gsap.killTweensOf(frame);
+      if (desktop && !reduced) { gsap.set(frame, { rotateY: rtl ? 3.5 : -3.5, rotateX: 1.5, y: 0, force3D: true }); gsap.to(frame, { y: -4, duration: 4.2, yoyo: true, repeat: -1, ease: "sine.inOut", force3D: true }); }
+      else gsap.set(frame, { rotateY: 0, rotateX: 0, y: 0, clearProps: "transform" });
+    }
+  }, { scope: viewport, dependencies: [service, rtl], revertOnUpdate: false });
 
-      if (frame) {
-        gsap.killTweensOf(frame);
-        if (desktop && !reduced) {
-          const yaw = rtl ? 7 : -7;
-          gsap.set(frame, { rotateY: yaw, rotateX: 3.5, y: 0, force3D: true });
-          gsap.to(frame, {
-            y: -5,
-            duration: 3.6,
-            yoyo: true,
-            repeat: -1,
-            ease: "sine.inOut",
-            force3D: true
-          });
-        } else {
-          gsap.set(frame, { rotateY: 0, rotateX: 0, y: 0, clearProps: "transform" });
-        }
-      }
-    },
-    { scope: viewport, dependencies: [service, rtl], revertOnUpdate: false }
-  );
-
-  return (
-    <figure className="service-preview" data-service={service} data-arrival-services="">
-      <div className="preview-bloom" aria-hidden="true" />
-      <div className="preview-rig" ref={device}>
-        <div className="preview-device">
-          <div className="preview-chrome" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-            <span>SailTru</span>
-          </div>
-          <div ref={viewport} className="preview-viewport">
-            <div data-pane="analysis" inert={service !== "analysis"} aria-hidden={service !== "analysis"} className="preview-pane">
-              <AnalysisBoard playing={service === "analysis"} />
-            </div>
-            <div data-pane="solutions" inert={service !== "solutions"} aria-hidden={service !== "solutions"} className="preview-pane">
-              <SolutionsBoard />
-            </div>
-            <div data-pane="studio" inert={service !== "studio"} aria-hidden={service !== "studio"} className="preview-pane">
-              <StudioBoard playing={service === "studio"} />
-            </div>
-          </div>
-        </div>
+  return <figure className="service-preview service-preview--product" data-service={service} data-arrival-services="">
+    <div className="preview-bloom" aria-hidden="true" />
+    <div className="preview-rig" ref={device}><div className="preview-device product-device">
+      <div className="preview-chrome" aria-hidden="true"><i /><i /><i /><span>Sailtru</span><b>app.sailtru.com</b></div>
+      <div ref={viewport} className="preview-viewport product-viewport">
+        <div data-pane="analysis" inert={service !== "analysis"} aria-hidden={service !== "analysis"} className="preview-pane"><AnalysisBoard playing={service === "analysis"} /></div>
+        <div data-pane="solutions" inert={service !== "solutions"} aria-hidden={service !== "solutions"} className="preview-pane"><SolutionsBoard playing={service === "solutions"} /></div>
+        <div data-pane="studio" inert={service !== "studio"} aria-hidden={service !== "studio"} className="preview-pane"><StudioBoard playing={service === "studio"} /></div>
       </div>
-    </figure>
-  );
+    </div></div>
+  </figure>;
 }
