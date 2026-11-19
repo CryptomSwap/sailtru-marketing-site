@@ -1,5 +1,24 @@
 {
   "companyHero": {
+    "preview": {
+      "analysis": "Dashboard tour · Sample account",
+      "solutions": "Example workflow",
+      "studio": "Example campaign",
+      "tourDescription": "From a sample signal to a recommended action",
+      "pause": "Pause",
+      "play": "Play",
+      "workflowTitle": "From enquiry to sales brief",
+      "receive": "Receive the enquiry",
+      "receiveDetail": "A website form captures the company and request.",
+      "qualify": "Prepare the brief",
+      "qualifyDetail": "AI summarizes the need and flags missing details.",
+      "handoff": "Route for review",
+      "handoffDetail": "The sales owner gets a CRM draft to approve.",
+      "adCopy": "Room to breathe.",
+      "social": "Social post",
+      "postTitle": "After dusk.",
+      "postCopy": "Step inside a Northline home designed around the last light of the day."
+    },
     "title": "Business intelligence",
     "accent": "and applied AI.",
     "intro": "We analyze websites, build custom AI systems, and create ads and social content.",

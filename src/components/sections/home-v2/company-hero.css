@@ -46,33 +46,39 @@
 .company-copy h1 em { display: block; color: var(--tone); font-weight: 400; }
 .company-copy p { max-width: 42ch; margin: 1.45rem 0 1.65rem; color: #f0f3ff; font-size: clamp(1rem, 1.28vw, 1.18rem); line-height: 1.55; }
 .company-copy .field-scan { margin: 0; width: min(100%, 28rem); }
-.company-action { display: inline-flex; align-items: center; min-height: 48px; border-radius: 2rem; padding: .7rem 1.5rem; background: white; color: #152f85; font-weight: 650; }
+.company-hero .company-action { display: inline-flex; align-items: center; min-height: 48px; border-radius: 2rem; padding: .7rem 1.5rem; background: white; color: #152f85; font-weight: 650; }
 .company-report { display: inline-block; margin-block-start: .85rem; font-size: .9rem; text-decoration: underline; text-underline-offset: .25em; }
 .company-stage :is(button,a):focus-visible { outline: 2px solid white; outline-offset: 4px; }
-.company-art {
-  grid-area: 1 / 2 / span 2; pointer-events: none;
-  width: 100%; aspect-ratio: 1; position: relative; direction: ltr;
+/* The same frame holds a real product recording and two examples of client work. */
+.service-preview {
+  grid-area: 1 / 2 / span 2; align-self: center; min-width: 0; width: 100%; margin: 0;
+  overflow: hidden; isolation: isolate; background: #fbfcff; color: #18243a;
+  border: 1px solid #ffffff8a; border-radius: 15px; box-shadow: 0 20px 60px #15297b40;
 }
-.company-relief { position: absolute; inset: 0; animation: relief-in .5s ease-out both; }
-.company-relief i {
-  position: absolute; left: 35%; top: 9%; width: 32%; height: 72%;
-  border-radius: 100% 2% 67% 7% / 78% 8% 32% 22%;
-  transform-origin: 25% 94%;
-  transform: rotate(calc(-47deg + var(--layer) * 2.2deg));
-  background: linear-gradient(143deg, #f0fff8 2%, #abeedb 24%, #38b4bc 50%, #215b9f 83%);
-  box-shadow: inset 1px 1px 1px #eefffdc9, inset -2px -1px 2px #1947909c;
+.service-preview > header, .service-preview figcaption {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  padding: .8rem 1rem; font-size: .84rem; line-height: 1.35;
 }
-[data-service=solutions] .company-relief i {
-  left: 23%; top: 20%; width: 57%; height: 58%; border-radius: 19%;
-  transform-origin: center; transform: translateY(calc((var(--layer) - 18) * .55%)) rotate(calc(-32deg + var(--layer) * 2.2deg));
-  background: linear-gradient(137deg, #fff0ff, #bb93ee 43%, #594bc1 85%);
-}
-[data-service=studio] .company-relief i {
-  left: 41%; top: 12%; width: 24%; height: 46%; border-radius: 100% 36% 80% 18%;
-  transform-origin: 40% 84%; transform: rotate(calc(var(--layer) * 10deg));
-  background: linear-gradient(135deg, #fff0c8, #ffb399 42%, #ad538d 83%);
-}
-@keyframes relief-in { from { opacity: 0; transform: translateY(8px) scale(.975); } }
+.service-preview > header { background: #152b52; color: #fff; }
+.service-preview > header strong { font-size: 1.12rem; letter-spacing: -.04em; }
+.service-preview video { display: block; width: 100%; height: auto; background: #f5f7fb; }
+.service-preview figcaption { background: white; color: #38465e; }
+.service-preview figcaption button { padding: .45rem .8rem; min-height: 36px; border: 1px solid #bcc9db; border-radius: 20px; color: #243b63; cursor: pointer; }
+.service-preview figcaption button:focus-visible { outline-color: #3154da; }
+.workflow-preview { padding: clamp(1rem,2.2vw,2rem); background: #f6f3ff; }
+.workflow-preview h2 { margin: 0 0 1rem; font: 500 clamp(1.4rem,2.1vw,2rem)/1.15 var(--font-serif),serif; }
+.workflow-preview ol { margin: 0; padding: 0; display: grid; gap: .5rem; }
+.workflow-preview li { display: flex; gap: .85rem; padding: .65rem .85rem; align-items: center; border: 1px solid #ded9ef; border-radius: .65rem; background: white; }
+.workflow-index { display: grid; place-items: center; min-width: 2rem; height: 2rem; border-radius: .65rem; background: #eae2ff; color: #503c81; font-weight: 650; }
+.workflow-preview small { display: block; color: #515c72; line-height: 1.35; }
+.studio-preview { padding: clamp(1rem,2vw,1.7rem); background: #f1e9df; display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: .8rem; }
+.studio-print, .studio-post { padding: clamp(.8rem,1.4vw,1.4rem); }
+.studio-preview small { font: 600 .75rem/1.4 var(--font-sans),sans-serif; letter-spacing: .06em; }
+.studio-print { min-height: 14rem; aspect-ratio: 4/5; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(0deg,#131410b8,transparent 70%),url('/videos/tours/studio-house.webp') center/cover; color: white; }
+.studio-print strong,.studio-post strong { display: block; font: 500 clamp(1.6rem,2.7vw,2.8rem)/1.02 var(--font-serif),serif; letter-spacing: -.035em; }
+.studio-post { background: #fff9ed; color: #352b26; }
+.studio-post strong { margin-block: 1.25rem .8rem; }
+.studio-post p { margin: 0; font-size: .92rem; line-height: 1.45; }
 @media(min-width: 761px) {
   .company-stage { min-height: min(43rem, 85svh); }
   .company-copy { min-height: 23rem; }
@@ -80,14 +86,13 @@
 @media(max-width: 760px) {
   .company-shell { width: 90%; }
   .company-stage { grid-template-columns: minmax(0,1fr); align-content: center; row-gap: 1.2rem; padding-block: 1.5rem 5rem; }
-  .company-art { grid-area: 1 / 1; justify-self: center; width: min(61vw, 26vh, 15rem); }
-  .company-tabs { grid-area: 2 / 1; justify-self: stretch; justify-content: space-between; }
+  .company-art { grid-area: 3 / 1; }
+  .company-tabs { grid-area: 1 / 1; justify-self: stretch; justify-content: space-between; }
   .company-tabs button { padding-inline: .35rem; font-size: .875rem; gap: .35rem; }
-  .company-copy { grid-area: 3 / 1; }
+  .company-copy { grid-area: 2 / 1; }
   .company-copy h1 { font-size: clamp(3rem, 10.8vw, 4.75rem); }
   .company-copy p { margin: .85rem 0 1.05rem; }
 }
 @media(prefers-reduced-motion: reduce) {
-  .company-relief { animation: none; }
   .company-tabs button::after { transition: none; }
 }

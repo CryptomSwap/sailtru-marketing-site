@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Link } from "@/i18n/navigation";
+import { ServicePreview } from "./service-preview";
 import { HeroDotField } from "./hero-dot-field";
 import { HeroScanSequence } from "./hero-scan-sequence";
 import "./home-v2.css";
@@ -70,13 +71,7 @@ export function CompanyHero() {
               </div>
             ))}
           </div>
-          <div className="company-art" data-arrival-services="" aria-hidden="true">
-            <div key={active} className="company-relief">
-              {Array.from({ length: 36 }, (_, layer) => (
-                <i key={layer} style={{ "--layer": layer } as CSSProperties} />
-              ))}
-            </div>
-          </div>
+          <ServicePreview service={active} />
         </div>
       </div>
     </section>
