@@ -20,11 +20,11 @@
   display: grid;
   grid-template-columns: 1.08fr 1fr;
   grid-template-rows: auto minmax(22rem, auto);
-  align-content: center;
+  align-content: start;
   align-items: start;
   column-gap: 3.5%;
-  row-gap: clamp(1.4rem, 3.6vh, 2.6rem);
-  padding-block: 2.2rem 5.5rem;
+  row-gap: clamp(0.95rem, 2.2vh, 1.5rem);
+  padding-block: 1.35rem 5.5rem;
   transition: --tone 0.5s ease;
 }
 .company-stage[data-service="solutions"] { --tone: #e2cdff; }
@@ -32,7 +32,7 @@
 .company-tabs {
   position: relative;
   display: flex;
-  align-self: end;
+  align-self: start;
   justify-self: start;
   max-width: 100%;
   border-bottom: 1px solid rgb(255 255 255 / 0.28);
@@ -140,7 +140,7 @@
 .service-preview {
   --panel-depth: 1500px;
   grid-area: 1 / 2 / span 2;
-  align-self: center;
+  align-self: start;
   position: relative;
   min-width: 0;
   width: 108%;
@@ -612,6 +612,8 @@
 
 @media (min-width: 761px) {
   .company-stage { min-height: min(43rem, 85svh); }
+  .company-copy { align-self: start; }
+  .service-preview { margin-top: 0.15rem; }
 }
 @media (max-width: 760px) {
   .company-shell { width: 90%; }
