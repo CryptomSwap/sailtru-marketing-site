@@ -69,7 +69,7 @@ function smoothArea(values: number[], width: number, height: number, max: number
 function ChartGrid({ width, height }: { width: number; height: number }) {
   return (
     <g className="ui-grid" aria-hidden="true">
-      {[0.2, 0.4, 0.6, 0.8, 1].map((n) => (
+      {[0.25, 0.5, 0.75, 1].map((n) => (
         <line key={n} x1="0" x2={width} y1={height * (1 - n)} y2={height * (1 - n)} />
       ))}
     </g>
@@ -96,11 +96,12 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
     { key: "google", label: t("kpiGoogle"), value: t("kpiGoogleVal"), delta: t("kpiGoogleDelta"), up: true },
     { key: "pos", label: t("kpiPos"), value: t("kpiPosVal"), delta: t("kpiPosDelta"), up: true },
     { key: "ai", label: t("kpiAi"), value: t("kpiAiVal"), delta: t("kpiAiDelta"), up: true },
-    { key: "sov", label: t("kpiSov"), value: t("kpiSovVal"), delta: t("kpiSovDelta"), up: false },
     { key: "rival", label: t("kpiRival"), value: t("kpiRivalVal"), delta: t("kpiRivalDelta"), up: false, watch: true }
   ];
-  const youPts = points(you, 320, 118, 64);
+  const plot = { w: 640, h: 236, max: 64 };
+  const youPts = points(you, plot.w, plot.h, plot.max);
   const last = youPts[youPts.length - 1];
+  const ticks = ["3 Sep", "12 Sep", "22 Sep", "1 Oct"];
 
   useGSAP(
     () => {
@@ -114,15 +115,14 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
       const beam = el.querySelector<HTMLElement>("[data-beam]");
       const tip = el.querySelector<HTMLElement>("[data-tip]");
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const caption = el.querySelector<HTMLElement>("[data-caption]");
-
       const setNav = (id: string) => {
         nav.forEach((item) => item.classList.toggle("is-on", item.dataset.nav === id));
         el.dataset.view = id;
-        const source = nav.find((item) => item.dataset.nav === id);
-        if (caption && source?.dataset.note) caption.textContent = source.dataset.note;
         cards.forEach((card) => {
-          const hot = (id === "watch" && card.hasAttribute("data-watch-kpi")) || (id === "seo" && card.dataset.key === "google") || (id === "aeo" && card.dataset.key === "ai");
+          const hot =
+            (id === "watch" && card.hasAttribute("data-watch-kpi")) ||
+            (id === "seo" && card.dataset.key === "google") ||
+            (id === "aeo" && card.dataset.key === "ai");
           card.classList.toggle("is-hot", hot);
         });
       };
@@ -183,17 +183,17 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
       <aside className="ui-rail" aria-hidden="true">
         <strong>SailTru</strong>
         <span>{t("navGroupAnalytics")}</span>
-        <button type="button" tabIndex={-1} data-nav="overview" data-note={t("captionOverview")} className="is-on">
+        <button type="button" tabIndex={-1} data-nav="overview" className="is-on">
           {t("navOverview")}
         </button>
-        <button type="button" tabIndex={-1} data-nav="seo" data-note={t("captionSeo")}>
+        <button type="button" tabIndex={-1} data-nav="seo">
           {t("navSeo")}
         </button>
-        <button type="button" tabIndex={-1} data-nav="aeo" data-note={t("captionAeo")}>
+        <button type="button" tabIndex={-1} data-nav="aeo">
           {t("navAeo")}
         </button>
         <span>{t("navGroupWatch")}</span>
-        <button type="button" tabIndex={-1} data-nav="watch" data-note={t("captionWatch")}>
+        <button type="button" tabIndex={-1} data-nav="watch">
           {t("navWatch")}
         </button>
       </aside>
@@ -203,32 +203,33 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
           <em>{t("range")}</em>
           <b>{t("sampleBadge")}</b>
         </header>
-        <p className="ui-caption" data-caption="">
-          {t("captionOverview")}
-        </p>
         <div className="ui-kpis">
           {kpis.map((kpi) => (
             <article key={kpi.key} data-key={kpi.key} data-watch-kpi={kpi.watch ? "" : undefined}>
               <span>{kpi.label}</span>
-              <strong>{kpi.value}</strong>
-              <em data-up={kpi.up ? "" : undefined}>{kpi.delta}</em>
+              <div>
+                <strong>{kpi.value}</strong>
+                <em data-up={kpi.up ? "" : undefined}>{kpi.delta}</em>
+              </div>
             </article>
           ))}
         </div>
         <div className="ui-charts">
           <section data-chart="seo">
-            <p>{t("chartSeo")}</p>
+            <p>
+              {t("chartSeo")} <small>{t("chartSeoHint")}</small>
+            </p>
             <div className="ui-plot">
               <i className="ui-beam" data-beam="" />
-              <svg viewBox="0 0 320 118" role="img" aria-hidden="true">
+              <svg viewBox={`0 0 ${plot.w} ${plot.h}`} role="img" aria-hidden="true" shapeRendering="geometricPrecision">
                 <defs>
-                  <linearGradient id="youFill" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#3558f5" stopOpacity="0.38" />
+                  <linearGradient id="sailtruYouFill" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor="#3558f5" stopOpacity="0.32" />
                     <stop offset="100%" stopColor="#3558f5" stopOpacity="0" />
                   </linearGradient>
                 </defs>
-                <ChartGrid width={320} height={118} />
-                <path data-fill="" fill="url(#youFill)" d={smoothArea(you, 320, 118, 64)} />
+                <ChartGrid width={plot.w} height={plot.h} />
+                <path data-fill="" fill="url(#sailtruYouFill)" d={smoothArea(you, plot.w, plot.h, plot.max)} />
                 {rivals.map((rival) => (
                   <path
                     key={rival.id}
@@ -236,18 +237,32 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
                     data-rival=""
                     fill="none"
                     stroke={rival.color}
-                    strokeWidth="2"
+                    strokeWidth="3"
                     strokeLinecap="round"
-                    d={smoothPath(rival.values, 320, 118, 64)}
+                    strokeLinejoin="round"
+                    d={smoothPath(rival.values, plot.w, plot.h, plot.max)}
                   />
                 ))}
-                <path data-line="" fill="none" stroke="#3558f5" strokeWidth="2.8" strokeLinecap="round" d={smoothPath(you, 320, 118, 64)} />
-                <circle cx={last.x} cy={last.y} r="4.2" fill="#3558f5" />
+                <path
+                  data-line=""
+                  fill="none"
+                  stroke="#3558f5"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d={smoothPath(you, plot.w, plot.h, plot.max)}
+                />
+                <circle cx={last.x} cy={last.y} r="6" fill="#fff" stroke="#3558f5" strokeWidth="3" />
               </svg>
-              <div className="ui-tip" data-tip="" style={{ left: `${(last.x / 320) * 100}%`, top: `${(last.y / 118) * 100}%` }}>
+              <div className="ui-tip" data-tip="" style={{ left: `${(last.x / plot.w) * 100}%`, top: `${(last.y / plot.h) * 100}%` }}>
                 <strong>{t("kpiGoogleVal")}</strong>
                 <span>{t("you")}</span>
               </div>
+              <ol className="ui-ticks" aria-hidden="true">
+                {ticks.map((tick) => (
+                  <li key={tick}>{tick}</li>
+                ))}
+              </ol>
             </div>
             <ul>
               <li>
@@ -259,22 +274,30 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
             </ul>
           </section>
           <section data-chart="aeo">
-            <p>{t("chartAeo")}</p>
+            <p>
+              {t("chartAeo")} <small>{t("chartAeoHint")}</small>
+            </p>
             <div className="ui-plot">
-              <svg viewBox="0 0 320 118" role="img" aria-hidden="true">
-                <ChartGrid width={320} height={118} />
+              <svg viewBox={`0 0 ${plot.w} ${plot.h}`} role="img" aria-hidden="true" shapeRendering="geometricPrecision">
+                <ChartGrid width={plot.w} height={plot.h} />
                 {models.map((model) => (
                   <path
                     key={model.id}
                     data-line=""
                     fill="none"
                     stroke={model.color}
-                    strokeWidth="2.1"
+                    strokeWidth="3.2"
                     strokeLinecap="round"
-                    d={smoothPath(model.values, 320, 118, 60)}
+                    strokeLinejoin="round"
+                    d={smoothPath(model.values, plot.w, plot.h, 60)}
                   />
                 ))}
               </svg>
+              <ol className="ui-ticks" aria-hidden="true">
+                {ticks.map((tick) => (
+                  <li key={tick}>{tick}</li>
+                ))}
+              </ol>
             </div>
             <ul>
               {models.map((model) => (
@@ -471,22 +494,21 @@ export function ServicePreview({ service }: { service: Service }) {
         const on = pane.dataset.pane === service;
         gsap.killTweensOf(pane);
         if (!booted.current || reduced) {
-          gsap.set(pane, { autoAlpha: on ? 1 : 0, xPercent: 0, rotateY: 0, pointerEvents: on ? "auto" : "none" });
+          gsap.set(pane, { autoAlpha: on ? 1 : 0, xPercent: 0, pointerEvents: on ? "auto" : "none" });
           return;
         }
         if (on) {
           gsap.fromTo(
             pane,
-            { autoAlpha: 0, xPercent: rtl ? -8 : 8, rotateY: rtl ? -8 : 8, pointerEvents: "auto" },
-            { autoAlpha: 1, xPercent: 0, rotateY: 0, duration: 0.62, ease: "power3.out", delay: 0.04 }
+            { autoAlpha: 0, xPercent: rtl ? -6 : 6, pointerEvents: "auto" },
+            { autoAlpha: 1, xPercent: 0, duration: 0.5, ease: "power3.out", delay: 0.04 }
           );
         } else {
           gsap.to(pane, {
             autoAlpha: 0,
-            xPercent: rtl ? 6 : -6,
-            rotateY: rtl ? 6 : -6,
+            xPercent: rtl ? 5 : -5,
             pointerEvents: "none",
-            duration: 0.24,
+            duration: 0.22,
             ease: "power2.in"
           });
         }
@@ -496,18 +518,18 @@ export function ServicePreview({ service }: { service: Service }) {
       if (frame) {
         gsap.killTweensOf(frame);
         if (desktop && !reduced) {
-          const yaw = rtl ? 10 : -10;
-          gsap.set(frame, { rotateY: yaw, rotateX: 5, y: 0, transformPerspective: 1200 });
+          const yaw = rtl ? 7 : -7;
+          gsap.set(frame, { rotateY: yaw, rotateX: 3.5, y: 0, force3D: true });
           gsap.to(frame, {
-            y: -7,
-            rotateX: 7,
-            duration: 3.4,
+            y: -5,
+            duration: 3.6,
             yoyo: true,
             repeat: -1,
-            ease: "sine.inOut"
+            ease: "sine.inOut",
+            force3D: true
           });
         } else {
-          gsap.set(frame, { rotateY: 0, rotateX: 0, y: 0 });
+          gsap.set(frame, { rotateY: 0, rotateX: 0, y: 0, clearProps: "transform" });
         }
       }
     },
@@ -517,24 +539,24 @@ export function ServicePreview({ service }: { service: Service }) {
   return (
     <figure className="service-preview" data-service={service} data-arrival-services="">
       <div className="preview-bloom" aria-hidden="true" />
-      <div className="preview-depth preview-depth--back" aria-hidden="true" />
-      <div className="preview-depth preview-depth--mid" aria-hidden="true" />
-      <div className="preview-device" ref={device}>
-        <div className="preview-chrome" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-          <span>SailTru</span>
-        </div>
-        <div ref={viewport} className="preview-viewport">
-          <div data-pane="analysis" className="preview-pane">
-            <AnalysisBoard playing={service === "analysis"} />
+      <div className="preview-rig" ref={device}>
+        <div className="preview-device">
+          <div className="preview-chrome" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+            <span>SailTru</span>
           </div>
-          <div data-pane="solutions" className="preview-pane">
-            <SolutionsBoard playing={service === "solutions"} />
-          </div>
-          <div data-pane="studio" className="preview-pane">
-            <StudioBoard playing={service === "studio"} />
+          <div ref={viewport} className="preview-viewport">
+            <div data-pane="analysis" className="preview-pane">
+              <AnalysisBoard playing={service === "analysis"} />
+            </div>
+            <div data-pane="solutions" className="preview-pane">
+              <SolutionsBoard playing={service === "solutions"} />
+            </div>
+            <div data-pane="studio" className="preview-pane">
+              <StudioBoard playing={service === "studio"} />
+            </div>
           </div>
         </div>
       </div>
