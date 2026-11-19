@@ -1,10 +1,11 @@
 {
   "companyHero": {
     "preview": {
-      "analysis": "Dashboard tour · Sample account",
+      "chapters": ["Finding", "Evidence", "Action"],
+      "analysis": "Sample report walkthrough",
       "solutions": "Example workflow",
       "studio": "Example campaign",
-      "tourDescription": "From a sample signal to a recommended action",
+      "tourDescription": "A service-page finding, its evidence and the proposed fix",
       "pause": "Pause",
       "play": "Play",
       "workflowTitle": "From enquiry to sales brief",

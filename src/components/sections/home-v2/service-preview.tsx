@@ -8,6 +8,8 @@ function DashboardTour() {
   const t = useTranslations("companyHero.preview");
   const video = useRef<HTMLVideoElement>(null);
   const requested = useRef<boolean | null>(null);
+  const [chapter, setChapter] = useState(0);
+  const chapters = t.raw("chapters") as string[];
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
@@ -45,10 +47,23 @@ function DashboardTour() {
   }
 
   return <>
-    <video ref={video} muted loop playsInline preload="none" width="768" height="464"
+    <video ref={video} muted loop playsInline preload="metadata" width="840" height="478"
       src={`/videos/tours/analysis-${locale}.mp4`} poster={`/videos/tours/analysis-${locale}.webp`}
+      onTimeUpdate={event => setChapter(Math.min(2, Math.floor(event.currentTarget.currentTime / 5)))}
       aria-label={t("tourDescription")} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
-    <figcaption><span>{t("tourDescription")}</span><button type="button" onClick={toggle}>{playing ? t("pause") : t("play")}</button></figcaption>
+    <figcaption className="film-controls">
+      <div className="film-chapters">{chapters.map((label, index) =>
+        <button key={label} type="button" aria-pressed={chapter === index} onClick={() => {
+          if (video.current) {
+            video.current.currentTime = index * 5;
+            setChapter(index);
+          }
+        }}>{label}</button>
+      )}</div>
+      <button className="film-toggle" type="button" onClick={toggle} aria-label={playing ? t("pause") : t("play")}>
+        <span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>
+      </button>
+    </figcaption>
   </>;
 }
 

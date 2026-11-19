@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
+import { flushSync } from "react-dom";
 import { useLocale, useTranslations } from "next-intl";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Link } from "@/i18n/navigation";
@@ -20,6 +21,26 @@ export function CompanyHero() {
   const rtl = useLocale() === "he";
   const [active, setActive] = useState<Service>("analysis");
 
+  const transition = useRef<ViewTransition | null>(null);
+
+  function selectService(service: Service) {
+    transition.current?.skipTransition();
+    const root = document.documentElement;
+    if (!document.startViewTransition || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setActive(service);
+      return;
+    }
+    root.setAttribute("data-service-swap", "");
+    const next = document.startViewTransition(() => flushSync(() => setActive(service)));
+    transition.current = next;
+    void next.finished.finally(() => {
+      if (transition.current === next) {
+        root.removeAttribute("data-service-swap");
+        transition.current = null;
+      }
+    });
+  }
+
   function navigateTabs(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     const next = {
       ArrowRight: index + (rtl ? -1 : 1),
@@ -30,7 +51,7 @@ export function CompanyHero() {
     if (next === undefined) return;
     event.preventDefault();
     const service = services[(next + services.length) % services.length];
-    setActive(service);
+    selectService(service);
     document.getElementById(`tab-${service}`)?.focus();
   }
 
@@ -45,7 +66,7 @@ export function CompanyHero() {
             {services.map((service, index) => (
               <button key={service} type="button" role="tab" id={`tab-${service}`}
                 aria-controls={`panel-${service}`} aria-selected={active === service}
-                tabIndex={active === service ? 0 : -1} onClick={() => setActive(service)}
+                tabIndex={active === service ? 0 : -1} onClick={() => { if (active !== service || transition.current) selectService(service); }}
                 onKeyDown={(event) => navigateTabs(event, index)}>
                 <span className="company-tab-dot" aria-hidden="true" />
                 {t(`${service}.label`)}
