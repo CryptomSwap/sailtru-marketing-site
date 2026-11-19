@@ -36,7 +36,7 @@ export function CompanyHero() {
   return (
     <section id="hero" className="field-hero field-hero--ref company-hero">
       <a className="sr-only focus:not-sr-only" href="#observe">{common("skipToContent")}</a>
-      <HeroDotField subtle />
+      <HeroDotField maxFps={24} />
       <div className="company-shell">
         <SiteHeader company />
         <div className="company-stage">
@@ -45,13 +45,14 @@ export function CompanyHero() {
             <p>{t("intro")}</p>
           </div>
           <div className="company-services" id="observe" data-arrival-services="">
-            <div className="company-tabs" role="tablist" aria-label={t("services")}>
+            <div className="company-tabs" data-service={active} role="tablist" aria-label={t("services")}>
               {services.map((service, index) => (
                 <button key={service} type="button" role="tab" id={`tab-${service}`}
                   aria-controls={`panel-${service}`} aria-selected={active === service}
                   tabIndex={active === service ? 0 : -1} onClick={() => setActive(service)}
                   onKeyDown={(event) => navigateTabs(event, index)}>
-                  {t(`${service}.label`)}
+                  <span className={`service-mark service-mark--${service}`} aria-hidden="true"><i /><i /><i /></span>
+                  <span>{t(`${service}.label`)}</span>
                 </button>
               ))}
             </div>
