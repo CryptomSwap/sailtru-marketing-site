@@ -10,19 +10,25 @@
     },
     "analysis": {
       "label": "Website Analysis",
-      "line": "Find out what to fix on your website.",
+      "lead": "Measure your",
+      "accent": "visibility.",
+      "line": "See how your website appears in search and AI answers, where competitors lead, and what to improve first.",
       "report": "View sample report"
     },
     "solutions": {
-      "label": "Custom AI Solutions",
-      "line": "Put AI to work on a process your team handles by hand.",
+      "label": "Custom AI",
+      "lead": "Build around",
+      "accent": "your workflow.",
+      "line": "Show us a process your team handles by hand. We design and build an AI system around the way you work.",
       "cta": "Describe your workflow",
       "subject": "Custom AI workflow enquiry",
       "brief": "The workflow we want to improve is: "
     },
     "studio": {
-      "label": "Studio",
-      "line": "Turn a campaign brief into ads and social posts.",
+      "label": "Sailtru Studio",
+      "lead": "Give your campaign",
+      "accent": "a creative team.",
+      "line": "Bring a campaign brief. Sailtru Studio turns it into ads and social posts for the channels your audience uses.",
       "cta": "Brief the studio",
       "subject": "SailTru Studio campaign brief",
       "brief": "Our campaign, audience, and channels: "

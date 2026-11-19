@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useState, type CSSProperties, type KeyboardEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Link } from "@/i18n/navigation";
@@ -39,37 +39,43 @@ export function CompanyHero() {
       <HeroDotField maxFps={24} />
       <div className="company-shell">
         <SiteHeader company />
-        <div className="company-stage">
-          <div className="field-main company-copy">
-            <h1>{t("title")} <em>{t("accent")}</em></h1>
-            <p>{t("intro")}</p>
+        <div id="observe" className="company-stage" data-service={active}>
+          <div className="company-tabs" role="tablist" aria-label={t("services")}>
+            {services.map((service, index) => (
+              <button key={service} type="button" role="tab" id={`tab-${service}`}
+                aria-controls={`panel-${service}`} aria-selected={active === service}
+                tabIndex={active === service ? 0 : -1} onClick={() => setActive(service)}
+                onKeyDown={(event) => navigateTabs(event, index)}>
+                <span className="company-tab-dot" aria-hidden="true" />
+                {t(`${service}.label`)}
+              </button>
+            ))}
           </div>
-          <div className="company-services" id="observe" data-arrival-services="">
-            <div className="company-tabs" data-service={active} role="tablist" aria-label={t("services")}>
-              {services.map((service, index) => (
-                <button key={service} type="button" role="tab" id={`tab-${service}`}
-                  aria-controls={`panel-${service}`} aria-selected={active === service}
-                  tabIndex={active === service ? 0 : -1} onClick={() => setActive(service)}
-                  onKeyDown={(event) => navigateTabs(event, index)}>
-                  <span className={`service-mark service-mark--${service}`} aria-hidden="true"><i /><i /><i /></span>
-                  <span>{t(`${service}.label`)}</span>
-                </button>
-              ))}
-            </div>
+          <div className="field-main company-copy">
             {services.map((service) => (
               <div key={service} role="tabpanel" id={`panel-${service}`}
                 aria-labelledby={`tab-${service}`} hidden={active !== service}>
-                <h2>{t(`${service}.line`)}</h2>
-                {service === "analysis" ? (
-                  active === service && <HeroScanSequence simpleEntry />
-                ) : (
-                  <a className="company-action" href={`mailto:team@sailtru.com?subject=${encodeURIComponent(t(`${service}.subject`))}&body=${encodeURIComponent(t(`${service}.brief`))}`}>
-                    {t(`${service}.cta`)}
-                  </a>
-                )}
-                {service === "analysis" && <Link className="company-report" prefetch={false} href="/analysis#sample-report">{t("analysis.report")}</Link>}
+                {active === service && <>
+                  <h1>{t(`${service}.lead`)} <em>{t(`${service}.accent`)}</em></h1>
+                  <p>{t(`${service}.line`)}</p>
+                  {service === "analysis" ? <>
+                    <HeroScanSequence simpleEntry />
+                    <Link className="company-report" prefetch={false} href="/analysis#sample-report">{t("analysis.report")}</Link>
+                  </> : (
+                    <a className="company-action" href={`mailto:team@sailtru.com?subject=${encodeURIComponent(t(`${service}.subject`))}&body=${encodeURIComponent(t(`${service}.brief`))}`}>
+                      {t(`${service}.cta`)}
+                    </a>
+                  )}
+                </>}
               </div>
             ))}
+          </div>
+          <div className="company-art" data-arrival-services="" aria-hidden="true">
+            <div key={active} className="company-relief">
+              {Array.from({ length: 36 }, (_, layer) => (
+                <i key={layer} style={{ "--layer": layer } as CSSProperties} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
