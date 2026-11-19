@@ -1,6 +1,49 @@
 {
   "companyHero": {
     "preview": {
+      "customWorkspace": "Custom AI · Example run",
+      "deskTitle": "From request to reviewed draft",
+      "incoming": "Incoming message",
+      "salesInput": "“We need a new office for 40 people by March.”",
+      "supportInput": "“What do we need before our first design call?”",
+      "salesDestination": "CRM · Draft opportunity",
+      "supportDestination": "Support inbox · Suggested reply",
+      "salesTitle": "Office fit-out enquiry",
+      "supportTitle": "First design call",
+      "salesDraft": "40 seats · March move-in. Ask for a floor plan and budget range before sending a proposal.",
+      "supportDraft": "Please bring a floor plan and your target move-in date. Your account lead can confirm the timeline on the call.",
+      "forReview": "Ready for your team to review",
+      "exampleWorkspace": "Sample workspace",
+      "agentTitle": "Your campaign agent",
+      "scanSource": "Website scan",
+      "userSource": "Social page you shared",
+      "agentSource": "Agent research",
+      "rivalsScanned": "3 competitors scanned",
+      "outputChoice": "Choose your output",
+      "videoChoice": "Video ad",
+      "planChoice": "Social post plan",
+      "adDirection": "Creative direction",
+      "adRationale": "Lead with the finished space. Close with an invitation to tour it.",
+      "weekTitle": "This week’s publishing plan",
+      "visibilityGap": "AI answers miss your office work",
+      "visibilityAction": "Add a completed office project to your services page so search engines and AI have a specific example to cite.",
+      "postPlan": [
+        {
+          "day": "Mon",
+          "format": "Instagram · Carousel",
+          "title": "A room before and after dusk"
+        },
+        {
+          "day": "Wed",
+          "format": "LinkedIn · Project note",
+          "title": "Why the glazing faces west"
+        },
+        {
+          "day": "Fri",
+          "format": "Instagram · Reel",
+          "title": "A walk through Northline at sunset"
+        }
+      ],
       "analysis": "Visibility",
       "solutions": "Example workflow",
       "studio": "Example campaign",
@@ -166,12 +209,12 @@
     },
     "studio": {
       "label": "Sailtru Studio",
-      "lead": "A studio that makes",
-      "accent": "the campaign.",
-      "line": "Sailtru Studio is our in-house creative team. We produce paid ads, organic social, and the landing pages they send people to — from one brief.",
-      "cta": "Brief the studio",
-      "subject": "SailTru Studio campaign brief",
-      "brief": "Our campaign, audience, and channels: "
+      "lead": "Your own AI",
+      "accent": "campaign agent.",
+      "line": "Share your social pages. Your agent combines them with your website scan, researches competitors on its own, and creates the video ad or social post plan you choose.",
+      "cta": "Discuss your Studio setup",
+      "subject": "Sailtru Studio setup",
+      "brief": "Our website, social pages and preferred output (video ad or social post plan): "
     }
   },
   "metadata": {

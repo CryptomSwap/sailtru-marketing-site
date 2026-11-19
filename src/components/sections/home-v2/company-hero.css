@@ -681,3 +681,58 @@
   .art { transition: none; }
   .preview-rig, .preview-device { transform: none !important; }
 }
+
+/* Size each preview to its content, including translated and enlarged text. */
+.preview-viewport { display: grid; min-height: 0; }
+.preview-pane { grid-area: 1/1; position: relative; inset: auto; min-width: 0; }
+.ui-dash { grid-template-columns: minmax(5.8rem,20%) minmax(0,1fr); }
+.visibility-action { margin-block-start: .8rem; padding: .8rem 1rem; border-radius: .75rem; border-inline-start: 3px solid #556cfa; background: #eef2ff; color: #182b51; }
+.visibility-action h3 { margin: .25rem 0; font-size: 1rem; }
+.visibility-action p { font-size: .85rem; margin: 0; }
+.client-board { padding: clamp(1.1rem,2.2vw,2.1rem); height: 100%; color: #27332d; background: #f7f6f0; }
+.board-head { display: flex; justify-content: space-between; align-items: baseline; gap: .6rem; font-weight: 650; }
+.board-head small { color: #56665c; font-weight: 500; }
+.client-board h2 { font: 400 clamp(1.9rem,2.6vw,3rem)/1.04 var(--font-serif),Georgia,serif; margin: 1.1rem 0; letter-spacing: -.035em; }
+.agent-sources { display: grid; grid-template-columns: repeat(3,1fr); border-block: 1px solid #d8ddd2; padding: .8rem 0; gap: .5rem; }
+.client-board small,.visibility-action small { font-size: .76rem; line-height: 1.35; }
+.agent-sources small,.studio-output small,.desk-result small { display: block; color: #58665c; }
+.agent-sources strong { display: block; font-size: .88rem; margin-top: .2rem; }
+.preview-choices { display: flex; width: fit-content; gap: .2rem; padding: .2rem; border-radius: .7rem; background: #e2e6dd; margin: 1rem 0; }
+.preview-choices button { padding: .45rem .9rem; min-height: 42px; font-size: .88rem; font-weight: 600; cursor: pointer; border-radius: .55rem; }
+.preview-choices button[aria-pressed=true] { color: white; background: #264b3c; }
+.preview-choices button:focus-visible { outline: 2px solid #3259de; outline-offset: 2px; }
+.studio-output { display: grid; grid-template-columns: 1.15fr .85fr; align-items: center; gap: 1rem; }
+.studio-output video { width: 100%; border-radius: .65rem; background: #16211b; aspect-ratio: 4/3; }
+.studio-output h3,.desk-paper h3 { font: 400 clamp(1.5rem,2vw,2.2rem)/1.1 var(--font-serif),Georgia,serif; margin: .5rem 0; }
+.studio-output p,.desk-paper p { font-size: .94rem; line-height: 1.45; margin: 0; }
+.week-plan { grid-column: 1/-1; }
+.week-plan article { display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid #d8ddd2; padding: .55rem 0; }
+.week-plan article>b { min-width: 2.8rem; color: #385d47; }
+.week-plan strong { font-size: .98rem; }
+.desk-board { background: #232239; color:#fbf8ff; }
+.desk-board .board-head small,.desk-result>small { color:#d0c8e8; }
+.desk-board .preview-choices { background:#38364e; }
+.desk-board .preview-choices button[aria-pressed=true] { background:#e7dbff; color:#2e2544; }
+.desk-result blockquote { margin:.45rem 0 1rem; padding-inline-start:.75rem; border-inline-start:2px solid #aca0d1; font-size:1rem; }
+.desk-paper { background:#f5f1fc; color:#322b43; border-radius:.85rem; padding:1.1rem; }
+.desk-paper strong { display:inline-block; margin-top:.75rem; color:#655477; font-size:.82rem; }
+@media(prefers-reduced-motion:no-preference) {
+  .output-enter { animation: client-output-in .35s ease-out; }
+  @keyframes client-output-in { from { opacity:0; transform:translateY(6px); } }
+}
+@media(max-width:760px) {
+  .preview-pane[aria-hidden=true] { position:absolute; inset:0; }
+  .preview-viewport { min-height:0; }
+  .ui-dash { grid-template-columns: minmax(0,1fr); }
+  .ui-rail { display:none; }
+  .ui-charts { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .studio-output { grid-template-columns:minmax(0,1fr); }
+}
+@media(max-width:760px) {
+  :dir(rtl) .service-preview { width:100%; padding:0; }
+}
+.visibility-action [data-insight] { display:none; }
+.ui-dash[data-view="overview"] [data-insight="overview"],
+.ui-dash[data-view="seo"] [data-insight="seo"],
+.ui-dash[data-view="aeo"] [data-insight="aeo"],
+.ui-dash[data-view="watch"] [data-insight="watch"] { display:block; }

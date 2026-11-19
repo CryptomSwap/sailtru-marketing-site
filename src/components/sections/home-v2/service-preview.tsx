@@ -2,7 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 gsap.registerPlugin(useGSAP);
@@ -80,7 +80,8 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
   const rtl = useLocale() === "he";
   const root = useRef<HTMLDivElement>(null);
-  const you = [12, 14, 16, 21, 28, 36, 44, 52];
+  const [selectedView, setSelectedView] = useState<string | null>(null);
+  const you = [10, 11, 12, 13, 14, 15, 16, 18];
   const rivals = [
     { id: "a", color: "#16a34a", values: [54, 55, 55, 56, 56, 57, 57, 58] },
     { id: "b", color: "#d97706", values: [38, 39, 41, 40, 42, 43, 44, 45] },
@@ -127,15 +128,15 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
         });
       };
 
-      setNav("overview");
+      setNav(selectedView ?? "overview");
       lines.forEach((line) => {
         const length = line.getTotalLength();
-        gsap.set(line, { strokeDasharray: length, strokeDashoffset: reduced ? 0 : length });
+        gsap.set(line, { strokeDasharray: length, strokeDashoffset: reduced || selectedView ? 0 : length });
       });
-      gsap.set(fills, { autoAlpha: reduced ? 1 : 0 });
-      if (tip) gsap.set(tip, { autoAlpha: reduced ? 1 : 0 });
+      gsap.set(fills, { autoAlpha: reduced || selectedView ? 1 : 0 });
+      if (tip) gsap.set(tip, { autoAlpha: reduced || selectedView ? 1 : 0 });
 
-      if (!playing || reduced || !pointer) {
+      if (!playing || reduced || selectedView || !pointer) {
         if (pointer) gsap.set(pointer, { autoAlpha: 0 });
         return;
       }
@@ -175,25 +176,25 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
       tl.to({}, { duration: 1.2 });
       tl.add(() => setNav("overview"));
     },
-    { scope: root, dependencies: [playing, rtl], revertOnUpdate: true }
+    { scope: root, dependencies: [playing, rtl, selectedView], revertOnUpdate: true }
   );
 
   return (
     <div ref={root} className="ui-dash" data-view="overview" aria-label={t("tourDescription")}>
-      <aside className="ui-rail" aria-hidden="true">
+      <aside className="ui-rail" aria-label={t("navGroupAnalytics")}>
         <strong>SailTru</strong>
         <span>{t("navGroupAnalytics")}</span>
-        <button type="button" tabIndex={-1} data-nav="overview" className="is-on">
+        <button type="button" onClick={() => setSelectedView("overview")} data-nav="overview" className="is-on">
           {t("navOverview")}
         </button>
-        <button type="button" tabIndex={-1} data-nav="seo">
+        <button type="button" onClick={() => setSelectedView("seo")} data-nav="seo">
           {t("navSeo")}
         </button>
-        <button type="button" tabIndex={-1} data-nav="aeo">
+        <button type="button" onClick={() => setSelectedView("aeo")} data-nav="aeo">
           {t("navAeo")}
         </button>
         <span>{t("navGroupWatch")}</span>
-        <button type="button" tabIndex={-1} data-nav="watch">
+        <button type="button" onClick={() => setSelectedView("watch")} data-nav="watch">
           {t("navWatch")}
         </button>
       </aside>
@@ -308,172 +309,56 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
             </ul>
           </section>
         </div>
+        <section className="visibility-action"><small>{t("next")}</small>
+          {(["overview","seo","aeo","watch"] as const).map((view, i) =>
+            <div key={view} data-insight={view}><h3>{t(["visibilityGap","googleQ2","aiQ2","googleQ1"][i])}</h3>
+              <p>{t(["visibilityAction","fixGoogleDo","fixAiDo","googleOther1"][i])}</p></div>
+          )}
+        </section>
       </div>
       <Pointer />
     </div>
   );
 }
 
-function SolutionsBoard({ playing }: { playing: boolean }) {
+function SolutionsBoard() {
   const t = useTranslations("companyHero.preview");
-  const root = useRef<HTMLDivElement>(null);
-  const teams = [
-    { id: "sales", title: t("teamSales"), line: t("teamSalesLine"), agents: [t("agentInbox"), t("agentBrief"), t("agentCrm")] },
-    { id: "support", title: t("teamSupport"), line: t("teamSupportLine"), agents: [t("agentDocs"), t("agentReply"), t("agentHand")] },
-    { id: "watch", title: t("teamWatch"), line: t("teamWatchLine"), agents: [t("agentScan"), t("agentAlert"), t("agentWatchNote")] },
-    { id: "ops", title: t("teamOps"), line: t("teamOpsLine"), agents: [t("agentOpsQ"), t("agentOpsA"), t("agentOpsLog")] }
-  ];
-
-  useGSAP(
-    () => {
-      const el = root.current;
-      if (!el) return;
-      const cards = gsap.utils.toArray<HTMLElement>("[data-team]");
-      const nodes = gsap.utils.toArray<HTMLElement>("[data-node]");
-      const packet = el.querySelector<SVGCircleElement>("[data-packet]");
-      const path = el.querySelector<SVGGeometryElement>("[data-wire]");
-      const pointer = el.querySelector<HTMLElement>("[data-pointer]");
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      const setTeam = (id: string) => {
-        const team = teams.find((item) => item.id === id);
-        cards.forEach((item) => item.classList.toggle("is-on", item.dataset.team === id));
-        nodes.forEach((node, index) => {
-          const label = node.querySelector("strong");
-          if (label && team) label.textContent = team.agents[index] ?? "";
-        });
-      };
-
-      setTeam("sales");
-      if (!playing || reduced || !pointer) {
-        if (pointer) gsap.set(pointer, { autoAlpha: 0 });
-        return;
-      }
-
-      gsap.set(pointer, { autoAlpha: 1, x: 24, y: 40 });
-      const length = path?.getTotalLength() ?? 0;
-      if (packet && path) {
-        const start = path.getPointAtLength(0);
-        gsap.set(packet, { autoAlpha: 1, attr: { cx: start.x, cy: start.y } });
-      }
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.45 });
-      cards.forEach((card) => {
-        tl.to(pointer, { ...pointerXY(el, card), duration: 0.48, ease: "power2.inOut" });
-        clickPointer(pointer, tl);
-        tl.add(() => setTeam(card.dataset.team ?? "sales"));
-        nodes.forEach((node, index) => {
-          tl.fromTo(node, { scale: 0.92, filter: "brightness(1)" }, { scale: 1, filter: "brightness(1.08)", duration: 0.22, ease: "back.out(2)" }, index === 0 ? ">" : ">-0.05");
-        });
-        if (packet && path && length) {
-          tl.fromTo(
-            packet,
-            { autoAlpha: 1 },
-            {
-              duration: 1.15,
-              ease: "none",
-              onUpdate() {
-                const p = path.getPointAtLength(this.progress() * length);
-                gsap.set(packet, { attr: { cx: p.x, cy: p.y } });
-              }
-            },
-            "<"
-          );
-        }
-        tl.to({}, { duration: 0.35 });
-      });
-    },
-    { scope: root, dependencies: [playing], revertOnUpdate: true }
-  );
-
-  return (
-    <div ref={root} className="team-board">
-      <p className="team-lead">{t("teamsLead")}</p>
-      <ol className="team-how">
-        <li>{t("how1")}</li>
-        <li>{t("how2")}</li>
-        <li>{t("how3")}</li>
-      </ol>
-      <div className="team-live">
-        <div className="team-flow" aria-hidden="true">
-          <svg className="team-wire" viewBox="0 0 520 86">
-            <path data-wire="" d="M36 22 C 140 22, 200 22, 260 22 S 380 22, 484 22" fill="none" stroke="#c9d4ff" strokeWidth="4" />
-            <circle data-packet="" r="8" cx="36" cy="22" fill="#3558f5" />
-          </svg>
-          <div className="team-nodes">
-            {teams[0].agents.map((agent, index) => (
-              <div key={index} className="team-node" data-node="">
-                <i />
-                <strong>{agent}</strong>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="team-grid">
-          {teams.map((team, index) => (
-            <article key={team.id} data-team={team.id} className={index === 0 ? "is-on" : ""}>
-              <h3>{team.title}</h3>
-              <p>{team.line}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-      <Pointer />
+  const [team, setTeam] = useState<"sales" | "support">("sales");
+  return <section className="client-board desk-board">
+    <header className="board-head"><span>{t("customWorkspace")}</span><small>{t("sampleBadge")}</small></header>
+    <h2>{t("deskTitle")}</h2>
+    <div className="preview-choices">{(["sales", "support"] as const).map(id =>
+      <button type="button" key={id} aria-pressed={team === id} onClick={() => setTeam(id)}>{t(id === "sales" ? "teamSales" : "teamSupport")}</button>
+    )}</div>
+    <div className="desk-result output-enter" key={team}>
+      <small>{t("incoming")}</small><blockquote>{t(`${team}Input`)}</blockquote>
+      <div className="desk-paper"><small>{t(`${team}Destination`)}</small><h3>{t(`${team}Title`)}</h3><p>{t(`${team}Draft`)}</p><strong>{t("forReview")}</strong></div>
     </div>
-  );
+  </section>;
 }
 
 function StudioBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
-  const root = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const el = root.current;
-      if (!el) return;
-      const cards = gsap.utils.toArray<HTMLElement>("[data-offer]");
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const setOffer = (id: string) => {
-        el.dataset.offer = id;
-        cards.forEach((item) => item.classList.toggle("is-on", item.dataset.offer === id));
-      };
-      setOffer("ads");
-      if (!playing || reduced) return;
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.7 });
-      cards.forEach((card) => {
-        tl.add(() => setOffer(card.dataset.offer ?? "ads"));
-        tl.to(card, { duration: 1.55 });
-      });
-    },
-    { scope: root, dependencies: [playing], revertOnUpdate: true }
-  );
-
-  return (
-    <div ref={root} className="offer-board" data-offer="ads">
-      <p className="team-lead">{t("studioLead")}</p>
-      <p className="studio-how">{t("studioHow")}</p>
-      <div className="studio-stage">
-        <article data-offer="ads" className="art art--ad is-on">
-          <em>{t("offerAds")}</em>
-          <strong>{t("adCopy")}</strong>
-          <span>{t("offerAdsEx")}</span>
-        </article>
-        <article data-offer="social" className="art art--social">
-          <div className="art-photo" />
-          <div className="art-copy">
-            <em>{t("offerSocial")}</em>
-            <strong>{t("postTitle")}</strong>
-            <p>{t("postCopy")}</p>
-          </div>
-        </article>
-        <article data-offer="pages" className="art art--page">
-          <div className="art-bar" />
-          <em>{t("offerPages")}</em>
-          <strong>{t("adCopy")}</strong>
-          <span>{t("offerPagesEx")}</span>
-        </article>
-      </div>
+  const [output, setOutput] = useState<"video" | "plan">("video");
+  const posts = t.raw("postPlan") as { day: string; format: string; title: string }[];
+  return <section className="client-board agent-board">
+    <header className="board-head"><span>Sailtru Studio</span><small>{t("exampleWorkspace")}</small></header>
+    <h2>{t("agentTitle")}</h2>
+    <div className="agent-sources">
+      <div><small>{t("scanSource")}</small><strong>Northline</strong></div>
+      <div><small>{t("userSource")}</small><strong dir="ltr">@northline</strong></div>
+      <div><small>{t("agentSource")}</small><strong>{t("rivalsScanned")}</strong></div>
     </div>
-  );
+    <div className="preview-choices" role="group" aria-label={t("outputChoice")}>{(["video", "plan"] as const).map(id =>
+      <button type="button" key={id} aria-pressed={output === id} onClick={() => setOutput(id)}>{t(id === "video" ? "videoChoice" : "planChoice")}</button>
+    )}</div>
+    <div className="studio-output output-enter" key={output}>
+      {output === "video" ? <>
+        {playing && <video controls playsInline muted preload="none" poster="/videos/tours/northline-poster.webp" src="/videos/tours/northline-ad.mp4" aria-label={t("videoChoice")} />}
+        <div><small>{t("adDirection")}</small><h3>{t("adCopy")}</h3><p>{t("adRationale")}</p></div>
+      </> : <div className="week-plan"><small>{t("weekTitle")}</small>{posts.map(post => <article key={post.day}><b>{post.day}</b><div><small>{post.format}</small><strong>{post.title}</strong></div></article>)}</div>}
+    </div>
+  </section>;
 }
 
 export function ServicePreview({ service }: { service: Service }) {
@@ -548,13 +433,13 @@ export function ServicePreview({ service }: { service: Service }) {
             <span>SailTru</span>
           </div>
           <div ref={viewport} className="preview-viewport">
-            <div data-pane="analysis" className="preview-pane">
+            <div data-pane="analysis" inert={service !== "analysis"} aria-hidden={service !== "analysis"} className="preview-pane">
               <AnalysisBoard playing={service === "analysis"} />
             </div>
-            <div data-pane="solutions" className="preview-pane">
-              <SolutionsBoard playing={service === "solutions"} />
+            <div data-pane="solutions" inert={service !== "solutions"} aria-hidden={service !== "solutions"} className="preview-pane">
+              <SolutionsBoard />
             </div>
-            <div data-pane="studio" className="preview-pane">
+            <div data-pane="studio" inert={service !== "studio"} aria-hidden={service !== "studio"} className="preview-pane">
               <StudioBoard playing={service === "studio"} />
             </div>
           </div>
