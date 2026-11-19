@@ -631,15 +631,12 @@
     align-self: center;
   }
   /* Cobalt scroll entrance: keep the masked hero cheap to repaint. */
-  .hs--cobalt-arrival[data-arriving="true"] .preview-bloom {
+  .hs--cobalt-arrival[data-entrance-busy="true"] .preview-bloom {
     opacity: 0;
     visibility: hidden;
   }
-  .hs--cobalt-arrival[data-arriving="true"] .service-preview {
+  .hs--cobalt-arrival[data-entrance-busy="true"] .service-preview {
     contain: layout paint style;
-  }
-  .hs--cobalt-arrival[data-arriving="true"] .field-hero__dots {
-    opacity: 0.85;
   }
 }
 @media (max-width: 760px) {

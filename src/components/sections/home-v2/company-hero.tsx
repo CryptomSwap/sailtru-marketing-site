@@ -8,7 +8,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { Link } from "@/i18n/navigation";
 import { ServicePreview } from "./service-preview";
 import { HeroDotField } from "./hero-dot-field";
-import { useCobaltArrival } from "./use-cobalt-arrival";
+import { useCobaltEntranceBusy } from "./use-cobalt-arrival";
 import { HeroScanSequence } from "./hero-scan-sequence";
 import "./home-v2.css";
 import "./field-hero-ref.css";
@@ -27,7 +27,7 @@ export function CompanyHero() {
   const stageRef = useRef<HTMLDivElement>(null);
   const gliderRef = useRef<HTMLSpanElement>(null);
   const previous = useRef<Service>("analysis");
-  const cobaltArrival = useCobaltArrival();
+  const entranceBusy = useCobaltEntranceBusy();
 
   function navigateTabs(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     const next = {
@@ -99,7 +99,7 @@ export function CompanyHero() {
       <a className="sr-only focus:not-sr-only" href="#observe">
         {common("skipToContent")}
       </a>
-      <HeroDotField maxFps={cobaltArrival ? 15 : 24} active={!cobaltArrival} />
+      <HeroDotField maxFps={entranceBusy ? 15 : 24} />
       <div className="company-shell">
         <SiteHeader company />
         <div id="observe" className="company-stage" data-service={active} ref={stageRef}>
@@ -156,7 +156,7 @@ export function CompanyHero() {
               ))}
             </div>
           </div>
-          <ServicePreview service={active} pauseMotion={cobaltArrival} />
+          <ServicePreview service={active} pauseMotion={entranceBusy} />
         </div>
       </div>
     </section>

@@ -541,10 +541,15 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
           }
         }
       }
+      const E = CobaltArrival;
+      const gone = E.HERO[1];
+      const arrivalKey = arrival.toFixed(4);
+      if (root!.dataset.arrival !== arrivalKey) root!.dataset.arrival = arrivalKey;
+      const entranceBusy = String(on && arrival > 0.06 && arrival < gone);
+      if (root!.dataset.entranceBusy !== entranceBusy) root!.dataset.entranceBusy = entranceBusy;
       if (on) paintHole(arrival);
       if (arrival === paintedArrival) return;
       paintedArrival = arrival;
-      const E = CobaltArrival;
       if (on) {
         const copy = E.ease(arrival, E.COPY);
         const cards = E.ease(arrival, E.CARDS);
@@ -560,7 +565,6 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
         if (deck) deck.style.opacity = E.ease(arrival, E.STORY).toFixed(4);
       }
       // Attributes change only when they flip (a write on the story root restyles all of it).
-      const gone = E.HERO[1];
       const arriving = String(on && arrival < gone);
       if (root!.dataset.arriving !== arriving) root!.dataset.arriving = arriving;
       if (heroEl) {
