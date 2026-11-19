@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
+import { flushSync } from "react-dom";
 import { useLocale, useTranslations } from "next-intl";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Link } from "@/i18n/navigation";
+import { ServicePreview } from "./service-preview";
 import { HeroDotField } from "./hero-dot-field";
 import { HeroScanSequence } from "./hero-scan-sequence";
 import "./home-v2.css";
@@ -19,6 +21,26 @@ export function CompanyHero() {
   const rtl = useLocale() === "he";
   const [active, setActive] = useState<Service>("analysis");
 
+  const transition = useRef<ViewTransition | null>(null);
+
+  function selectService(service: Service) {
+    transition.current?.skipTransition();
+    const root = document.documentElement;
+    if (!document.startViewTransition || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setActive(service);
+      return;
+    }
+    root.setAttribute("data-service-swap", "");
+    const next = document.startViewTransition(() => flushSync(() => setActive(service)));
+    transition.current = next;
+    void next.finished.finally(() => {
+      if (transition.current === next) {
+        root.removeAttribute("data-service-swap");
+        transition.current = null;
+      }
+    });
+  }
+
   function navigateTabs(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     const next = {
       ArrowRight: index + (rtl ? -1 : 1),
@@ -29,47 +51,48 @@ export function CompanyHero() {
     if (next === undefined) return;
     event.preventDefault();
     const service = services[(next + services.length) % services.length];
-    setActive(service);
+    selectService(service);
     document.getElementById(`tab-${service}`)?.focus();
   }
 
   return (
     <section id="hero" className="field-hero field-hero--ref company-hero">
       <a className="sr-only focus:not-sr-only" href="#observe">{common("skipToContent")}</a>
-      <HeroDotField subtle />
+      <HeroDotField maxFps={24} />
       <div className="company-shell">
         <SiteHeader company />
-        <div className="company-stage">
-          <div className="field-main company-copy">
-            <h1>{t("title")} <em>{t("accent")}</em></h1>
-            <p>{t("intro")}</p>
+        <div id="observe" className="company-stage" data-service={active}>
+          <div className="company-tabs" role="tablist" aria-label={t("services")}>
+            {services.map((service, index) => (
+              <button key={service} type="button" role="tab" id={`tab-${service}`}
+                aria-controls={`panel-${service}`} aria-selected={active === service}
+                tabIndex={active === service ? 0 : -1} onClick={() => { if (active !== service || transition.current) selectService(service); }}
+                onKeyDown={(event) => navigateTabs(event, index)}>
+                <span className="company-tab-dot" aria-hidden="true" />
+                {t(`${service}.label`)}
+              </button>
+            ))}
           </div>
-          <div className="company-services" id="observe" data-arrival-services="">
-            <div className="company-tabs" role="tablist" aria-label={t("services")}>
-              {services.map((service, index) => (
-                <button key={service} type="button" role="tab" id={`tab-${service}`}
-                  aria-controls={`panel-${service}`} aria-selected={active === service}
-                  tabIndex={active === service ? 0 : -1} onClick={() => setActive(service)}
-                  onKeyDown={(event) => navigateTabs(event, index)}>
-                  {t(`${service}.label`)}
-                </button>
-              ))}
-            </div>
+          <div className="field-main company-copy">
             {services.map((service) => (
               <div key={service} role="tabpanel" id={`panel-${service}`}
                 aria-labelledby={`tab-${service}`} hidden={active !== service}>
-                <h2>{t(`${service}.line`)}</h2>
-                {service === "analysis" ? (
-                  active === service && <HeroScanSequence simpleEntry />
-                ) : (
-                  <a className="company-action" href={`mailto:team@sailtru.com?subject=${encodeURIComponent(t(`${service}.subject`))}&body=${encodeURIComponent(t(`${service}.brief`))}`}>
-                    {t(`${service}.cta`)}
-                  </a>
-                )}
-                {service === "analysis" && <Link className="company-report" prefetch={false} href="/analysis#sample-report">{t("analysis.report")}</Link>}
+                {active === service && <>
+                  <h1>{t(`${service}.lead`)} <em>{t(`${service}.accent`)}</em></h1>
+                  <p>{t(`${service}.line`)}</p>
+                  {service === "analysis" ? <>
+                    <HeroScanSequence simpleEntry />
+                    <Link className="company-report" prefetch={false} href="/analysis#sample-report">{t("analysis.report")}</Link>
+                  </> : (
+                    <a className="company-action" href={`mailto:team@sailtru.com?subject=${encodeURIComponent(t(`${service}.subject`))}&body=${encodeURIComponent(t(`${service}.brief`))}`}>
+                      {t(`${service}.cta`)}
+                    </a>
+                  )}
+                </>}
               </div>
             ))}
           </div>
+          <ServicePreview service={active} />
         </div>
       </div>
     </section>
