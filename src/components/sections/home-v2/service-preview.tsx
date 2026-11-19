@@ -205,7 +205,11 @@ function StudioBoard({ playing }: { playing: boolean }) {
       <main className="studio-workspace">
         <header><div><span>{t("campaignWorkspace")}</span><h2>Northline · {t("springCampaign")}</h2></div><nav aria-label={t("outputChoice")}>{(["video", "plan"] as StudioOutput[]).map((item) => <button type="button" key={item} aria-pressed={output === item} onClick={() => setOutput(item)}>{t(item === "video" ? "videoChoice" : "planChoice")}</button>)}</nav></header>
         <div className="studio-result" key={output}>
-          {output === "video" ? <div className="video-result"><video controls playsInline muted preload="metadata" poster="/videos/tours/northline-poster.webp" src="/videos/tours/northline-ad.mp4" aria-label={t("videoChoice")} />
+          {output === "video" ? <div className="video-result">{playing ? (
+            <video controls playsInline muted preload="metadata" poster="/videos/tours/northline-poster.webp" src="/videos/tours/northline-ad.mp4" aria-label={t("videoChoice")} />
+          ) : (
+            <img className="video-poster" src="/videos/tours/northline-poster.webp" alt="" />
+          )}
             <section><span>{t("agentDecision")}</span><h3>{t("adCopy")}</h3><p>{t("adRationale")}</p><dl><div><dt>{t("format")}</dt><dd>4:5 · 8s</dd></div><div><dt>{t("channel")}</dt><dd>Meta</dd></div></dl></section></div>
           : <div className="calendar-result"><header><span>{t("weekTitle")}</span><b>{t("readyForReview")}</b></header>{posts.map((post, index) => <article key={post.day}><time>{post.day}</time><div><small>{post.format}</small><strong>{post.title}</strong><span>{t(`postGoals.${index}`)}</span></div><i>{index === 0 ? "▣" : index === 1 ? "Aa" : "▶"}</i></article>)}</div>}
         </div>
@@ -214,7 +218,7 @@ function StudioBoard({ playing }: { playing: boolean }) {
   </div>;
 }
 
-export function ServicePreview({ service }: { service: Service }) {
+export function ServicePreview({ service, pauseMotion = false }: { service: Service; pauseMotion?: boolean }) {
   const viewport = useRef<HTMLDivElement>(null);
   const device = useRef<HTMLDivElement>(null);
   const booted = useRef(false);
@@ -237,20 +241,44 @@ export function ServicePreview({ service }: { service: Service }) {
     booted.current = true;
     if (frame) {
       gsap.killTweensOf(frame);
-      if (desktop && !reduced) { gsap.set(frame, { rotateY: rtl ? 3.5 : -3.5, rotateX: 1.5, y: 0, force3D: true }); gsap.to(frame, { y: -4, duration: 4.2, yoyo: true, repeat: -1, ease: "sine.inOut", force3D: true }); }
-      else gsap.set(frame, { rotateY: 0, rotateX: 0, y: 0, clearProps: "transform" });
+      if (desktop && !reduced && !pauseMotion) {
+        gsap.set(frame, { rotateY: rtl ? 3.5 : -3.5, rotateX: 1.5, y: 0, force3D: true });
+        gsap.to(frame, { y: -4, duration: 4.2, yoyo: true, repeat: -1, ease: "sine.inOut", force3D: true });
+      } else if (desktop && !reduced && pauseMotion) {
+        gsap.set(frame, { rotateY: rtl ? 3.5 : -3.5, rotateX: 1.5, y: 0, force3D: true });
+      } else {
+        gsap.set(frame, { rotateY: 0, rotateX: 0, y: 0, clearProps: "transform" });
+      }
     }
-  }, { scope: viewport, dependencies: [service, rtl], revertOnUpdate: false });
+  }, { scope: viewport, dependencies: [service, rtl, pauseMotion], revertOnUpdate: false });
 
-  return <figure className="service-preview service-preview--product" data-service={service} data-arrival-services="">
-    <div className="preview-bloom" aria-hidden="true" />
-    <div className="preview-rig" ref={device}><div className="preview-device product-device">
-      <div className="preview-chrome" aria-hidden="true"><i /><i /><i /><span>Sailtru</span><b>app.sailtru.com</b></div>
-      <div ref={viewport} className="preview-viewport product-viewport">
-        <div data-pane="analysis" inert={service !== "analysis"} aria-hidden={service !== "analysis"} className="preview-pane"><AnalysisBoard playing={service === "analysis"} /></div>
-        <div data-pane="solutions" inert={service !== "solutions"} aria-hidden={service !== "solutions"} className="preview-pane"><SolutionsBoard playing={service === "solutions"} /></div>
-        <div data-pane="studio" inert={service !== "studio"} aria-hidden={service !== "studio"} className="preview-pane"><StudioBoard playing={service === "studio"} /></div>
+  const motionOn = (pane: Service) => service === pane && !pauseMotion;
+
+  return (
+    <figure className="service-preview service-preview--product" data-service={service} data-arrival-services="">
+      <div className="preview-bloom" aria-hidden="true" />
+      <div className="preview-rig" ref={device}>
+        <div className="preview-device product-device">
+          <div className="preview-chrome" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+            <span>Sailtru</span>
+            <b>app.sailtru.com</b>
+          </div>
+          <div ref={viewport} className="preview-viewport product-viewport">
+            <div data-pane="analysis" inert={service !== "analysis"} aria-hidden={service !== "analysis"} className="preview-pane">
+              <AnalysisBoard playing={motionOn("analysis")} />
+            </div>
+            <div data-pane="solutions" inert={service !== "solutions"} aria-hidden={service !== "solutions"} className="preview-pane">
+              <SolutionsBoard playing={motionOn("solutions")} />
+            </div>
+            <div data-pane="studio" inert={service !== "studio"} aria-hidden={service !== "studio"} className="preview-pane">
+              <StudioBoard playing={motionOn("studio")} />
+            </div>
+          </div>
+        </div>
       </div>
-    </div></div>
-  </figure>;
+    </figure>
+  );
 }

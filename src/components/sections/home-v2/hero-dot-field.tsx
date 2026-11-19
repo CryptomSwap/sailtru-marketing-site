@@ -15,7 +15,10 @@ const REST_Y = 0.4;
  * Perspective dot field for the hero. The plane tilts with the pointer,
  * and the dots under the cursor lift toward the camera.
  */
-export function HeroDotField({ maxFps }: { maxFps?: number } = {}) {
+export function HeroDotField({
+  maxFps,
+  active = true
+}: { maxFps?: number; active?: boolean } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -235,7 +238,7 @@ export function HeroDotField({ maxFps }: { maxFps?: number } = {}) {
 
     const start = () => {
       if (raf) window.cancelAnimationFrame(raf);
-      if (dissolved || !onScreen || document.hidden) {
+      if (!active || dissolved || !onScreen || document.hidden) {
         running = false;
         raf = 0;
         return;
@@ -302,7 +305,7 @@ export function HeroDotField({ maxFps }: { maxFps?: number } = {}) {
       document.removeEventListener("visibilitychange", onVisibility);
       motionQuery.removeEventListener("change", start);
     };
-  }, [maxFps]);
+  }, [maxFps, active]);
 
   return <canvas ref={canvasRef} className="field-hero__dots" aria-hidden />;
 }
