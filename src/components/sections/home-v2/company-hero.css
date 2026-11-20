@@ -171,10 +171,9 @@
 }
 .preview-bloom {
   position: absolute;
-  inset: 10% 4% 6% 8%;
+  inset: 6% 0 2% 4%;
   border-radius: 46%;
-  background: radial-gradient(circle, rgb(170 220 255 / 0.38), transparent 68%);
-  filter: blur(32px);
+  background: radial-gradient(circle, rgb(170 220 255 / 0.42), transparent 72%);
   pointer-events: none;
   z-index: 0;
 }
@@ -243,6 +242,9 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+}
+.preview-pane[aria-hidden="true"] {
+  content-visibility: hidden;
 }
 .preview-pane[data-pane="analysis"] {
   opacity: 1;

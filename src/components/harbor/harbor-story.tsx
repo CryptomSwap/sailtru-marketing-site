@@ -276,35 +276,63 @@ export function HarborStory({ belowHero = false, scene3d = false, hero }: { belo
   }, [kickLoop, setHarbor3d]);
 
   // Decide whether the 3D harbor may run, then load it once the story is near and the page is idle.
+  // With the cobalt hero, wait for idle or first scroll so GLB/shader compile doesn't hitch the dot field.
   useEffect(() => {
     const root = rootRef.current;
     if (!scene3d || !root) return;
     if (WebGLSupport.prefersReducedMotion()) return;
     const mode = stageRef.current && getComputedStyle(stageRef.current).display !== "none" ? "stage" : "vignette";
+    const cobaltHero = belowHero;
     let idle = 0;
+    let begun = false;
+    const ric =
+      window.requestIdleCallback ??
+      ((cb: () => void, opts?: IdleRequestOptions) => window.setTimeout(cb, opts?.timeout ?? 300));
+    const cancelRic = window.cancelIdleCallback ?? window.clearTimeout;
     const start = () => {
-      const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
-      // The cinematic stage on wide screens; otherwise the stacked layout's vignettes.
-      idle = ric(() => {
-        if (WebGLSupport.prefersReducedMotion() || !WebGLSupport.available()) return;
-        setHarbor3d("loading");
-        setLoad3d(mode);
-      }, { timeout: 1200 });
+      if (begun) return;
+      begun = true;
+      if (WebGLSupport.prefersReducedMotion() || !WebGLSupport.available()) return;
+      setHarbor3d("loading");
+      setLoad3d(mode);
     };
+    if (cobaltHero) {
+      for (const url of [
+        "/models/harbor/sailboat.glb",
+        "/models/harbor/boats.glb",
+        "/models/harbor/buoy.glb",
+        "/models/harbor/lighthouse.glb",
+        "/models/harbor/dock.glb",
+        "/models/harbor/terrain.glb",
+        "/models/harbor/props.glb"
+      ]) {
+        void fetch(url, { cache: "force-cache" }).catch(() => undefined);
+      }
+      window.addEventListener("wheel", start, { once: true, passive: true });
+      window.addEventListener("pointerdown", start, { once: true, passive: true });
+      window.addEventListener("keydown", start, { once: true });
+      idle = ric(() => start(), { timeout: 2800 });
+      return () => {
+        window.removeEventListener("wheel", start);
+        window.removeEventListener("pointerdown", start);
+        window.removeEventListener("keydown", start);
+        cancelRic(idle);
+      };
+    }
     const io = new IntersectionObserver(
       (entries) => {
         if (!entries.some((e) => e.isIntersecting)) return;
         io.disconnect();
-        start();
+        idle = ric(() => start(), { timeout: 1200 });
       },
       { rootMargin: mode === "vignette" ? "200px 0px" : "100% 0px" }
     );
     io.observe(mode === "vignette" ? root.querySelector(".hs-vignette--opening") ?? root : root);
     return () => {
       io.disconnect();
-      (window.cancelIdleCallback ?? window.clearTimeout)(idle);
+      cancelRic(idle);
     };
-  }, [scene3d, setHarbor3d]);
+  }, [scene3d, setHarbor3d, belowHero]);
   // Smooth wheel scrolling for the 3D story page (Lenis on gsap.ticker; off under reduced motion).
   useEffect(() => {
     if (!scene3d) return;

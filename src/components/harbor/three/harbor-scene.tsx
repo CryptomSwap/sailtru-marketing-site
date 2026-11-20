@@ -220,7 +220,7 @@ function World({ layout, mirror, boatCanvas, onStage, onReady, onError }: Harbor
         const boatRenderer = boatRendererRef.current;
         if (boatRenderer) {
           const result = resultRef.current;
-          if (input.arrival !== undefined && result.arrival < CobaltArrival.HERO[1]) {
+          if (input.arrival !== undefined && result.arrival > 0.03 && result.arrival < CobaltArrival.HERO[1]) {
             const dpr = gl.getPixelRatio();
             if (boatRenderer.getPixelRatio() !== dpr) boatRenderer.setPixelRatio(dpr);
             const size = boatRenderer.getSize(scratchSize);

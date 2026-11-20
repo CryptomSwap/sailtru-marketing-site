@@ -45,6 +45,8 @@ export function HeroDotField({
     let dissolved = host?.hasAttribute("data-dissolved") ?? false;
     let settle = false;
     let onScreen = true;
+    let box = { left: 0, top: 0, width: 1, height: 1 };
+    let boxAt = 0;
 
     const build = (width: number) => {
       const nextCols = width < 760 ? 24 : 42;
@@ -83,6 +85,7 @@ export function HeroDotField({
       canvas.dataset.ready = "";
       pixel = width / cssWidth;
       build(cssWidth);
+      boxAt = 0;
     };
 
     const draw = (time: number) => {
@@ -243,17 +246,23 @@ export function HeroDotField({
       if (running && !motionQuery.matches) raf = window.requestAnimationFrame(frame);
     };
 
+    const syncBox = () => {
+      const next = canvas.getBoundingClientRect();
+      box = { left: next.left, top: next.top, width: next.width, height: next.height };
+      boxAt = performance.now();
+    };
+
     const onPointer = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
+      if (performance.now() - boxAt > 120) syncBox();
       const inside =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
+        event.clientX >= box.left &&
+        event.clientX <= box.left + box.width &&
+        event.clientY >= box.top &&
+        event.clientY <= box.top + box.height;
       pointer.inside = inside;
       if (!inside) return;
-      pointer.x = rect.width > 0 ? (event.clientX - rect.left) / rect.width : REST_X;
-      pointer.y = rect.height > 0 ? (event.clientY - rect.top) / rect.height : REST_Y;
+      pointer.x = box.width > 0 ? (event.clientX - box.left) / box.width : REST_X;
+      pointer.y = box.height > 0 ? (event.clientY - box.top) / box.height : REST_Y;
     };
 
     const onLeave = () => {
