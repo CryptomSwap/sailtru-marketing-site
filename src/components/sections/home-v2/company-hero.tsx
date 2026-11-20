@@ -99,7 +99,7 @@ export function CompanyHero() {
       <a className="sr-only focus:not-sr-only" href="#observe">
         {common("skipToContent")}
       </a>
-      <HeroDotField maxFps={entranceBusy ? 15 : 24} />
+      <HeroDotField />
       <div className="company-shell">
         <SiteHeader company />
         <div id="observe" className="company-stage" data-service={active} ref={stageRef}>

@@ -34,6 +34,8 @@
   pointer-events: none;
   display: block;
   opacity: 0;
+  transform: translateZ(0);
+  contain: paint;
 }
 
 .field-hero--ref .field-hero__dots[data-ready] {
