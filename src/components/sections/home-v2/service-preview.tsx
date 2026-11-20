@@ -145,6 +145,45 @@ function AnalysisBoard({ playing }: { playing: boolean }) {
 const automationTypes: Automation[] = ["sales", "support", "watch"];
 
 function SolutionsBoard({ playing }: { playing: boolean }) {
+  const hebrew = useLocale() === "he";
+  const [testing, setTesting] = useState(false);
+  const [selected, setSelected] = useState(1);
+  const agents = hebrew ? [
+    ["סוכן מחקר", "חברו את הפנייה לפרטי החברה.", "טופס האתר ואתר החברה", "סוכן סינון"],
+    ["סוכן סינון", "חלצו גודל צוות ומועד יעד. סמנו תקציב חסר.", "הפנייה וכללי המכירות", "סוכן מסירה"],
+    ["סוכן מסירה", "הכינו רשומת עסקה ושאלת המשך לאישור.", "סיכום הפנייה", "טיוטה ב-HubSpot"],
+  ] : [
+    ["Research agent", "Match the enquiry to the company and collect relevant context.", "Website form and company site", "Qualification agent"],
+    ["Qualification agent", "Extract team size and timing. Flag a missing budget.", "Enquiry and sales rules", "Handoff agent"],
+    ["Handoff agent", "Draft a deal and a follow-up question for the sales owner.", "Qualified enquiry", "HubSpot draft"],
+  ];
+  const agent = agents[selected];
+  return <div className="automation-app">
+    <header className="automation-topbar">
+      <strong>Sailtru</strong>
+      <span>{hebrew ? "צוות קליטת פניות · סביבת דוגמה" : "Sales intake team · Sample workspace"}</span>
+      <button type="button" onClick={() => setTesting(!testing)} style={{color:"white",border:"1px solid #838bb0",borderRadius:8,padding:".4rem .65rem"}}>
+        {testing ? (hebrew ? "חזרה לתכנון" : "Back to design") : (hebrew ? "הרצת דוגמה" : "Run sample")}
+      </button>
+    </header>
+    {testing ? <SampleRunBoard playing={playing} /> : <div className="automation-body">
+      <nav className="automation-picker" aria-label={hebrew ? "סוכנים" : "Agent roles"}>
+        <span>{hebrew ? "תכנון הצוות" : "Team design"}</span>
+        {agents.map(([name], index) => <button key={name} type="button" aria-pressed={selected === index} onClick={() => setSelected(index)}><i/><strong>{name}</strong></button>)}
+      </nav>
+      <section className="automation-workspace">
+        <header><div><span>{hebrew ? "הגדרות הסוכן" : "Agent configuration"}</span><h2>{agent[0]}</h2></div></header>
+        <aside className="agent-output" key={agent[0]}>
+          <span>{hebrew ? "הוראות" : "Instructions"}</span><h3>{agent[1]}</h3>
+          <dl><div><dt>{hebrew ? "מקורות" : "Reads from"}</dt><dd>{agent[2]}</dd></div><div><dt>{hebrew ? "יעד" : "Hands off to"}</dt><dd>{agent[3]}</dd></div></dl>
+          <small>{hebrew ? "איש המכירות בודק את הטיוטה לפני עדכון ה-CRM." : "The sales owner reviews the draft before the CRM is updated."}</small>
+        </aside>
+      </section>
+    </div>}
+  </div>;
+}
+
+function SampleRunBoard({ playing }: { playing: boolean }) {
   const t = useTranslations("companyHero.preview");
   const [automation, setAutomation] = useState<Automation>("sales");
   const [step, setStep] = useState(0);
