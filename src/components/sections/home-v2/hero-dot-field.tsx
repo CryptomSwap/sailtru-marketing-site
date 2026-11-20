@@ -20,9 +20,8 @@ const LINK_STYLES = ["rgba(214,232,255,", "rgba(126,231,255,"] as const;
  */
 export function HeroDotField({
   maxFps,
-  shore = false,
   active = true
-}: { maxFps?: number; active?: boolean; shore?: boolean } = {}) {
+}: { maxFps?: number; active?: boolean } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -92,30 +91,6 @@ export function HeroDotField({
       if (width < 2 || height < 2 || dots.length === 0) return;
 
       const reduced = motionQuery.matches;
-      if (shore) {
-        // Sample a shallow wave in perspective along the bottom edge of the hero.
-        ctx.clearRect(0, 0, width, height);
-        const phase = reduced ? 0 : time * .00026;
-        const columns = Math.ceil(width / (12 * pixel));
-        for (let row = 0; row < 16; row++) {
-          const depth = row / 15;
-          ctx.fillStyle = `rgba(230,245,255,${.28 + depth * .48})`;
-          ctx.beginPath();
-          for (let col = -2; col <= columns + 2; col++) {
-            const u = col / columns;
-            const crest = Math.sin(u * 12 + depth * 3 + phase) * .13
-              + Math.sin(u * 21 - depth * 2 - phase) * .05;
-            const x = width * (u + depth * .025 * Math.sin(u * 9 + phase));
-            const y = height * (.28 + depth * depth * .9 + crest);
-            const radius = pixel * (.52 + depth * .45);
-            ctx.moveTo(x + radius, y);
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-          }
-          ctx.fill();
-        }
-        settle = false;
-        return;
-      }
       const follow = reduced || settle ? 1 : 0.075;
       smooth.x += ((pointer.inside ? pointer.x : REST_X) - smooth.x) * follow;
       smooth.y += ((pointer.inside ? pointer.y : REST_Y) - smooth.y) * follow;
@@ -353,8 +328,7 @@ export function HeroDotField({
       document.removeEventListener("visibilitychange", onVisibility);
       motionQuery.removeEventListener("change", start);
     };
-  }, [maxFps, active, shore]);
+  }, [maxFps, active]);
 
   return <canvas ref={canvasRef} className="field-hero__dots" aria-hidden />;
 }
-
